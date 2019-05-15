@@ -4,7 +4,7 @@ import Orka from '../build/orka';
 describe('Orka', function() {
   describe('orkaConfig', function() {
     it('supports default config', function() {
-      assert.deepEqual(new Orka().config, {
+      assert.deepEqual(new Orka().options, {
         afterMiddleware: [],
         appName: '',
         beforeMiddleware: [],
@@ -29,7 +29,7 @@ describe('Orka', function() {
             configFolder: './foo',
             loadDotEnv: ['production']
           } as any
-        }).config,
+        }).options,
         {
           afterMiddleware: [],
           appName: '',
@@ -53,7 +53,7 @@ describe('Orka', function() {
       assert.deepEqual(
         new Orka({
           appName: 'name'
-        }).config,
+        }).options,
         {
           afterMiddleware: [],
           appName: 'name',
