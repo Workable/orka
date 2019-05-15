@@ -7,7 +7,7 @@ import addRequestId from './add-request-id';
 import errorHander from './error-handler';
 import * as bodyParser from 'koa-bodyparser';
 import { router } from 'fast-koa-router';
-import { OrkaOptions } from 'typings/Orka';
+import { OrkaOptions } from '../../typings/Orka';
 
 const logger = getLogger('orka.initializers.koa');
 export let app: Koa;

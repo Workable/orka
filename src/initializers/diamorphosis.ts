@@ -1,5 +1,5 @@
 import * as diamorphosis from 'diamorphosis';
-import { OrkaOptions } from 'typings/orka';
+import { OrkaOptions } from '../typings/orka';
 
 export default (config, orkaOptions: OrkaOptions) => {
   config.nodeEnv = config.nodeEnv || 'development';

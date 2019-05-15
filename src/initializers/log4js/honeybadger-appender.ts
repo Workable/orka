@@ -59,13 +59,9 @@ const honeyBadgerAppender = ({ filter_status = [] }) => {
   };
 };
 
-function configure(config = {} as any) {
+export function configure(config = {} as any) {
   const { filter_status = [] } = config;
   return honeyBadgerAppender({
     filter_status
   });
 }
-
-module.exports = {
-  configure
-};

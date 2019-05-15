@@ -1,4 +1,4 @@
-import {  OrkaOptions } from 'typings/orka';
+import {  OrkaOptions } from '../../typings/orka';
 
 export default async (config, orkaOptions: OrkaOptions) => {
   if (config.newRelicLicenseKey) {

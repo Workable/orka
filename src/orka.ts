@@ -4,7 +4,7 @@ import honeybadger from './initializers/honeybadger';
 import newrelic from './initializers/newrelic';
 import { default as log4js, getLogger } from './initializers/log4js';
 import defaultConfig from './default-options';
-import { OrkaOptions } from 'typings/orka';
+import { OrkaOptions } from './typings/orka';
 
 export default class Orka {
   public rootPath = path.resolve('.');
