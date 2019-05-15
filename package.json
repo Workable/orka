@@ -45,7 +45,6 @@
     "koa-compress": "^3.0.0",
     "koa2-cors": "^2.0.6",
     "log4js": "^4.2.0",
-    "log4js_honeybadger_appender": "^1.0.1",
     "newrelic": "^5.8.0",
     "riviere": "^0.3.0",
     "source-map-support": "^0.5.12",
@@ -56,6 +55,8 @@
     "@types/node": "^11.13.8",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
+    "should": "^13.2.3",
+    "sinon": "^7.3.2",
     "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
     "typescript": "^3.4.5"

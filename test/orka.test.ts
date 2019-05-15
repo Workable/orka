@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import Orka from '../build/orka';
+import Orka from '../src/orka';
 
 describe('Orka', function() {
   describe('orkaConfig', function() {

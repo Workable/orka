@@ -1,5 +1,5 @@
 export default async (config, orkaOptions) => {
-  if (config.honeyBadgerApiKey) {
+  if (config.honeybadgerApiKey) {
     const honeybadger = await import('honeybadger');
     honeybadger.configure({
       environment: config.nodeEnv,
