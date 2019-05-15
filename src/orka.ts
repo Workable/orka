@@ -5,7 +5,6 @@ import newrelic from './initializers/newrelic';
 import { default as log4js, getLogger } from './initializers/log4js';
 import defaultConfig from './default-options';
 import { OrkaOptions } from 'typings/orka';
-import koa from './initializers/koa';
 
 export default class Orka {
   public rootPath = path.resolve('.');
@@ -39,7 +38,8 @@ export default class Orka {
       await honeybadger(config, this.options);
       await log4js(config, this.options);
       await newrelic(config, this.options);
-      await koa(config, this.options);
+      const koa = await import('./initializers/koa');
+      await koa.default(config, this.options);
     } catch (e) {
       getLogger('orka').error(e);
       process.exit(1);

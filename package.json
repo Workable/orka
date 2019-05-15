@@ -45,7 +45,6 @@
     "koa-compress": "^3.0.0",
     "koa2-cors": "^2.0.6",
     "log4js": "^4.2.0",
-    "log4js_honeybadger_appender": "^1.0.1",
     "newrelic": "^5.8.0",
     "riviere": "^0.3.0",
     "source-map-support": "^0.5.12",

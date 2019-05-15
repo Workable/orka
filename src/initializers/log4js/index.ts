@@ -1,4 +1,5 @@
 import * as Log4js from 'log4js';
+import * as path from 'path';
 
 let tmp = name => {
   const logger = Log4js.getLogger('initializing.' + name);
@@ -25,7 +26,7 @@ export default async (config, orkaOptions) => {
 
   if (config.honeybadgerApiKey) {
     appenders.honeybadger = {
-      type: 'log4js_honeybadger_appender'
+      type: path.resolve(path.join(__dirname, './honeybadger-appender'))
     };
     appendersList.push('honeybadger');
   }
