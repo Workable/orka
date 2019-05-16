@@ -44,7 +44,8 @@ orka({
     loadDotEnv: ['development']
   },
   beforeMiddleware: [],
-  afterMiddleware: []
+  afterMiddleware: [],
+  beforeStart: [] // functions to run before start
 }).start();
 
 // this way you can update some configuration with envs only.
