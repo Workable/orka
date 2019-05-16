@@ -44,6 +44,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
     "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.11",
     "log4js": "^4.2.0",
     "newrelic": "^5.8.0",
     "riviere": "^0.3.0",
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.8",
+    "@types/lodash": "^4.14.129",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "should": "^13.2.3",

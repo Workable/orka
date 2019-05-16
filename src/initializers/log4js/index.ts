@@ -11,7 +11,7 @@ export let getLogger = name => {
   return tmp(name);
 };
 
-export default async (config, orkaOptions) => {
+export default async config => {
   const appenders = {
     console: {
       type: 'console',

@@ -1,7 +1,7 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
 
-export default (config, orkaOptions: OrkaOptions) => {
+export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
   config.honeybadgerApiKey = config.honeybadgerApiKey || '';
   config.newRelicLicenseKey = '';
