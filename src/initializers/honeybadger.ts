@@ -1,9 +1,9 @@
-export default async (config, orkaOptions) => {
+export default async (config, options) => {
   if (config.honeybadgerApiKey) {
     const honeybadger = await import('honeybadger');
     honeybadger.configure({
       environment: config.nodeEnv,
-      developmentEnvironments: orkaOptions.honeyBadger.developmentEnvironments
+      developmentEnvironments: options.developmentEnvironments
     });
   }
 };

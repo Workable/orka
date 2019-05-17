@@ -47,15 +47,23 @@ orka({
   afterMiddleware: []
 }).start();
 
-// You can also save some literal deaults eg appName inside config eg:
-
-config = {
-  orka: {
-    appName: 'appName'
-  }
-}
-
 // this way you can update some configuration with envs only.
 ```
 
-For detailed usage please see the examples
+Using the builder you can access a fluent API for initiliazing your server.
+
+```js
+const { builder } = require('@workablehr/orka');
+
+builder({…some static options here…})
+  .forTypeScript()
+  .withNewrelic('my-app-name')
+  .withHoneyBadger({…})
+  .use(async (ctx, next) => {…before middleware…})
+  .useDefaults() // riviere, cors, etc.
+  .use(async (ctx, next) => {…after middleware…})
+  .routes('./routes/my-routes')
+  .start(8080)
+```
+
+For detailed usage please see the examples.
