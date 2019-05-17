@@ -14,5 +14,6 @@ export default {
     loadDotEnv: ['development']
   },
   beforeMiddleware: [],
-  afterMiddleware: []
+  afterMiddleware: [],
+  beforeStart: []
 };

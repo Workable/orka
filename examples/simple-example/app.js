@@ -1,5 +1,6 @@
 const { orka } = require('../../build');
 const path = require('path');
+const config = require('./config');
 
 orka({
   beforeMiddleware: [
@@ -9,5 +10,6 @@ orka({
     }
   ],
   diamorphosis: { configFolder: './examples/simple-example' },
-  routesPath: './examples/simple-example/routes.js'
+  routesPath: './examples/simple-example/routes.js',
+  beforeStart: () => console.log(`Going to start env: ${config.nodeEnv}`)
 }).start();

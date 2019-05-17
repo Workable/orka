@@ -75,6 +75,11 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
       queue.push(() => honeybadger(config, o));
       return _;
     },
+    with: tasks => {
+      tasks = lodash.flatten([tasks]).filter(lodash.identity);
+      tasks.forEach(task => queue.push(() => task(config)));
+      return _;
+    },
     routes: (m: string) => _.use(router(require(path.resolve(m)))),
     start: async (port: number = config.port) => {
       const _logger = getLogger('orka');

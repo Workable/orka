@@ -10,6 +10,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .use(options.afterMiddleware)
     .withNewrelic()
     .withHoneyBadger()
+    .with(options.beforeStart)
     .routes(options.routesPath);
   return options.typescript ? orka.forTypescript() : orka;
 };
