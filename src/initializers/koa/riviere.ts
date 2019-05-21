@@ -10,9 +10,16 @@ export default config =>
       }
     ],
     outbound: {
-      enabled: true,
+      enabled: config.riviere,
       https: true,
       level: 'info'
     },
+    inbound: {
+      level: 'info',
+      enabled: config.riviere
+    } as any,
+    errors: {
+      enabled: config.enabled
+    } as any,
     traceHeaderName: config.traceHeaderName
   });

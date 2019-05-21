@@ -15,5 +15,6 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
+  config.riviere = config.riviere || true;
   diamorphosis(orkaOptions.diamorphosis);
 };
