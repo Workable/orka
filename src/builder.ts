@@ -32,13 +32,13 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
 
   // always use logger
   log4js(config);
+  let server: Server;
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
   const errorHander = require('./initializers/koa/error-handler').default;
 
   const middlewares: Middleware<any>[] = [];
 
   const _ = {
-    server: null as Server,
     use: (m: Middleware<any> | Middleware<any>[] = []) => {
       if (Array.isArray(m)) {
         m.forEach(__ => middlewares.push(__));
@@ -92,7 +92,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
           await queue.shift()();
         }
         const koa = await import('./initializers/koa');
-        _.server = await koa.default(port, middlewares, (logger = _logger) => {
+        server = await koa.default(port, middlewares, (logger = _logger) => {
           logger.info(`Server listening to http://localhost:${port}/`);
           logger.info(`Server environment: ${config.nodeEnv}`);
         });
@@ -103,9 +103,9 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
     },
     stop: async () => {
       const _logger = getLogger('orka');
-      assert(_.server, 'Application is not started');
+      assert(server, 'Application is not started');
       _logger.info('Shutting down server');
-      _.server.close();
+      server.close();
     }
   };
   return _;
