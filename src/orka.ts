@@ -11,6 +11,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withNewrelic()
     .withHoneyBadger()
     .with(options.beforeStart)
+    .withLogo(options.logoPath)
     .routes(options.routesPath);
   return options.typescript ? orka.forTypescript() : orka;
 };

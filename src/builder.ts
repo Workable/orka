@@ -15,6 +15,7 @@ import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
 import assert = require('assert');
 import { Server } from 'http';
+import logo from './initializers/logo';
 
 const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(defaults);
@@ -81,6 +82,10 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
     with: tasks => {
       tasks = lodash.flatten([tasks]).filter(lodash.identity);
       tasks.forEach(task => queue.push(() => task(config)));
+      return _;
+    },
+    withLogo: (pathToLogo: string) => {
+      queue.push(() => logo(config, pathToLogo));
       return _;
     },
     routes: (m: string) => _.use(router(require(path.resolve(m)))),

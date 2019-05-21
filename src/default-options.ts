@@ -7,6 +7,7 @@ export default {
     developmentEnvironments: ['development', 'test']
   },
   routesPath: path.resolve('./config/routes'),
+  logoPath: path.resolve('./config/logo.txt'),
   diamorphosis: {
     configFolder: path.resolve('config'),
     configPath: '',
