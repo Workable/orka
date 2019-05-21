@@ -13,6 +13,8 @@ import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
+import assert = require('assert');
+import { Server } from 'http';
 
 const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(defaults);
@@ -30,6 +32,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
 
   // always use logger
   log4js(config);
+  let server: Server;
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
   const errorHander = require('./initializers/koa/error-handler').default;
 
@@ -89,7 +92,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
           await queue.shift()();
         }
         const koa = await import('./initializers/koa');
-        await koa.default(port, middlewares, (logger = _logger) => {
+        server = await koa.default(port, middlewares, (logger = _logger) => {
           logger.info(`Server listening to http://localhost:${port}/`);
           logger.info(`Server environment: ${config.nodeEnv}`);
         });
@@ -97,6 +100,12 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
         _logger.error(e);
         process.exit(1);
       }
+    },
+    stop: async () => {
+      const _logger = getLogger('orka');
+      assert(server, 'Application is not started');
+      _logger.info('Shutting down server');
+      server.close();
     }
   };
   return _;
