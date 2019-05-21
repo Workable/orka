@@ -11,4 +11,5 @@ builder(staticOptions)
     await next();
   })
   .routes('./examples/simple-example/routes.js')
+  .withLogo('./examples/simple-example/logo.txt')
   .start();

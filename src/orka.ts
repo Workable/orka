@@ -8,6 +8,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .use(options.beforeMiddleware)
     .useDefaults()
     .use(options.afterMiddleware)
+    .withLogo(options.logoPath)
     .withNewrelic()
     .withHoneyBadger()
     .with(options.beforeStart)

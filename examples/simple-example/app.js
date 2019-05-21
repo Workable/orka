@@ -10,5 +10,6 @@ orka({
   ],
   diamorphosis: { configFolder: './examples/simple-example' },
   routesPath: './examples/simple-example/routes.js',
+  logoPath: './examples/simple-example/logo.txt',
   beforeStart: () => console.log(`Going to start env: ${config.nodeEnv}`)
 }).start();
