@@ -15,5 +15,6 @@ export default {
   },
   beforeMiddleware: [],
   afterMiddleware: [],
-  beforeStart: []
+  beforeStart: [],
+  initialize: null
 };

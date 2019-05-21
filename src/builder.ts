@@ -28,6 +28,10 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const config = require(`${options.diamorphosis.configPath}`);
   diamorphosis(config, options);
 
+  if (options.initialize) {
+    options.initialize();
+  }
+
   // always use logger
   log4js(config);
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
