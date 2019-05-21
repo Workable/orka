@@ -1,5 +1,4 @@
 const { orka } = require('../../build');
-const path = require('path');
 const config = require('./config');
 
 orka({

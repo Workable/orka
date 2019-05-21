@@ -13,6 +13,8 @@ import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
+import assert = require('assert');
+import { Server } from 'http';
 
 const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(defaults);
@@ -36,6 +38,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const middlewares: Middleware<any>[] = [];
 
   const _ = {
+    server: null as Server,
     use: (m: Middleware<any> | Middleware<any>[] = []) => {
       if (Array.isArray(m)) {
         m.forEach(__ => middlewares.push(__));
@@ -89,7 +92,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
           await queue.shift()();
         }
         const koa = await import('./initializers/koa');
-        await koa.default(port, middlewares, (logger = _logger) => {
+        _.server = await koa.default(port, middlewares, (logger = _logger) => {
           logger.info(`Server listening to http://localhost:${port}/`);
           logger.info(`Server environment: ${config.nodeEnv}`);
         });
@@ -97,6 +100,12 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
         _logger.error(e);
         process.exit(1);
       }
+    },
+    stop: async () => {
+      const _logger = getLogger('orka');
+      assert(_.server, 'Application is not started');
+      _logger.info('Shutting down server');
+      _.server.close();
     }
   };
   return _;
