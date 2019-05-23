@@ -88,7 +88,13 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
       queue.push(() => logo(config, pathToLogo));
       return _;
     },
-    routes: (m: string) => _.use(router(require(path.resolve(m)))),
+    routes: (m: string) => {
+      let routes = require(path.resolve(m));
+      if (routes.default && Object.keys(routes).length === 1) {
+        routes = routes.default;
+      }
+      return _.use(router(routes));
+    },
     start: async (port: number = config.port) => {
       const _logger = getLogger('orka');
       try {
