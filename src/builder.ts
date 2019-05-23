@@ -93,8 +93,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
       if (routes.default && Object.keys(routes).length === 1) {
         routes = routes.default;
       }
-      _.use(router(routes));
-      return _;
+      return _.use(router(routes));
     },
     start: async (port: number = config.port) => {
       const _logger = getLogger('orka');
