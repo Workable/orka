@@ -17,9 +17,114 @@ import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
 
+export class OrkaBuilder {
+  options: Partial<OrkaOptions>;
+  config: any;
+  middlewares: Middleware<any>[];
+  errorHandler: any;
+  queue: (() => Promise<void> | void)[];
+  server: Server;
+
+  constructor(options, config, errorHandler) {
+    this.options = options;
+    this.config = config;
+    this.middlewares = [];
+    this.errorHandler = errorHandler;
+    this.queue = [];
+  }
+
+  use(m: Middleware<any> | Middleware<any>[] = []) {
+    if (Array.isArray(m)) {
+      m.forEach(__ => this.middlewares.push(__));
+    } else {
+      this.middlewares.push(m);
+    }
+    return this;
+  }
+
+  useDefaults() {
+    this.use(riviere(this.config));
+    this.use(compress());
+    this.useCors();
+    this.use(addRequestId(this.config));
+    this.use(this.errorHandler(this.config));
+    this.use(bodyParser());
+    return this;
+  }
+
+  useCors(allowedOrigins = this.config.allowedOrigins) {
+    const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
+    return this.use(
+      cors({
+        origin: ctx =>
+          allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0]
+      })
+    );
+  }
+
+  forTypescript() {
+    require('tsconfig-paths/register');
+    require('source-map-support/register');
+    return this;
+  }
+
+  withNewrelic(appName: string = this.options.appName) {
+    this.queue.push(() => newrelic(this.config, { appName }));
+    return this;
+  }
+
+  withHoneyBadger(o: any = this.options.honeyBadger) {
+    this.queue.push(() => honeybadger(this.config, o));
+    return this;
+  }
+
+  with(tasks) {
+    tasks = lodash.flatten([tasks]).filter(lodash.identity);
+    tasks.forEach(task => this.queue.push(() => task(this.config)));
+    return this;
+  }
+
+  withLogo(pathToLogo: string) {
+    this.queue.push(() => logo(this.config, pathToLogo));
+    return this;
+  }
+
+  routes(m: string) {
+    let routes = require(path.resolve(m));
+    if (routes.default && Object.keys(routes).length === 1) {
+      routes = routes.default;
+    }
+    return this.use(router(routes));
+  }
+
+  async start(port: number = this.config.port) {
+    const _logger = getLogger('orka');
+    try {
+      _logger.info(`Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`);
+      while (this.queue.length) {
+        await this.queue.shift()();
+      }
+      const koa = await import('./initializers/koa');
+      this.server = await koa.default(port, this.middlewares, (logger = _logger) => {
+        logger.info(`Server listening to http://localhost:${port}/`);
+        logger.info(`Server environment: ${this.config.nodeEnv}`);
+      });
+    } catch (e) {
+      _logger.error(e);
+      process.exit(1);
+    }
+  }
+
+  async stop() {
+    const _logger = getLogger('orka');
+    assert(this.server, 'Application is not started');
+    _logger.info('Shutting down server');
+    this.server.close();
+  }
+}
+
 const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(defaults);
-  const queue: (() => Promise<void> | void)[] = [];
 
   // Always initialize diamorphosis.
   if (!options.diamorphosis.configPath) {
@@ -33,93 +138,11 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
 
   // always use logger
   log4js(config);
-  let server: Server;
+
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
-  const errorHander = require('./initializers/koa/error-handler').default;
+  const errorHandler = require('./initializers/koa/error-handler').default;
 
-  const middlewares: Middleware<any>[] = [];
-
-  const _ = {
-    use: (m: Middleware<any> | Middleware<any>[] = []) => {
-      if (Array.isArray(m)) {
-        m.forEach(__ => middlewares.push(__));
-      } else {
-        middlewares.push(m);
-      }
-      return _;
-    },
-    useDefaults: () => {
-      _.use(riviere(config));
-      _.use(compress());
-      _.useCors();
-      _.use(addRequestId(config));
-      _.use(errorHander(config));
-      _.use(bodyParser());
-      return _;
-    },
-    useCors: (allowedOrigins = config.allowedOrigins) => {
-      const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
-      return _.use(
-        cors({
-          origin: ctx =>
-            allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0]
-        })
-      );
-    },
-    forTypescript: () => {
-      queue.unshift(() => import('tsconfig-paths/register'));
-      queue.unshift(() => import('source-map-support/register'));
-      return _;
-    },
-    withNewrelic: (appName: string = options.appName) => {
-      queue.push(() => newrelic(config, { appName }));
-      return _;
-    },
-    withHoneyBadger: (o: any = options.honeyBadger) => {
-      queue.push(() => honeybadger(config, o));
-      return _;
-    },
-    with: tasks => {
-      tasks = lodash.flatten([tasks]).filter(lodash.identity);
-      tasks.forEach(task => queue.push(() => task(config)));
-      return _;
-    },
-    withLogo: (pathToLogo: string) => {
-      queue.push(() => logo(config, pathToLogo));
-      return _;
-    },
-    routes: (m: string) => {
-      let routes = require(path.resolve(m));
-      if (routes.default && Object.keys(routes).length === 1) {
-        routes = routes.default;
-      }
-      return _.use(router(routes));
-    },
-    start: async (port: number = config.port) => {
-      const _logger = getLogger('orka');
-      try {
-        _logger.info(`Initializing orka processing ${queue.length} tasks and ${middlewares.length} middlewares…`);
-        while (queue.length) {
-          await queue.shift()();
-        }
-        const koa = await import('./initializers/koa');
-        server = await koa.default(port, middlewares, (logger = _logger) => {
-          logger.info(`Server listening to http://localhost:${port}/`);
-          logger.info(`Server environment: ${config.nodeEnv}`);
-        });
-      } catch (e) {
-        _logger.error(e);
-        process.exit(1);
-      }
-    },
-    stop: async () => {
-      const _logger = getLogger('orka');
-      assert(server, 'Application is not started');
-      _logger.info('Shutting down server');
-      server.close();
-    }
-  };
-  return _;
+  return new OrkaBuilder(options, config, errorHandler);
 };
 
 export default builder;
