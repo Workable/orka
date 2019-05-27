@@ -4,7 +4,8 @@ import defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
 
 const fromOptions = (options: Partial<OrkaOptions>) => {
-  const orka = builder(lodash.defaultsDeep(options, defaults))
+  return builder(lodash.defaultsDeep(options, defaults))
+    .forTypescript(options.typescript)
     .use(options.beforeMiddleware)
     .useDefaults()
     .use(options.afterMiddleware)
@@ -13,7 +14,6 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withHoneyBadger()
     .with(options.beforeStart)
     .routes(options.routesPath);
-  return options.typescript ? orka.forTypescript() : orka;
 };
 
 export default fromOptions;

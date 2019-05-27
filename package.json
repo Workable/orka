@@ -13,6 +13,12 @@
     "pretest": "tslint src/*.ts",
     "test": "nyc mocha"
   },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --print-width 120 --single-quote true --write",
+      "git add"
+    ]
+  },
   "author": "Nikos Kostoulas <kosotulas@workable.com>",
   "contributors": [
     "Anastasios Kakalis <anastasios@workable.com>"
@@ -52,11 +58,12 @@
     "tsconfig-paths": "^3.8.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.129",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.8",
-    "@types/lodash": "^4.14.129",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
+    "prettier": "^1.17.1",
     "should": "^13.2.3",
     "sinon": "^7.3.2",
     "ts-node": "^8.1.0",
