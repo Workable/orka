@@ -56,13 +56,15 @@ export class OrkaBuilder {
     const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
     return this.use(
       cors({
-        origin: ctx =>
-          allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0]
+        origin: ctx => (allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0])
       })
     );
   }
 
-  forTypescript() {
+  forTypescript(isTypeScript = true) {
+    if (!isTypeScript) {
+      return this;
+    }
     require('tsconfig-paths/register');
     require('source-map-support/register');
     return this;
@@ -90,17 +92,22 @@ export class OrkaBuilder {
   }
 
   routes(m: string) {
-    let routes = require(path.resolve(m));
-    if (routes.default && Object.keys(routes).length === 1) {
-      routes = routes.default;
-    }
-    return this.use(router(routes));
+    let routes;
+    return this.use((...args) => {
+      routes = require(path.resolve(m));
+      if (routes.default && Object.keys(routes).length === 1) {
+        routes = routes.default;
+      }
+      return router(routes)(...args);
+    });
   }
 
   async start(port: number = this.config.port) {
     const _logger = getLogger('orka');
     try {
-      _logger.info(`Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`);
+      _logger.info(
+        `Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`
+      );
       while (this.queue.length) {
         await this.queue.shift()();
       }
