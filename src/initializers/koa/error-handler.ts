@@ -7,6 +7,7 @@ const isBlacklisted = (err: { status: number } = {} as any, config) =>
   err.status && config.blacklistedErrorCodes.includes(err.status);
 
 export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
+  console.log('$$$$$$$$$$$$$$$$$$$');
   try {
     await next();
   } catch (err) {
@@ -16,7 +17,7 @@ export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
 
     Object.assign(err, {
       component: err.component || 'koa',
-      action: err.action || ctx._matchedRoute,
+      action: err.action || (typeof ctx._matchedRoute === 'string' && ctx._matchedRoute) || ctx.request.path,
       params: {
         ...ctx.request.query,
         requestId: ctx.state.requestId,
