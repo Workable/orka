@@ -66,7 +66,9 @@ export class OrkaBuilder {
       return this;
     }
     require('tsconfig-paths/register');
-    require('source-map-support/register');
+    if (this.config.env !== 'test') {
+      require('source-map-support/register');
+    }
     return this;
   }
 
