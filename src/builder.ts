@@ -66,7 +66,9 @@ export class OrkaBuilder {
       return this;
     }
     require('tsconfig-paths/register');
-    require('source-map-support/register');
+    if (this.config.env !== 'test') {
+      require('source-map-support/register');
+    }
     return this;
   }
 
@@ -140,7 +142,9 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   if (!options.diamorphosis.envFolder) {
     options.diamorphosis.envFolder = path.resolve(options.diamorphosis.configFolder + '/env');
   }
-  const config = require(`${options.diamorphosis.configPath}`);
+  let config = require(`${options.diamorphosis.configPath}`);
+  //module.exports vs export default
+  config = lodash.isEmpty(config.default) ? config : config.default;
   diamorphosis(config, options);
 
   // always use logger
