@@ -7,7 +7,6 @@ const isBlacklisted = (err: { status: number } = {} as any, config) =>
   err.status && config.blacklistedErrorCodes.includes(err.status);
 
 export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
-  console.log('$$$$$$$$$$$$$$$$$$$');
   try {
     await next();
   } catch (err) {
