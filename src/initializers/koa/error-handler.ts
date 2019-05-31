@@ -16,7 +16,7 @@ export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
 
     Object.assign(err, {
       component: err.component || 'koa',
-      action: err.action || (typeof ctx._matchedRoute === 'string' && ctx._matchedRoute) || ctx.request.path,
+      action: err.action || ctx.request.path,
       params: {
         ...ctx.request.query,
         requestId: ctx.state.requestId,
