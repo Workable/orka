@@ -66,9 +66,7 @@ export class OrkaBuilder {
       return this;
     }
     require('tsconfig-paths/register');
-    if (this.config.env !== 'test') {
-      require('source-map-support/register');
-    }
+    require('source-map-support/register');
     return this;
   }
 
@@ -97,9 +95,7 @@ export class OrkaBuilder {
     let routes;
     return this.use((...args) => {
       routes = require(path.resolve(m));
-      if (routes.default && Object.keys(routes).length === 1) {
-        routes = routes.default;
-      }
+      routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
       return router(routes)(...args);
     });
   }
@@ -144,7 +140,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   }
   let config = require(`${options.diamorphosis.configPath}`);
   //module.exports vs export default
-  config = lodash.isEmpty(config.default) ? config : config.default;
+  config = config.default && Object.keys(config).length === 1 ? config.default : config;
   diamorphosis(config, options);
 
   // always use logger
