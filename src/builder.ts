@@ -34,11 +34,8 @@ export class OrkaBuilder {
   }
 
   use(m: Middleware<any> | Middleware<any>[] = []) {
-    if (Array.isArray(m)) {
-      m.forEach(__ => this.middlewares.push(__));
-    } else {
-      this.middlewares.push(m);
-    }
+    m = lodash.flatten([m]).filter(lodash.identity);
+    m.forEach(__ => this.middlewares.push(__));
     return this;
   }
 
