@@ -1,3 +1,6 @@
+const { OrkaKafkaClient } = require('../../build');
+const config = require('./config');
+
 module.exports = {
   get: {
     '/test': async (ctx, next) => (ctx.body = 'ok'),
@@ -5,7 +8,7 @@ module.exports = {
   },
   policy: {
     '/testPolicy': async (ctx, next) => {
-      if(ctx.request.query.secret_key === 'success') {
+      if (ctx.request.query.secret_key === 'success') {
         return await next();
       }
       throw { status: 401, message: 'Unauthorized' };

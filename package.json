@@ -53,7 +53,9 @@
     "log4js": "^4.2.0",
     "newrelic": "^5.8.0",
     "riviere": "^0.3.0",
+    "sinek": "^7.29.3",
     "source-map-support": "^0.5.12",
+    "tmp": "^0.1.0",
     "tsconfig-paths": "^3.8.0"
   },
   "devDependencies": {
