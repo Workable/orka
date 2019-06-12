@@ -130,7 +130,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
 
   // Always initialize diamorphosis.
   if (!options.diamorphosis.configPath) {
-    options.diamorphosis.configPath = path.resolve(options.diamorphosis.configFolder + '/config.js');
+    options.diamorphosis.configPath = path.resolve(options.diamorphosis.configFolder + '/config');
   }
   if (!options.diamorphosis.envFolder) {
     options.diamorphosis.envFolder = path.resolve(options.diamorphosis.configFolder + '/env');
