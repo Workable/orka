@@ -2,9 +2,6 @@ import { getLogger } from '../log4js';
 import { NProducer, NConsumer } from 'sinek';
 import authOptions from './auth-options';
 
-const logger = getLogger('orka.kafka');
-const kafkaLogger = getLogger('orka.kafka.sinek.consumer');
-
 export default class Kafka {
   private producer: NProducer;
   private options: any;
@@ -25,20 +22,20 @@ export default class Kafka {
     const { key, cert, ca } = this.options;
     this.authOptions = authOptions({ key, cert, ca });
     this.producer = this.createProducer();
-    this.producer.on('error', err => logger.error(err));
+    this.producer.on('error', err => getLogger('orka.kafka.connect').error(err));
     await this.producer.connect();
   }
 
   public async send(topic: string, message: string | Buffer) {
     const { key, partition, offset } = await this.producer.send(topic, message);
-    logger.info(`partition(${partition})[${offset}][${key}] produced for topic ${topic}`);
+    getLogger('orka.kafka.send').info(`partition(${partition})[${offset}][${key}] produced for topic ${topic}`);
   }
 
   public createConsumer(topic: string) {
     const { groupId, brokers } = this.options;
     const config = {
       groupId,
-      logger: kafkaLogger,
+      logger: getLogger('orka.kafka.consumer.internal'),
       noptions: {
         'group.id': groupId,
         'metadata.broker.list': brokers.join(','),
@@ -58,7 +55,7 @@ export default class Kafka {
   public createProducer() {
     const { clientId, brokers } = this.options;
     const config = {
-      logger: kafkaLogger,
+      logger: getLogger('orka.kafka.producer.internal'),
       noptions: {
         'metadata.broker.list': brokers.join(','),
         'client.id': clientId,
