@@ -127,7 +127,6 @@ export class OrkaBuilder {
 
 const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(defaults);
-
   // Always initialize diamorphosis.
   if (!options.diamorphosis.configPath) {
     options.diamorphosis.configPath = path.resolve(options.diamorphosis.configFolder + '/config');
@@ -139,6 +138,8 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   //module.exports vs export default
   config = config.default && Object.keys(config).length === 1 ? config.default : config;
   diamorphosis(config, options);
+
+  options.appName = options.appName || config.app && config.app.name;
 
   // always use logger
   log4js(config);
