@@ -1,6 +1,3 @@
-const { OrkaKafkaClient } = require('../../build');
-const config = require('./config');
-
 module.exports = {
   get: {
     '/test': async (ctx, next) => (ctx.body = 'ok'),
