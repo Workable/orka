@@ -20,7 +20,7 @@ export default class Kafka {
 
   public async connect() {
     const { key, cert, ca } = this.options;
-    this.authOptions = authOptions({ key, cert, ca });
+    this.authOptions = key && cert && ca ? authOptions({ key, cert, ca }) : {};
     this.producer = this.createProducer();
     this.producer.on('error', err => getLogger('orka.kafka.connect').error(err));
     await this.producer.connect();
