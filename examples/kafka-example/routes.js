@@ -1,4 +1,4 @@
-const { Kafka } = require('../../build');
+const { Kafka, getLogger } = require('../../build');
 const config = require('./config');
 const KafkaHandler = require('./handler');
 const input = require('./input');
@@ -14,13 +14,12 @@ const kafka = new Kafka(options);
 
 module.exports = {
   get: {
-    '/read': async (ctx, next) => {
+    '/init': async (ctx, next) => {
       await kafka.connect();
       const topic = config.kafka.consumer.topics.test;
-      new KafkaHandler(kafka, { topic });
+      new KafkaHandler(kafka, { topic, logger: getLogger('test') });
     },
     '/write': async (ctx, next) => {
-      await kafka.connect();
       const topic = config.kafka.consumer.topics.test;
       await kafka.send(topic, JSON.stringify(input));
     }

@@ -19,11 +19,13 @@ export default class Kafka {
   }
 
   public async connect() {
-    const { key, cert, ca } = this.options;
+    const { key, cert, ca, brokers } = this.options;
     this.authOptions = key && cert && ca ? authOptions({ key, cert, ca }) : {};
     this.producer = this.createProducer();
-    this.producer.on('error', err => getLogger('orka.kafka.connect').error(err));
+    const logger = getLogger('orka.kafka.connect');
+    this.producer.on('error', err => logger.error(err));
     await this.producer.connect();
+    logger.info(`Kafka connected ${brokers.join(',')}`);
   }
 
   public async send(topic: string, message: string | Buffer) {
