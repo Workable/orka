@@ -15,13 +15,16 @@ export default abstract class BaseKafkaHandler {
     this.batchSize = batchSize || 1;
     this.logger = logger;
     this.consumer = kafka.createConsumer(this.topic);
-    this.consumer.connect().then(() => this.consume().catch(err => this.logger.error(err)));
+    this.consumer.connect().then(() => {
+      this.logger.info(`Kafka consumer connected to topic: ${this.topic}`);
+      this.consume().catch(err => this.logger.error(err));
+    });
   }
 
   async abstract handle(message: any): Promise<any>;
 
   async consume() {
-    this.logger.info(`[${this.topic}] Consumer connected`);
+    this.logger.info(`[${this.topic}] Consuming...`);
     this.consumer.consume(
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
         try {
