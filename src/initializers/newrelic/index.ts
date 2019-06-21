@@ -9,4 +9,4 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   }
 };
 
-export { newrelic };
+export const getNewRelic = () => newrelic;
