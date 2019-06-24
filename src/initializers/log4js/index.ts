@@ -37,6 +37,14 @@ export default async config => {
       default: {
         appenders: appendersList,
         level: config.log.level
+      },
+      'orka.kafka.consumer.internal': {
+        appenders: appendersList,
+        level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
+      },
+      'orka.kafka.producer.internal': {
+        appenders: appendersList,
+        level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
       }
     }
   });
