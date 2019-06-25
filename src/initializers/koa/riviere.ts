@@ -19,7 +19,8 @@ export default config =>
       enabled: config.riviere
     } as any,
     errors: {
-      enabled: config.enabled
+      enabled: config.riviere
     } as any,
+    headersRegex: new RegExp(config.headersRegex, 'i'),
     traceHeaderName: config.traceHeaderName
   });
