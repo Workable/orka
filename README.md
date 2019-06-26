@@ -38,6 +38,7 @@ config = {
   port: 3000,
   allowedOrigins: ['localhost', 'lvh.me'], // for cors
   traceHeaderName: 'X-Request-Id', // for logging in http requests
+  headersRegex: '^X-.*', // for logging headers in http requests
   blacklistedErrorCodes: [404] // will not send to honeybadger requests with this status
 }
 ```
