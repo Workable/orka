@@ -53,7 +53,7 @@
     "log4js": "^4.2.0",
     "newrelic": "^5.8.0",
     "sinek": "^7.29.3",
-    "@workablehr/riviere": "^1.1.0",
+    "@workablehr/riviere": "^1.2.0",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
     "tsconfig-paths": "^3.8.0"
