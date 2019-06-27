@@ -28,7 +28,7 @@ export default abstract class BaseKafkaHandler {
     this.consumer.consume(
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
         try {
-          await Promise.all(flatten([messages]).map(m => this.handle(m.value)));
+          await Promise.all(flatten([messages]).map(m => this.handle(m)));
           cb();
           this.consumer.commit(false); //synchronous commit
         } catch (err) {
