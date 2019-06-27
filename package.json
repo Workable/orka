@@ -53,6 +53,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "log4js": "^4.2.0",
+    "rabbit-queue": "^3.0.2",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
     "tsconfig-paths": "^3.8.0"

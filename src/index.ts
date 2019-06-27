@@ -7,3 +7,4 @@ export const orka = config => Orka(config);
 export { Koa };
 export { getNewRelic } from './initializers/newrelic';
 export { getKafka } from './initializers/kafka';
+export { getRabbit } from './initializers/rabbitmq';

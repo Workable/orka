@@ -8,6 +8,7 @@ import * as bodyParser from 'koa-bodyparser';
 import diamorphosis from './initializers/diamorphosis';
 import honeybadger from './initializers/honeybadger';
 import newrelic from './initializers/newrelic';
+import rabbitmq from './initializers/rabbitmq';
 import { default as log4js, getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
@@ -70,6 +71,11 @@ export class OrkaBuilder {
 
   withNewrelic(appName: string = this.options.appName) {
     this.queue.push(() => newrelic(this.config, { appName }));
+    return this;
+  }
+
+  withRabbitMQ(appName: string = this.options.appName) {
+    this.queue.push(() => rabbitmq(this.config, { appName }));
     return this;
   }
 
