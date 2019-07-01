@@ -1,7 +1,7 @@
-import * as Riviere from 'riviere';
+import { riviere } from '@workablehr/riviere';
 
 export default config =>
-  Riviere.middleware({
+  riviere({
     forceIds: true,
     health: [
       {
