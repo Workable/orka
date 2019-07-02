@@ -42,6 +42,7 @@
     "instrument": true
   },
   "dependencies": {
+    "@types/amqplib": "^0.5.13",
     "@workablehr/riviere": "^1.2.0",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.1",
