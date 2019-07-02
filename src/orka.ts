@@ -12,6 +12,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withLogo(options.logoPath)
     .withNewrelic()
     .withHoneyBadger()
+    .withKafka()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };

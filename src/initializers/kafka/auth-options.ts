@@ -20,11 +20,14 @@ const certificates = ({ key, cert, ca }) => {
   return paths;
 };
 
-export default ({ key, cert, ca }) => {
+export default ({ key, cert, ca } = { key: '', cert: '', ca: '' }) => {
+  if (!key || !cert || !ca) {
+    return {};
+  }
   const paths = certificates({ key, cert, ca });
 
   return {
-    'security.protocol': <'ssl'> 'ssl',
+    'security.protocol': <'ssl'>'ssl',
     'ssl.key.location': paths.key,
     'ssl.certificate.location': paths.cert,
     'ssl.ca.location': paths.ca

@@ -6,3 +6,4 @@ export * from './initializers/kafka';
 export const orka = config => Orka(config);
 export { Koa };
 export { getNewRelic } from './initializers/newrelic';
+export { getKafka } from './initializers/kafka';

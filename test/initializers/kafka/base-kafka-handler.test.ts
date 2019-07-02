@@ -2,9 +2,13 @@ import * as sinon from 'sinon';
 import 'should';
 import Kafka from '../../../src/initializers/kafka/kafka';
 import BaseKafkaHandler from '../../../src/initializers/kafka/base-kafka-handler';
-import { getLogger } from '../../../src/initializers/log4js';
 
 const sandbox = sinon.sandbox.create();
+const logger = {
+  trace: () => null,
+  debug: () => null,
+  info: () => null
+} as any;
 
 describe('base kafka handler class', async () => {
   const cbStub = sinon.stub();
@@ -15,9 +19,15 @@ describe('base kafka handler class', async () => {
     commit: sinon.stub(),
     consume: sinon.stub().callsFake(async fn => await fn({ value: 'msg' }, cbStub))
   };
-  class TestKafkaHandler extends BaseKafkaHandler {
-    public async handle(message: any) {
-      handleStub(message);
+  class TestKafkaHandler extends BaseKafkaHandler<any, any> {
+    public async handleError(...args) {
+      handleStub(args);
+    }
+    public async handleSuccess(...args) {
+      handleStub(args);
+    }
+    public async handle(...args) {
+      handleStub(args);
     }
   }
 
@@ -29,12 +39,12 @@ describe('base kafka handler class', async () => {
     sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
     sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
     const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
-    const handler = new TestKafkaHandler(kafka, { topic: 'topic', logger: getLogger('test'), batchSize: 2 });
+    const handler = new TestKafkaHandler(kafka, { topic: 'topic', logger, batchSize: 2 });
     await new Promise(resolve => setTimeout(resolve, 10));
     consumeStub.connect.calledOnce.should.eql(true);
     consumeStub.consume.calledOnce.should.eql(true);
     consumeStub.commit.calledOnce.should.eql(true);
-    handleStub.calledOnce.should.eql(true);
+    handleStub.calledTwice.should.eql(true);
     cbStub.calledOnce.should.eql(true);
     handleStub.calledWith('msg');
     consumeStub.commit.calledWith(false);

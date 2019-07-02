@@ -1,12 +1,12 @@
 import { OrkaOptions } from '../../typings/orka';
-import requirePeer from '../../require-peer';
+import requireInjected from '../../require-injected';
 
 let newrelic;
 export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   if (config.newRelicLicenseKey) {
     process.env.NEW_RELIC_HOME = __dirname;
     process.env.NEW_RELIC_APP_NAME = `${orkaOptions.appName} ${config.nodeEnv}`;
-    newrelic = requirePeer('newrelic');
+    newrelic = requireInjected('newrelic');
   }
 };
 
