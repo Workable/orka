@@ -1,15 +1,15 @@
-import { KafkaMessage, NConsumer } from 'sinek';
 import Kafka from './kafka';
 import { Logger } from 'log4js';
 import { flatten } from 'lodash';
+import { NConsumer, KafkaMessage } from '../../typings/kafka';
 
-export default abstract class BaseKafkaHandler {
+export default abstract class BaseKafkaHandler<Input, Output> {
   consumer: NConsumer;
   topic: string;
   batchSize: number;
   logger: Logger;
 
-  constructor(kafka: Kafka, options: { topic: string; logger: Logger; batchSize?: number; }) {
+  constructor(kafka: Kafka, options: { topic: string; logger: Logger; batchSize?: number }) {
     const { topic, batchSize, logger } = options;
     this.topic = topic;
     this.batchSize = batchSize || 1;
@@ -21,19 +21,19 @@ export default abstract class BaseKafkaHandler {
     });
   }
 
-  async abstract handle(message: any): Promise<any>;
+  abstract async handle(msg: KafkaMessage & { value: Input }): Promise<Output>;
 
   async consume() {
     this.logger.info(`[${this.topic}] Consuming...`);
     this.consumer.consume(
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
-        try {
-          await Promise.all(flatten([messages]).map(m => this.handle(m.value)));
-          cb();
-          this.consumer.commit(false); //synchronous commit
-        } catch (err) {
-          this.logger.error(`Failed to dequeue`, err);
-        }
+        await Promise.all(
+          flatten([messages]).map(async msg => {
+            await this.handle(msg);
+          })
+        );
+        cb();
+        this.consumer.commit(false); //synchronous commit
       },
       false,
       true, //Receive as object

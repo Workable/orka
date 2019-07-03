@@ -16,5 +16,15 @@ export default {
   },
   beforeMiddleware: [],
   afterMiddleware: [],
-  beforeStart: []
+  beforeStart: [],
+  kafka: {
+    certificates: {
+      key: '',
+      cert: '',
+      ca: ''
+    },
+    groupId: '',
+    clientId: '',
+    brokers: []
+  }
 };

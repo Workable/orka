@@ -1,6 +1,9 @@
 import { getLogger } from '../log4js';
-import { NProducer, NConsumer } from 'sinek';
 import authOptions from './auth-options';
+import requireInjected from '../../require-injected';
+import { NProducer } from '../../typings/kafka';
+
+const { NConsumer: KafkaConsumer, NProducer: KafkaProducer } = requireInjected('sinek');
 
 export default class Kafka {
   private producer: NProducer;
@@ -8,9 +11,11 @@ export default class Kafka {
   private authOptions: any;
 
   constructor(options: {
-    key: string;
-    cert: string;
-    ca: string;
+    certificates: {
+      key: string;
+      cert: string;
+      ca: string;
+    };
     groupId: string;
     clientId: string;
     brokers: string[];
@@ -19,8 +24,8 @@ export default class Kafka {
   }
 
   public async connect() {
-    const { key, cert, ca, brokers } = this.options;
-    this.authOptions = key && cert && ca ? authOptions({ key, cert, ca }) : {};
+    const { certificates, brokers } = this.options;
+    this.authOptions = authOptions(certificates);
     this.producer = this.createProducer();
     const logger = getLogger('orka.kafka.connect');
     this.producer.on('error', err => logger.error(err));
@@ -51,7 +56,7 @@ export default class Kafka {
       }
     };
 
-    return new NConsumer(topic, config);
+    return new KafkaConsumer(topic, config);
   }
 
   public createProducer() {
@@ -70,6 +75,6 @@ export default class Kafka {
         'request.required.acks': 1
       }
     };
-    return new NProducer(config);
+    return new KafkaProducer(config);
   }
 }

@@ -16,6 +16,7 @@ import { OrkaOptions } from './typings/orka';
 import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
+import kafka from './initializers/kafka';
 
 export class OrkaBuilder {
   options: Partial<OrkaOptions>;
@@ -74,6 +75,11 @@ export class OrkaBuilder {
 
   withHoneyBadger(o: any = this.options.honeyBadger) {
     this.queue.push(() => honeybadger(this.config, o));
+    return this;
+  }
+
+  withKafka() {
+    this.queue.push(() => kafka(this.config));
     return this;
   }
 
@@ -139,7 +145,7 @@ const builder = (defaults: Partial<OrkaOptions> = _defaults) => {
   config = config.default && Object.keys(config).length === 1 ? config.default : config;
   diamorphosis(config, options);
 
-  options.appName = options.appName || config.app && config.app.name;
+  options.appName = options.appName || (config.app && config.app.name);
 
   // always use logger
   log4js(config);
