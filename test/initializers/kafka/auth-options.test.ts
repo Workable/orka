@@ -4,7 +4,7 @@ import certificates from '../../../src/initializers/kafka/auth-options';
 import * as tmp from 'tmp';
 import * as fs from 'fs';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 let fsStub;
 let tmpStub;

@@ -76,6 +76,7 @@ const { builder } = require('@workablehr/orka');
 builder({…some static options here…})
   .forTypeScript()
   .withNewrelic('my-app-name')
+  .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
   .use(async (ctx, next) => {…before middleware…})
   .useDefaults() // riviere, cors, etc.

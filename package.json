@@ -42,6 +42,7 @@
     "instrument": true
   },
   "dependencies": {
+    "@types/amqplib": "^0.5.13",
     "@workablehr/riviere": "^1.2.0",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.1",
@@ -53,6 +54,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "log4js": "^4.2.0",
+    "rabbit-queue": "^3.0.2",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
     "tsconfig-paths": "^3.8.0"
@@ -64,6 +66,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.8",
     "mocha": "^6.1.4",
+    "mock-require": "^3.0.3",
     "nyc": "^14.1.1",
     "prettier": "^1.17.1",
     "should": "^13.2.3",

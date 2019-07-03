@@ -4,7 +4,7 @@ import Kafka from '../../../src/initializers/kafka/kafka';
 import * as tmp from 'tmp';
 import * as fs from 'fs';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 describe('kafka class', () => {
   const producerStub = { connect: sandbox.stub(), on: sandbox.stub(), send: sandbox.stub().returns({}) };

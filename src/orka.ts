@@ -11,6 +11,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .use(options.afterMiddleware)
     .withLogo(options.logoPath)
     .withNewrelic()
+    .withRabbitMQ()
     .withHoneyBadger()
     .withKafka()
     .with(options.beforeStart)
