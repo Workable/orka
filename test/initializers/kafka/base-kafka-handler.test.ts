@@ -20,12 +20,6 @@ describe('base kafka handler class', async () => {
     consume: sinon.stub().callsFake(async fn => await fn({ value: 'msg' }, cbStub))
   };
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
-    public async handleError(...args) {
-      handleStub(args);
-    }
-    public async handleSuccess(...args) {
-      handleStub(args);
-    }
     public async handle(...args) {
       handleStub(args);
     }
@@ -44,7 +38,7 @@ describe('base kafka handler class', async () => {
     consumeStub.connect.calledOnce.should.eql(true);
     consumeStub.consume.calledOnce.should.eql(true);
     consumeStub.commit.calledOnce.should.eql(true);
-    handleStub.calledTwice.should.eql(true);
+    handleStub.calledOnce.should.eql(true);
     cbStub.calledOnce.should.eql(true);
     handleStub.calledWith('msg');
     consumeStub.commit.calledWith(false);

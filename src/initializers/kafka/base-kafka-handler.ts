@@ -22,8 +22,6 @@ export default abstract class BaseKafkaHandler<Input, Output> {
   }
 
   abstract async handle(msg: KafkaMessage & { value: Input }): Promise<Output>;
-  abstract async handleError(err: Error, msg: KafkaMessage & { value: Input }): Promise<void>;
-  abstract async handleSuccess(msg: KafkaMessage & { value: Input }, output: Output): Promise<void>;
 
   async consume() {
     this.logger.info(`[${this.topic}] Consuming...`);
@@ -31,11 +29,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
         await Promise.all(
           flatten([messages]).map(async msg => {
-            try {
-              await this.handleSuccess(msg, await this.handle(msg));
-            } catch (err) {
-              await this.handleError(err, msg);
-            }
+            await this.handle(msg);
           })
         );
         cb();
