@@ -3,8 +3,7 @@ import * as Url from 'url';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 
-// const logger = getLogger('support.rabbit');
-const logger = getLogger('orka.errorHandler');
+const logger = getLogger('orka.rabbit');
 
 let connection: Rabbit;
 

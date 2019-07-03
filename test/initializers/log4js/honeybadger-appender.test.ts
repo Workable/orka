@@ -3,7 +3,7 @@ import 'should';
 import * as Honeybadger from 'honeybadger';
 import * as sinon from 'sinon';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 let notifySpy;
 

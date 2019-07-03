@@ -3,7 +3,7 @@ import 'should';
 import Kafka from '../../../src/initializers/kafka/kafka';
 import BaseKafkaHandler from '../../../src/initializers/kafka/base-kafka-handler';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 const logger = {
   trace: () => null,
   debug: () => null,

@@ -9,8 +9,6 @@ module.exports = {
     frameMax: 0x1000,
     maxRetries: 0,
     retryDelay: 1000,
-    connectDelay: 5000,
-    maxPriority: 10,
-    replyQueues: ['example']
+    connectDelay: 5000
   },
 };
