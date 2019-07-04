@@ -22,33 +22,34 @@ describe('Test rabbitmq connection', function() {
   let onStub: sinon.SinonSpy;
   let getRabbit;
 
-  before(async function() {
+  beforeEach(async function() {
     onStub = sandbox.stub();
     stub = sandbox.stub().returns({
       on: onStub
     });
     mock('rabbit-queue', { Rabbit: stub });
+    delete require.cache[require.resolve('../../../src/initializers/rabbitmq')];
     ({ default: getRabbit } = await import('../../../src/initializers/rabbitmq'));
   });
 
-  after(function() {
+  afterEach(function() {
     sandbox.restore();
     mock.stopAll();
   });
 
   it('should connect to rabbitmq', () => {
     const rabbit = getRabbit(config, orkaOptions);
-    stub.calledOnce.should.be.true;
+    stub.calledOnce.should.be.true();
   });
 
   it('should not connect to rabbitmq, no config', () => {
     const rabbit = getRabbit({}, orkaOptions);
-    stub.called.should.be.false;
+    stub.called.should.be.false();
   });
 
   it('should not connect to rabbitmq, already connected', () => {
     const rabbit = getRabbit(config, orkaOptions);
     const rabbit_second = getRabbit(config, orkaOptions);
-    stub.calledOnce.should.be.true;
+    stub.calledOnce.should.be.true();
   });
 });
