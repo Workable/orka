@@ -14,6 +14,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withRabbitMQ()
     .withHoneyBadger()
     .withKafka()
+    .withMongoDB()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };
