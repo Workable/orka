@@ -10,37 +10,29 @@ describe('Test mongodb connection', function() {
       url: 'mongodb://localhost'
     }
   };
-  let connectionStub: sinon.SinonSpy;
   let onStub: sinon.SinonSpy;
-  let getMongoDB;
+  let mongodb;
+  let connectStub: sinon.SinonSpy;
 
-  before(async function() {
+  beforeEach(async function() {
     onStub = sandbox.stub();
-    connectionStub = sandbox.stub().returns({
-      on: onStub
-    });
-    mock('mongoose', { connect: () => {}, connection: connectionStub });
-    ({ default: getMongoDB } = await import('../../src/initializers/mongodb'));
+    connectStub = sandbox.stub();
+    mock('mongoose', { connect: connectStub, connection: { on: onStub } });
+    ({ default: mongodb } = await import('../../src/initializers/mongodb'));
   });
 
-  after(function() {
+  afterEach(function() {
     sandbox.restore();
     mock.stopAll();
   });
 
   it('should connect to mongodb', () => {
-    getMongoDB(config);
-    connectionStub.calledOnce.should.be.true;
+    mongodb(config);
+    onStub.callCount.should.equal(4);
   });
 
   it('should not connect to mongodb with no config', () => {
-    getMongoDB({});
-    connectionStub.called.should.be.false;
-  });
-
-  it('should not connect again to mongodb, if already connected', () => {
-    getMongoDB(config);
-    getMongoDB(config);
-    connectionStub.calledOnce.should.be.true;
+    mongodb({});
+    connectStub.called.should.be.false();
   });
 });

@@ -10,7 +10,7 @@
     "prewatch": "npm run clean",
     "watch": "tsc -w -p src",
     "prepublishOnly": "npm run build && npm test",
-    "pretest": "tslint src/*.ts",
+    "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
     "test": "nyc mocha"
   },
   "lint-staged": {
@@ -67,6 +67,7 @@
     "@types/mocha": "^5.2.6",
     "@types/mongoose": "^5.5.7",
     "@types/node": "^11.13.8",
+    "@types/sinon": "^7.0.13",
     "mocha": "^6.1.4",
     "mock-require": "^3.0.3",
     "nyc": "^14.1.1",
