@@ -4,7 +4,7 @@ module.exports = {
     appName: 'foo'
   },
   kafka: {
-    brokers: ["localhost:9092"],
+    brokers: ['localhost:9092'],
     certificates: {
       ca: '',
       cert: '',

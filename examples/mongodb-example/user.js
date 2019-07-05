@@ -1,4 +1,4 @@
-const { mongoose } = require("../../build");
+const { mongoose } = require('../../build');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -11,4 +11,4 @@ const userSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
