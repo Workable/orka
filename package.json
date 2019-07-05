@@ -13,7 +13,7 @@
     "prepublishOnly": "npm run build && npm test",
     "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
     "test": "nyc mocha",
-    "prepack": "npm run build"
+    "install": "npm run build"
   },
   "lint-staged": {
     "*.{ts,js}": [
