@@ -3,6 +3,6 @@ import init from '../../../src/initializers/kafka/index';
 
 describe('kafka init', () => {
   it('should handle the absence of kafka config', async () => {
-    await init({});
+    await init({} as any);
   });
 });

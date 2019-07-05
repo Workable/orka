@@ -1,7 +1,7 @@
 import { getLogger } from '../log4js';
 import authOptions from './auth-options';
 import requireInjected from '../../require-injected';
-import { NProducer } from '../../typings/kafka';
+import { NProducer, KafkaConfig } from '../../typings/kafka';
 
 const { NConsumer: KafkaConsumer, NProducer: KafkaProducer } = requireInjected('sinek');
 
@@ -10,16 +10,7 @@ export default class Kafka {
   private options: any;
   private authOptions: any;
 
-  constructor(options: {
-    certificates: {
-      key: string;
-      cert: string;
-      ca: string;
-    };
-    groupId: string;
-    clientId: string;
-    brokers: string[];
-  }) {
+  constructor(options: KafkaConfig) {
     this.options = options;
   }
 

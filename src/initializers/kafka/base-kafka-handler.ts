@@ -27,6 +27,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     this.logger.info(`[${this.topic}] Consuming...`);
     this.consumer.consume(
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
+        this.logger.info(`HERE---- ${flatten([messages]).length}`);
         await Promise.all(
           flatten([messages]).map(async msg => {
             await this.handle(msg);
@@ -39,7 +40,8 @@ export default abstract class BaseKafkaHandler<Input, Output> {
       true, //Receive as object
       {
         batchSize: this.batchSize,
-        noBatchCommits: true //Commit after every batch (even if num < batchsize)
+        noBatchCommits: true, //Commit after every batch (even if num < batchsize)
+        manualBatching: true
       }
     );
   }
