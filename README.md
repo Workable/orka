@@ -57,7 +57,7 @@ orka({
   routesPath: path.resolve('./config/routes'),
   diamorphosis: {
     configFolder: path.resolve('config'),
-    configPaht: path.resolve('config/config.js'),
+    configPath: path.resolve('config/config.js'),
     envFolder: path.resolve('config/env')
     loadDotEnv: ['development']
   },
