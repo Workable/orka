@@ -4,17 +4,18 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
+    "precommit": "lint-staged",
     "clean": "rm -rf ./build",
     "prebuild": "npm run clean",
     "build": "tsc -p src",
     "prewatch": "npm run clean",
     "watch": "tsc -w -p src",
     "prepublishOnly": "npm run build && npm test",
-    "pretest": "tslint src/*.ts",
+    "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
     "test": "nyc mocha"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{ts,js}": [
       "prettier --print-width 120 --single-quote true --write",
       "git add"
     ]
@@ -48,12 +49,14 @@
     "diamorphosis": "^0.8.1",
     "fast-koa-router": "^0.2.1",
     "honeybadger": "^1.3.0",
+    "husky": "^3.0.0",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "log4js": "^4.2.0",
+    "mongoose": "^5.6.3",
     "rabbit-queue": "^3.0.2",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
@@ -64,7 +67,10 @@
     "@types/koa-bodyparser": "^4.3.0",
     "@types/lodash": "^4.14.129",
     "@types/mocha": "^5.2.6",
+    "@types/mongoose": "^5.5.7",
     "@types/node": "^11.13.8",
+    "@types/sinon": "^7.0.13",
+    "lint-staged": "^9.0.2",
     "mocha": "^6.1.4",
     "mock-require": "^3.0.3",
     "nyc": "^14.1.1",

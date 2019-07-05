@@ -4,4 +4,4 @@ module.exports = class KafkaHandler extends BaseKafkaHandler {
   handle(message) {
     console.log(message);
   }
-}
+};

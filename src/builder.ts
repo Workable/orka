@@ -9,6 +9,7 @@ import diamorphosis from './initializers/diamorphosis';
 import honeybadger from './initializers/honeybadger';
 import newrelic from './initializers/newrelic';
 import rabbitmq from './initializers/rabbitmq';
+import mongodb from './initializers/mongodb';
 import { default as log4js, getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
@@ -86,6 +87,11 @@ export class OrkaBuilder {
 
   withKafka() {
     this.queue.push(() => kafka(this.config));
+    return this;
+  }
+
+  withMongoDB() {
+    this.queue.push(() => mongodb(this.config));
     return this;
   }
 
