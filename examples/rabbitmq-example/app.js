@@ -12,6 +12,6 @@ orka({
   diamorphosis: { configFolder: './examples/rabbitmq-example' },
   routesPath: './examples/rabbitmq-example/routes.js',
   logoPath: './examples/simple-example/logo.txt',
-  rabbitHandlers: () => new ExampleHandler('example_queue'),
+  rabbitHandlers: [() => new ExampleHandler('example_queue')],
   beforeStart: () => console.log(`Going to start env: ${config.nodeEnv}`)
 }).start();
