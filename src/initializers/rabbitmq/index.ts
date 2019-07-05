@@ -27,13 +27,15 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     prefix: orkaOptions.appName
   });
 
-  connection.on('connected', () => logger.info('Connected to rabbitmq!'));
+  connection.on('connected', () => {
+    logger.info('Connected to rabbitmq!');
+    orkaOptions.rabbitHandlers.forEach(handler => handler());
+  });
 
   connection.on('disconnected', (err = new Error('Rabbitmq Disconnected')) => {
     logger.error(err);
-    setTimeout(() => connection.reconnect(), config.queue.connectDelay);
+    setTimeout(() => connection.reconnect(), config.queue.connectDelay || 5000);
   });
-
 };
 
 export const getRabbit = () => connection;

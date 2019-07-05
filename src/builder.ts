@@ -74,8 +74,8 @@ export class OrkaBuilder {
     return this;
   }
 
-  withRabbitMQ(appName: string = this.options.appName) {
-    this.queue.push(() => rabbitmq(this.config, { appName }));
+  withRabbitMQ(rabbitHandlers: Function[], appName: string = this.options.appName) {
+    this.queue.push(() => rabbitmq(this.config, { appName, rabbitHandlers }));
     return this;
   }
 

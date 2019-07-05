@@ -17,6 +17,7 @@ export default {
   beforeMiddleware: [],
   afterMiddleware: [],
   beforeStart: [],
+  rabbitHandlers: [],
   kafka: {
     certificates: {
       key: '',
