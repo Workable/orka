@@ -12,6 +12,7 @@
             '-._     __________...---'''             \   l
                 \   |                                 '._|
                  \__;
+
 —
 
 # Orka
@@ -78,6 +79,7 @@ builder({…some static options here…})
   .withNewrelic('my-app-name')
   .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
+  .withMongoDB()
   .use(async (ctx, next) => {…before middleware…})
   .useDefaults() // riviere, cors, etc.
   .use(async (ctx, next) => {…after middleware…})
@@ -86,3 +88,11 @@ builder({…some static options here…})
 ```
 
 For detailed usage please see the examples.
+
+To run the examples:
+
+- clone orka project
+- npm install
+- npm run build
+- you should be ready to run one of the examples locally. E.g.:
+  `node examples/simple-example/app.js`
