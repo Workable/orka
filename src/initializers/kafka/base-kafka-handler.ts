@@ -27,7 +27,6 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     this.logger.info(`[${this.topic}] Consuming...`);
     this.consumer.consume(
       async (messages: KafkaMessage | KafkaMessage[], cb) => {
-        this.logger.info(`HERE---- ${flatten([messages]).length}`);
         await Promise.all(
           flatten([messages]).map(async msg => {
             await this.handle(msg);
