@@ -6,7 +6,7 @@ export { default as BaseKafkaHandler } from './base-kafka-handler';
 
 let kafka;
 export default async (kafkaConfig: KafkaConfig) => {
-  if (!isEmpty(kafkaConfig && kafkaConfig.brokers)) {
+  if (!isEmpty(kafkaConfig && kafkaConfig.kafka && kafkaConfig.kafka.brokers)) {
     kafka = new Kafka(kafkaConfig);
     await kafka.connect();
   }

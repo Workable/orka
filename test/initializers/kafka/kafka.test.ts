@@ -22,14 +22,16 @@ describe('kafka class', () => {
     sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
     sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
     const kafka = new Kafka({
-      certificates: {
-        key: 'key',
-        cert: 'cert',
-        ca: 'ca'
-      },
-      groupId: 'groupId',
-      clientId: 'clientId',
-      brokers: []
+      kafka: {
+        certificates: {
+          key: 'key',
+          cert: 'cert',
+          ca: 'ca'
+        },
+        groupId: 'groupId',
+        clientId: 'clientId',
+        brokers: []
+      }
     });
     await kafka.connect();
     producerStub.connect.calledOnce.should.eql(true);

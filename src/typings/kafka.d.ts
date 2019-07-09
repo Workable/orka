@@ -1,12 +1,14 @@
 export interface KafkaConfig {
-  certificates: {
-    key: string;
-    cert: string;
-    ca: string;
+  kafka: {
+    certificates: {
+      key: string;
+      cert: string;
+      ca: string;
+    };
+    groupId: string;
+    clientId: string;
+    brokers: string[];
   };
-  groupId: string;
-  clientId: string;
-  brokers: string[];
 }
 
 export interface KafkaHealthConfig {

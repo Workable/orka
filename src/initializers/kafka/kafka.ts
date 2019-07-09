@@ -7,7 +7,7 @@ const { NConsumer: KafkaConsumer, NProducer: KafkaProducer } = requireInjected('
 
 export default class Kafka {
   private producer: NProducer;
-  private options: any;
+  private options: KafkaConfig;
   private authOptions: any;
 
   constructor(options: KafkaConfig) {
@@ -15,7 +15,9 @@ export default class Kafka {
   }
 
   public async connect() {
-    const { certificates, brokers } = this.options;
+    const {
+      kafka: { certificates, brokers }
+    } = this.options;
     this.authOptions = authOptions(certificates);
     this.producer = this.createProducer();
     const logger = getLogger('orka.kafka.connect');
@@ -30,7 +32,9 @@ export default class Kafka {
   }
 
   public createConsumer(topic: string) {
-    const { groupId, brokers } = this.options;
+    const {
+      kafka: { groupId, brokers }
+    } = this.options;
     const config = {
       groupId,
       logger: getLogger('orka.kafka.consumer.internal'),
@@ -51,7 +55,9 @@ export default class Kafka {
   }
 
   public createProducer() {
-    const { clientId, brokers } = this.options;
+    const {
+      kafka: { clientId, brokers }
+    } = this.options;
     const config = {
       logger: getLogger('orka.kafka.producer.internal'),
       noptions: {
