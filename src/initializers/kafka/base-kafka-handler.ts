@@ -32,8 +32,8 @@ export default abstract class BaseKafkaHandler<Input, Output> {
             await this.handle(msg);
           })
         );
+        this.consumer.commit(false); //synchronous commit, must be called before the callback
         cb();
-        this.consumer.commit(false); //synchronous commit
       },
       false,
       true, //Receive as object
