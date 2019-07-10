@@ -86,7 +86,7 @@ export class OrkaBuilder {
   }
 
   withKafka() {
-    this.queue.push(() => kafka(this.config));
+    this.queue.push(() => kafka(this.config.kafka));
     return this;
   }
 

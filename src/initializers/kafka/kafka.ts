@@ -15,9 +15,7 @@ export default class Kafka {
   }
 
   public async connect() {
-    const {
-      kafka: { certificates, brokers }
-    } = this.options;
+    const { certificates, brokers } = this.options;
     this.authOptions = authOptions(certificates);
     this.producer = this.createProducer();
     const logger = getLogger('orka.kafka.connect');
@@ -32,9 +30,7 @@ export default class Kafka {
   }
 
   public createConsumer(topic: string) {
-    const {
-      kafka: { groupId, brokers }
-    } = this.options;
+    const { groupId, brokers } = this.options;
     const config = {
       groupId,
       logger: getLogger('orka.kafka.consumer.internal'),
@@ -55,9 +51,7 @@ export default class Kafka {
   }
 
   public createProducer() {
-    const {
-      kafka: { clientId, brokers }
-    } = this.options;
+    const { clientId, brokers } = this.options;
     const config = {
       logger: getLogger('orka.kafka.producer.internal'),
       noptions: {
