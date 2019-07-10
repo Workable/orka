@@ -12,7 +12,8 @@
     "watch": "tsc -w -p src",
     "prepublishOnly": "npm run build && npm test",
     "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "prepare": "npm run build"
   },
   "lint-staged": {
     "*.{ts,js}": [

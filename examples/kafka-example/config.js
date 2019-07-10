@@ -4,6 +4,8 @@ module.exports = {
     appName: 'foo'
   },
   kafka: {
+    groupId: 'orka.example.consumer',
+    clientId: 'orka.example.producer',
     brokers: ['localhost:9092'],
     certificates: {
       ca: '',
@@ -12,13 +14,12 @@ module.exports = {
     },
     debug: true,
     consumer: {
-      groupId: 'dev.orka.consumer',
       topics: {
-        test: 'orka.example.consume'
+        name: 'orka.example.consume',
+        batchSize: 10
       }
     },
     producer: {
-      clientId: 'dev.orka.producer',
       topics: {
         test: 'orka.example.produce'
       }

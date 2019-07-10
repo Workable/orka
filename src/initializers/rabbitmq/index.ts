@@ -33,7 +33,6 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     logger.error(err);
     setTimeout(() => connection.reconnect(), config.queue.connectDelay);
   });
-
 };
 
 export const getRabbit = () => connection;
