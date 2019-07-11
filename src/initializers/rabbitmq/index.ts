@@ -38,4 +38,9 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   });
 };
 
-export const getRabbit = () => connection;
+export const getRabbit = () => {
+  if (!connection) {
+    throw new Error('rabbit is not initialized');
+  }
+  return connection;
+};
