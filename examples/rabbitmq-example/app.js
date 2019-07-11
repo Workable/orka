@@ -13,5 +13,8 @@ orka({
   routesPath: './examples/rabbitmq-example/routes.js',
   logoPath: './examples/simple-example/logo.txt',
   beforeStart: () => console.log(`Going to start env: ${config.nodeEnv}`),
-  rabbitOnConnected: () => new ExampleHandler('example_queue')
+  rabbitOnConnected: () => {
+    console.log('Custom rabbitOnConnected');
+    new ExampleHandler('example_queue');
+  }
 }).start();

@@ -4,9 +4,7 @@ const rabbit = getRabbit();
 module.exports = {
   get: {
     '/init': async (ctx, next) => {
-      rabbit
-        .publish('example_queue', { test: 'data' }, { correlationId: '1' })
-        .then(() => console.log('message published'));
+      await rabbit.publish('example_queue', { test: 'data' }, { correlationId: '1' });
     }
   }
 };
