@@ -11,7 +11,7 @@ describe('kafka class', () => {
   const consumeStub = {};
   before(() => {
     sandbox.stub(fs, 'writeFileSync');
-    sandbox.stub(tmp, 'fileSync').returns({ name: 'tmpkey' });
+    sandbox.stub(tmp, 'fileSync').returns({ name: 'tmpkey' } as any);
   });
 
   afterEach(() => {

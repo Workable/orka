@@ -12,4 +12,9 @@ export default async (kafkaConfig: KafkaConfig) => {
   }
 };
 
-export const getKafka = () => kafka;
+export const getKafka = () => {
+  if (!kafka) {
+    throw new Error('kafka is not initialized');
+  }
+  return kafka;
+};
