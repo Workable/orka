@@ -1,11 +1,5 @@
-const { getRabbit, getLogger } = require('../../build');
-const config = require('./config');
-
-const ExampleHandler = require('./example-handler');
-
+const { getRabbit } = require('../../build');
 const rabbit = getRabbit();
-
-new ExampleHandler('example_queue');
 
 module.exports = {
   get: {

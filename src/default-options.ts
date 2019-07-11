@@ -26,5 +26,6 @@ export default {
     groupId: '',
     clientId: '',
     brokers: []
-  }
+  },
+  rabbitOnConnected: () => undefined
 };

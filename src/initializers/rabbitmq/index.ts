@@ -27,7 +27,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     prefix: orkaOptions.appName
   });
 
-  connection.on('connected', () => logger.info('Connected to rabbitmq!'));
+  connection.on('connected', () => {
+    orkaOptions.rabbitOnConnected();
+    logger.info('Connected to rabbitmq!');
+  });
 
   connection.on('disconnected', (err = new Error('Rabbitmq Disconnected')) => {
     logger.error(err);
