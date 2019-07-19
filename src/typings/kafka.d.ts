@@ -1,8 +1,12 @@
 export interface KafkaConfig {
-  certificates: {
+  certificates?: {
     key: string;
     cert: string;
     ca: string;
+  };
+  sasl?: {
+    username: string;
+    password: string;
   };
   groupId: string;
   clientId: string;

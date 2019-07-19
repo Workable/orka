@@ -12,6 +12,10 @@ module.exports = {
       cert: '',
       key: ''
     },
+    sasl: {
+      username: '',
+      password: ''
+    },
     debug: true,
     consumer: {
       topics: {
