@@ -37,4 +37,14 @@ describe('kafka auth options', () => {
       'ssl.ca.location': 'tmpca'
     });
   });
+
+  it('should use sasl if specified', () => {
+    const result = certificates({ username: 'username', password: 'password' });
+    result.should.eql({
+      'security.protocol': 'sasl_ssl',
+      'sasl.mechanism': 'PLAIN',
+      'sasl.username': 'username',
+      'sasl.password': 'password'
+    });
+  });
 });

@@ -20,16 +20,36 @@ const certificates = ({ key, cert, ca }) => {
   return paths;
 };
 
-export default ({ key, cert, ca } = { key: '', cert: '', ca: '' }) => {
-  if (!key || !cert || !ca) {
-    return {};
-  }
-  const paths = certificates({ key, cert, ca });
+export default ({
+  key,
+  cert,
+  ca,
+  username,
+  password
+}: {
+  key?: string;
+  cert?: string;
+  ca?: string;
+  username?: string;
+  password?: string;
+}) => {
+  if (key && cert && ca) {
+    const paths = certificates({ key, cert, ca });
 
-  return {
-    'security.protocol': <'ssl'>'ssl',
-    'ssl.key.location': paths.key,
-    'ssl.certificate.location': paths.cert,
-    'ssl.ca.location': paths.ca
-  };
+    return {
+      'security.protocol': 'ssl',
+      'ssl.key.location': paths.key,
+      'ssl.certificate.location': paths.cert,
+      'ssl.ca.location': paths.ca
+    };
+  } else if (username && password) {
+    return {
+      'security.protocol': 'sasl_ssl',
+      'sasl.mechanism': 'PLAIN',
+      'sasl.username': username,
+      'sasl.password': password
+    };
+  }
+
+  return {};
 };
