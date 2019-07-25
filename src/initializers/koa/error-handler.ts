@@ -1,12 +1,13 @@
 import * as Koa from 'koa';
 import { getLogger } from '../log4js';
+import { OrkaOptions } from 'orka/typings/orka';
 
 const logger = getLogger('orka.errorHandler');
 
 const isBlacklisted = (err: { status: number } = {} as any, config) =>
   err.status && config.blacklistedErrorCodes.includes(err.status);
 
-export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
+export default (config, orkaOptions: Partial<OrkaOptions>) => async (ctx: Koa.Context, next: () => Promise<any>) => {
   try {
     await next();
   } catch (err) {
@@ -32,5 +33,7 @@ export default config => async (ctx: Koa.Context, next: () => Promise<any>) => {
 
     ctx.body = err.expose ? err.exposedMsg || err.message : ctx.body;
     ctx.status = err.status || 500;
+
+    orkaOptions.errorHandler(ctx, err);
   }
 };
