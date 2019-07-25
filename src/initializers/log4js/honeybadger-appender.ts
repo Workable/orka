@@ -39,7 +39,7 @@ function notifyHoneybadger(filter_status, name, error, ...rest) {
   const computedComponent = component || name;
 
   Honeybadger.notify(
-    { ...error, message },
+    { stack: error.stack, message },
     {
       context,
       headers,
