@@ -5,7 +5,7 @@ const init = require('../../../examples/custom-error-handler-example/app');
 
 const sandbox = sinon.createSandbox();
 
-describe.only('error-handler', function() {
+describe('error-handler', function() {
   let server;
 
   after(function() {
