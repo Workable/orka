@@ -34,6 +34,6 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => async (ctx: Koa.Co
     ctx.body = err.expose ? err.exposedMsg || err.message : ctx.body;
     ctx.status = err.status || 500;
 
-    orkaOptions.errorHandler(ctx, err);
+    await orkaOptions.errorHandler(ctx, err);
   }
 };
