@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Koa } from '.';
 
 export default {
   appName: '',
@@ -27,5 +28,6 @@ export default {
     clientId: '',
     brokers: []
   },
-  rabbitOnConnected: () => undefined
+  rabbitOnConnected: () => undefined,
+  errorHandler: (ctx: Koa.Context, err: Error) => undefined
 };

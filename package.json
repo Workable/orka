@@ -74,15 +74,16 @@
     "lint-staged": "^9.0.2",
     "mocha": "^6.1.4",
     "mock-require": "^3.0.3",
+    "newrelic": "*",
     "nyc": "^14.1.1",
     "prettier": "^1.17.1",
     "should": "^13.2.3",
     "sinek": "^7.29.3",
     "sinon": "^7.3.2",
+    "supertest": "^4.0.2",
     "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
-    "typescript": "^3.4.5",
-    "newrelic": "*"
+    "typescript": "^3.4.5"
   },
   "optionalPeerDependencies": {
     "newrelic": "*",

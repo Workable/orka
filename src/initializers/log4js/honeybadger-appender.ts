@@ -17,9 +17,10 @@ function notifyHoneybadger(filter_status, name, error, ...rest) {
   }
 
   let context = {} as any;
+  let message = error.message;
   rest.forEach(r => {
     if (typeof r === 'string') {
-      error.message += `. ${r}`;
+      message += `. ${r}`;
     } else {
       Object.assign(context, r);
     }
@@ -37,17 +38,20 @@ function notifyHoneybadger(filter_status, name, error, ...rest) {
 
   const computedComponent = component || name;
 
-  Honeybadger.notify(error, {
-    context,
-    headers,
-    cgiData: {
-      'server-software': `Node ${process.version}`
-    },
-    action,
-    component: computedComponent,
-    params,
-    fingerprint: action && computedComponent ? `${computedComponent}_${action}` : name
-  });
+  Honeybadger.notify(
+    { stack: error.stack, message },
+    {
+      context,
+      headers,
+      cgiData: {
+        'server-software': `Node ${process.version}`
+      },
+      action,
+      component: computedComponent,
+      params,
+      fingerprint: action && computedComponent ? `${computedComponent}_${action}` : name
+    }
+  );
 }
 
 const honeyBadgerAppender = ({ filter_status = [] }) => {

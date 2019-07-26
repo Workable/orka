@@ -47,7 +47,7 @@ export class OrkaBuilder {
     this.use(compress());
     this.useCors();
     this.use(addRequestId(this.config));
-    this.use(this.errorHandler(this.config));
+    this.use(this.errorHandler(this.config, this.options));
     this.use(bodyParser());
     return this;
   }
@@ -133,6 +133,7 @@ export class OrkaBuilder {
       _logger.error(e);
       process.exit(1);
     }
+    return this;
   }
 
   async stop() {
