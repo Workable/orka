@@ -6,3 +6,9 @@ export default async (port: number, middlewares: Middleware<any>[], callback: ()
   middlewares.forEach(middleware => app.use(middleware));
   return app.listen(port, callback);
 };
+
+export const callback = (middlewares: Middleware<any>[]) => {
+    let app = new Koa();
+    middlewares.forEach(middleware => app.use(middleware));
+    return app.callback();
+};

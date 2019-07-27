@@ -115,6 +115,22 @@ export class OrkaBuilder {
     });
   }
 
+  // Return a request handler callback instead of starting the server
+  // Usefull for testing
+  async callback() {
+    const _logger = getLogger('orka');
+    try {
+      while (this.queue.length) {
+        await this.queue.shift()();
+      }
+      const koa = require('./initializers/koa');
+      return koa.callback(this.middlewares);
+    } catch (e) {
+      _logger.error(e);
+      process.exit(1);
+    }
+  }
+
   async start(port: number = this.config.port) {
     const _logger = getLogger('orka');
     try {
