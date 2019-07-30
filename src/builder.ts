@@ -139,6 +139,9 @@ export class OrkaBuilder {
   async start(port: number = this.config.port) {
     const _logger = getLogger('orka');
     try {
+      _logger.info(
+        `Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`
+      );
       await this.initTasks();
       const koa = await import('./initializers/koa');
       this.server = await koa.default(port, this.middlewares, (logger = _logger) => {
