@@ -120,9 +120,7 @@ export class OrkaBuilder {
   async callback() {
     const _logger = getLogger('orka');
     try {
-      while (this.queue.length) {
-        await this.queue.shift()();
-      }
+      await this.initTasks();
       const koa = require('./initializers/koa');
       return koa.callback(this.middlewares);
     } catch (e) {
@@ -131,18 +129,9 @@ export class OrkaBuilder {
     }
   }
 
-  async init() {
-    const _logger = getLogger('orka');
-    try {
-      _logger.info(
-        `Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`
-      );
-      while (this.queue.length) {
-        await this.queue.shift()();
-      }
-    } catch (e) {
-      _logger.error(e);
-      process.exit(1);
+  async initTasks() {
+    while (this.queue.length) {
+      await this.queue.shift()();
     }
     return this;
   }
@@ -150,7 +139,7 @@ export class OrkaBuilder {
   async start(port: number = this.config.port) {
     const _logger = getLogger('orka');
     try {
-      await this.init();
+      await this.initTasks();
       const koa = await import('./initializers/koa');
       this.server = await koa.default(port, this.middlewares, (logger = _logger) => {
         logger.info(`Server listening to http://localhost:${port}/`);
