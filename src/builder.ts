@@ -131,7 +131,7 @@ export class OrkaBuilder {
     }
   }
 
-  async start(port: number = this.config.port) {
+  async init() {
     const _logger = getLogger('orka');
     try {
       _logger.info(
@@ -140,6 +140,17 @@ export class OrkaBuilder {
       while (this.queue.length) {
         await this.queue.shift()();
       }
+    } catch (e) {
+      _logger.error(e);
+      process.exit(1);
+    }
+    return this;
+  }
+
+  async start(port: number = this.config.port) {
+    const _logger = getLogger('orka');
+    try {
+      await this.init();
       const koa = await import('./initializers/koa');
       this.server = await koa.default(port, this.middlewares, (logger = _logger) => {
         logger.info(`Server listening to http://localhost:${port}/`);
