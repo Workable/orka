@@ -25,8 +25,8 @@ export default class Kafka {
     logger.info(`Kafka connected ${brokers.join(',')}`);
   }
 
-  public async send(topic: string, message: string | Buffer) {
-    const { key, partition, offset } = await this.producer.send(topic, message);
+  public async send(topic: string, message: string | Buffer, _partition?: number, _key?: string) {
+    const { key, partition, offset } = await this.producer.send(topic, message, _partition, _key);
     getLogger('orka.kafka.send').info(`partition(${partition})[${offset}][${key}] produced for topic ${topic}`);
   }
 

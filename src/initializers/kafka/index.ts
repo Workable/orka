@@ -1,9 +1,10 @@
 import { isEmpty } from 'lodash';
 import { KafkaConfig } from '../../typings/kafka';
+import Kafka from './kafka';
 
 export { default as BaseKafkaHandler } from './base-kafka-handler';
 
-let kafka;
+let kafka: Kafka;
 export default async (kafkaConfig: KafkaConfig) => {
   if (!isEmpty(kafkaConfig && kafkaConfig.brokers)) {
     const Kafka = (await import('./kafka')).default;
