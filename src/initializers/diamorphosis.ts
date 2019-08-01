@@ -4,6 +4,7 @@ import { OrkaOptions } from '../typings/orka';
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
   config.honeybadgerApiKey = config.honeybadgerApiKey || '';
+  config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
   config.newRelicLicenseKey = '';
   config.printLogo = config.printLogo || true;
   config.log = {
