@@ -67,6 +67,6 @@ export default class Kafka {
         'request.required.acks': 1
       }
     };
-    return new KafkaProducer(config);
+    return new KafkaProducer(config, undefined, /* defaultPartitionCount */ 'auto');
   }
 }
