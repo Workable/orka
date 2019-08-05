@@ -52,11 +52,13 @@ export class OrkaBuilder {
     return this;
   }
 
-  useCors(allowedOrigins = this.config.allowedOrigins) {
+  useCors({ credentials = undefined, allowedOrigins = this.config.allowedOrigins } = this.config.cors || {}) {
     const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
     return this.use(
       cors({
-        origin: ctx => (allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0])
+        origin: ctx =>
+          allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0],
+        credentials
       })
     );
   }
