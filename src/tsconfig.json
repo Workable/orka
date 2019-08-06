@@ -9,13 +9,12 @@
     "declaration": true,
     "suppressImplicitAnyIndexErrors": true,
     "outDir": "../build",
+    "noUnusedLocals": true,
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
       "orka/*": ["./*"]
     }
   },
-  "filesGlob": [
-    "./*.ts"
-  ]
+  "filesGlob": ["./*.ts"]
 }
