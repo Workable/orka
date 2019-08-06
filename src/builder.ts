@@ -3,6 +3,7 @@ import { OrkaOptions } from './typings/orka';
 import _defaults from './default-options';
 import * as lodash from 'lodash';
 import { getLogger } from './initializers/log4js';
+import orkaType from './orka-builder';
 
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
@@ -43,6 +44,6 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
   const errorHandler = require('./initializers/koa/error-handler').default;
 
-  const OrkaBuilder = require('./orka-builder').default;
+  const OrkaBuilder: typeof orkaType = require('./orka-builder').default;
   return new OrkaBuilder(options, config, errorHandler);
 };
