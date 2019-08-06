@@ -10,7 +10,6 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .useDefaults()
     .use(options.afterMiddleware)
     .withLogo(options.logoPath)
-    .withNewrelic()
     .withRabbitMQ(options.rabbitOnConnected)
     .withHoneyBadger()
     .withKafka()
