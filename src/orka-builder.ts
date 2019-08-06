@@ -83,7 +83,7 @@ export default class OrkaBuilder {
   withNewrelic() {
     const logger = getLogger('orka');
     logger.warn(
-      `withNewrelic is deprecated and will be removed.` +
+      `withNewrelic is deprecated and will be removed. ` +
         `Newrelic will be initialized by default if NEW_RELIC_LICENCE_KEY is found in env`
     );
     return this;
