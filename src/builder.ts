@@ -25,7 +25,8 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   if (cached) {
     getLogger('orka').error(
       new Error(
-        `Config in path ${options.diamorphosis.configPath} was already required. Your config might be used before being initialized by orka (diamorphosis).`
+        `Config in path ${options.diamorphosis.configPath} was already required.` +
+          `Your config might be used before being initialized by orka (diamorphosis).`
       )
     );
   }
