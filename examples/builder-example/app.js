@@ -2,7 +2,7 @@ const { builder } = require('../../build');
 
 const staticOptions = { diamorphosis: { configFolder: './examples/simple-example' } };
 
-builder(staticOptions)
+const w = builder(staticOptions)
   .forTypescript()
   .useDefaults()
   .with(config => console.log(`Going to Start env: ${config.nodeEnv}`))
@@ -11,5 +11,11 @@ builder(staticOptions)
     await next();
   })
   .routes('./examples/simple-example/routes.js')
-  .withLogo('./examples/simple-example/logo.txt')
-  .start();
+  .withLogo('./examples/simple-example/logo.txt');
+
+if (!module.parent) {
+  w.start();
+}
+
+w.name = 'builder-example';
+module.exports = w;

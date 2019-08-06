@@ -10,5 +10,11 @@ module.exports = {
       }
       throw { status: 401, message: 'Unauthorized' };
     }
+  },
+  prefix: {
+    '/test': async (ctx, next) => {
+      await next();
+      ctx.body = ctx.body + ' changed by prefix';
+    }
   }
 };
