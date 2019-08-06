@@ -1,4 +1,3 @@
-import { config } from './newrelic/newrelic';
 import { getLogger } from './log4js';
 import * as fs from 'fs';
 
