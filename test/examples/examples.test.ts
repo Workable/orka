@@ -1,15 +1,31 @@
 import 'should';
 import * as supertest from 'supertest';
-const ws = [require('../../examples/simple-example/app'), require('../../examples/builder-example/app')];
+import * as mockRequire from 'mock-require';
+import * as path from 'path';
+
+const ws: [string, string, Function?][] = [
+  ['../../examples/simple-example/app', 'simple-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
+  ['../../examples/builder-example/app', 'builder-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
+  ['../../examples/simple-example/app', 'simple-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
+  ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')]
+];
 
 describe('examples', function() {
-  ws.forEach(function(server) {
-    describe('Example:' + server.name, function() {
+  before(function() {
+    mockRequire('newrelic', () => console.log('initialized newrelic'));
+  });
+
+  ws.forEach(function([serverPath, name, setEnv]: [string, string, Function?]) {
+    let server;
+    describe('Example:' + name, function() {
       after(function() {
-        server.stop();
+        if (server) server.stop();
       });
 
       before(function() {
+        delete require.cache[require.resolve(serverPath)];
+        if (setEnv) setEnv();
+        server = require(serverPath);
         server.start();
       });
 
