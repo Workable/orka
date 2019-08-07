@@ -39,7 +39,7 @@ config = {
   port: 3000,
   cors: {
     allowedOrigins: ['localhost', 'lvh.me'],
-    creadentials: true, // Adds cors needed for exchanging cookies over https.
+    credentials: true, // Adds cors needed for exchanging cookies over https.
     …
   },
   traceHeaderName: 'X-Request-Id', // for logging in http requests
