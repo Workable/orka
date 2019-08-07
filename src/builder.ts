@@ -8,12 +8,8 @@ import orkaType from './orka-builder';
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
 
-  // Always call newrelic
-  newrelic(defaults.appName || process.env.APP_NAME);
-
   const diamorphosis = require('./initializers/diamorphosis').default;
   const path = require('path');
-  const log4js = require('./initializers/log4js').default;
 
   // Always initialize diamorphosis
   if (!options.diamorphosis.configPath) {
@@ -38,6 +34,10 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
 
   options.appName = options.appName || (config.app && config.app.name);
 
+  // Always call newrelic
+  newrelic(options.appName);
+
+  const log4js = require('./initializers/log4js').default;
   // Always use logger
   log4js(config);
 
