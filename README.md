@@ -1,4 +1,4 @@
-|
+
 
                 O          .
              O            ' '
@@ -13,7 +13,7 @@
                 \   |                                 '._|
                  \__;
 
-—
+
 
 # Orka
 
@@ -37,7 +37,11 @@ config = {
     level: 'debug',
   },
   port: 3000,
-  allowedOrigins: ['localhost', 'lvh.me'], // for cors
+  cors: {
+    allowedOrigins: ['localhost', 'lvh.me'],
+    credentials: true, // Adds cors needed for exchanging cookies over https.
+    …
+  },
   traceHeaderName: 'X-Request-Id', // for logging in http requests
   headersRegex: '^X-.*', // for logging headers in http requests
   blacklistedErrorCodes: [404] // will not send to honeybadger requests with this status
@@ -76,7 +80,6 @@ const { builder } = require('@workablehr/orka');
 
 builder({…some static options here…})
   .forTypeScript()
-  .withNewrelic('my-app-name')
   .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
   .withMongoDB()
