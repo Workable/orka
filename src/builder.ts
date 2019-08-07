@@ -9,7 +9,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
 
   // Always call newrelic
-  newrelic(this.config, defaults);
+  newrelic(defaults.appName || process.env.APP_NAME);
 
   const diamorphosis = require('./initializers/diamorphosis').default;
   const path = require('path');
