@@ -3,7 +3,7 @@ const { builder } = require('../../build');
 const staticOptions = { diamorphosis: { configFolder: './examples/simple-example' } };
 
 const w = builder(staticOptions)
-  .forTypescript()
+  .forTypescript(false)
   .useDefaults()
   .with(config => console.log(`Going to Start env: ${config.nodeEnv}`))
   .use(async (ctx, next) => {
@@ -17,5 +17,4 @@ if (!module.parent) {
   w.start();
 }
 
-w.name = 'builder-example';
 module.exports = w;

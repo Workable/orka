@@ -20,5 +20,4 @@ if (!module.parent) {
   w.start();
 }
 
-w.name = 'simple-example';
 module.exports = w;
