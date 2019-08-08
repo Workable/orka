@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Koa } from '.';
+import * as Koa from 'koa';
 
 export default {
   appName: '',
