@@ -11,6 +11,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const diamorphosis = require('./initializers/diamorphosis').default;
   const path = require('path');
 
+  const logger = getLogger('orka');
   // Always initialize diamorphosis
   if (!options.diamorphosis.configPath) {
     options.diamorphosis.configPath = path.resolve(options.diamorphosis.configFolder + '/config');
@@ -20,7 +21,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   }
   const cached = require.cache[require.resolve(options.diamorphosis.configPath)];
   if (cached) {
-    getLogger('orka').error(
+    logger.error(
       new Error(
         `Config in path ${options.diamorphosis.configPath} was already required. ` +
           `Your config might be used before being initialized by orka (diamorphosis).`
@@ -33,6 +34,10 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   diamorphosis(config, options);
 
   options.appName = options.appName || (config.app && config.app.name);
+
+  if (require.cache[require.resolve('koa')]) logger.warn('Koa was initialized');
+  if (require.cache[require.resolve('mongoose')]) logger.warn('Mongoose was initialized');
+  if (require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized');
 
   // Always call newrelic
   newrelic(options.appName);

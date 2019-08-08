@@ -1,13 +1,14 @@
-import { Rabbit } from 'rabbit-queue';
 import * as Url from 'url';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
+import * as RabbitType from 'rabbit-queue';
 
 const logger = getLogger('orka.rabbit');
 
-let connection: Rabbit;
+let connection: RabbitType.Rabbit;
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
+  const { Rabbit }: typeof RabbitType = require('rabbit-queue');
   if (!config.queue || !config.queue.url) {
     return;
   }
