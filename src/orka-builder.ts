@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as lodash from 'lodash';
 import { router } from 'fast-koa-router';
-import { Middleware } from 'koa';
+import { Middleware, Context } from 'koa';
 import * as compress from 'koa-compress';
 import * as cors from 'koa2-cors';
 import * as bodyParser from 'koa-bodyparser';
@@ -52,10 +52,13 @@ export default class OrkaBuilder {
 
   useCors({ credentials = undefined, allowedOrigins = this.config.allowedOrigins } = this.config.cors || {}) {
     const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
+
     return this.use(
       cors({
-        origin: ctx =>
-          allowedOrigin.test(ctx.request.headers.origin) ? ctx.request.headers.origin : allowedOrigins[0],
+        origin: (ctx: Context) => {
+          const origin = ctx.request.headers.origin || ctx.request.origin;
+          return allowedOrigin.test(origin) ? origin : allowedOrigins[0];
+        },
         credentials
       })
     );
