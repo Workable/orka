@@ -60,7 +60,7 @@
     "lodash": "^4.17.11",
     "log4js": "^4.2.0",
     "mongoose": "^5.6.3",
-    "rabbit-queue": "^4.1.2",
+    "rabbit-queue": "4.2.0",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
     "tsconfig-paths": "^3.8.0"
