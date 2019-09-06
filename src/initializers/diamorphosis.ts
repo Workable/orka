@@ -4,7 +4,7 @@ import { OrkaOptions } from '../typings/orka';
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
   config.honeybadgerApiKey = config.honeybadgerApiKey || '';
-  config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
+  config.honeybadgerEnvironment = config.honeybadgerEnvironment || '';
   config.printLogo = config.printLogo || true;
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
@@ -18,4 +18,5 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
   config.riviere = config.riviere || true;
   diamorphosis(orkaOptions.diamorphosis);
+  config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
 };

@@ -4,7 +4,6 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "precommit": "lint-staged",
     "clean": "rm -rf ./build",
     "prebuild": "npm run clean",
     "build": "tsc -p src",
@@ -14,6 +13,11 @@
     "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
     "test": "nyc mocha",
     "prepare": "npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.{ts,js}": [
@@ -70,7 +74,7 @@
     "@types/mongoose": "^5.5.7",
     "@types/node": "^11.13.8",
     "@types/sinon": "^7.0.13",
-    "husky": "^3.0.0",
+    "husky": "^3.0.5",
     "lint-staged": "^9.0.2",
     "mocha": "^6.1.4",
     "mock-require": "^3.0.3",
