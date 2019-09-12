@@ -12,7 +12,7 @@ import { getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import _defaults from './default-options';
-import { OrkaOptions } from './typings/orka';
+import { OrkaOptions, ReturnsMiddleware } from './typings/orka';
 import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
@@ -34,9 +34,9 @@ export default class OrkaBuilder {
     this.queue = [];
   }
 
-  use(m: Middleware<any> | Middleware<any>[] = []) {
+  use(m: ReturnsMiddleware<any> | ReturnsMiddleware<any>[] | Middleware<any> | Middleware<any>[] = []) {
     m = lodash.flatten([m]).filter(lodash.identity);
-    m.forEach(__ => this.middlewares.push(__));
+    m.forEach(c => this.middlewares.push(c.arguments === 1 ? (c as ReturnsMiddleware<any>)(this.config) : c));
     return this;
   }
 
@@ -118,7 +118,7 @@ export default class OrkaBuilder {
     return this.use((...args) => {
       routes = require(path.resolve(m));
       routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
-      return router(routes)(...args);
+      return router(routes)(args[0], args[1]);
     });
   }
 
