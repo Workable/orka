@@ -114,12 +114,9 @@ export default class OrkaBuilder {
   }
 
   routes(m: string) {
-    let routes;
-    return this.use((...args) => {
-      routes = require(path.resolve(m));
-      routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
-      return router(routes)(...args);
-    });
+    let routes = require(path.resolve(m));
+    routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
+    return this.use(router(routes));
   }
 
   // Return a request handler callback instead of starting the server
