@@ -2,9 +2,8 @@ import * as lodash from 'lodash';
 import builder from './builder';
 import defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
-import OrkaBuilder from './orka-builder';
 
-const fromOptions = (options: Partial<OrkaOptions & { builder?: OrkaBuilder }>) => {
+const fromOptions = (options: Partial<OrkaOptions>) => {
   return (options.builder || builder(lodash.defaultsDeep(options, defaults)))
     .forTypescript(options.typescript)
     .use(options.beforeMiddleware)

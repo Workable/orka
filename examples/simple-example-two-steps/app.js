@@ -1,8 +1,7 @@
 const { orka, builder } = require('../../build');
 
-const examplePath = './examples/simple-example-two-steps';
 const orkaBuilder = builder({
-  diamorphosis: { configFolder: examplePath }
+  diamorphosis: { configFolder: './examples/simple-example' }
 });
 
 const w = orka({
@@ -14,10 +13,10 @@ const w = orka({
       await next();
     }
   ],
-  routesPath: `${examplePath}/routes.js`,
-  logoPath: `${examplePath}/logo.txt`,
+  routesPath: './examples/simple-example/routes.js',
+  logoPath: './examples/simple-example/logo.txt',
   beforeStart: () => {
-    const config = require('./config');
+    const config = require('../simple-example/config');
     console.log(`Going to start env: ${config.nodeEnv}`);
   }
 });

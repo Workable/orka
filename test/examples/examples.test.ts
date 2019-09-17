@@ -10,8 +10,8 @@ const ws: [string, string, Function?][] = [
   ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
   [
     '../../examples/simple-example-two-steps/app',
-    'simple-example-two-steps newrelic',
-    () => process.env.NEW_RELIC_LICENSE_KEY
+    'simple-example-two-steps',
+    () => delete process.env.NEW_RELIC_LICENSE_KEY
   ]
 ];
 
