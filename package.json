@@ -30,6 +30,10 @@
     "Anastasios Kakalis <anastasios@workable.com>"
   ],
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Workable/orka.git"
+  },
   "nyc": {
     "include": [
       "src/**/*.ts"
