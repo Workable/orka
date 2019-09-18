@@ -27,9 +27,9 @@ export default {
     },
     groupId: '',
     clientId: '',
-    brokers: [],
-    orkaBuilder: null as OrkaBuilder
+    brokers: []
   },
+  builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
   errorHandler: (ctx: Koa.Context, err: Error) => undefined
 };
