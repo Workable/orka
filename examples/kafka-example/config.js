@@ -1,7 +1,7 @@
 module.exports = {
   nodeEnv: 'demo',
-  orka: {
-    appName: 'foo'
+  app: {
+    name: 'foo'
   },
   kafka: {
     groupId: 'orka.example.consumer',

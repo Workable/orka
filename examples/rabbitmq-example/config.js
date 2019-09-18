@@ -1,8 +1,8 @@
 module.exports = {
   nodeEnv: 'demo',
-  orka: {
-    appName: 'foo'
-  }, 
+  app: {
+    name: 'foo'
+  },
   queue: {
     prefetch: 100,
     url: process.env.CLOUDAMQP_URL || 'amqp://localhost',
@@ -10,5 +10,5 @@ module.exports = {
     maxRetries: 0,
     retryDelay: 1000,
     connectDelay: 5000
-  },
+  }
 };
