@@ -3,7 +3,7 @@ import { riviere } from '@workablehr/riviere';
 export default config =>
   riviere({
     forceIds: true,
-    styles: ['extended', 'json'],
+    styles: config.riviere.styles,
     health: [
       {
         method: 'GET',
@@ -11,17 +11,17 @@ export default config =>
       }
     ],
     outbound: {
-      enabled: config.riviere,
+      enabled: config.riviere.enabled,
       https: true,
       level: 'info'
     },
     inbound: {
       level: 'info',
-      enabled: config.riviere
+      enabled: config.riviere.enabled
     } as any,
     errors: {
-      enabled: config.riviere
+      enabled: config.riviere.enabled
     } as any,
-    headersRegex: new RegExp(config.headersRegex, 'i'),
+    headersRegex: new RegExp(config.riviere.headersRegex, 'i'),
     traceHeaderName: config.traceHeaderName
   });
