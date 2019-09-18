@@ -3,6 +3,7 @@ import { riviere } from '@workablehr/riviere';
 export default config =>
   riviere({
     forceIds: true,
+    styles: ['extended', 'json'],
     health: [
       {
         method: 'GET',
