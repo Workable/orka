@@ -1,5 +1,6 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
+import { get } from 'lodash';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
@@ -16,9 +17,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
   config.riviere = {
-    enabled: config.riviere.enabled || true,
-    styles: config.riviere.styles || ['extended'],
-    headersRegex: config.riviere.headersRegex || '^X-.*'
+    enabled: get(config, 'riviere.enabled') || true,
+    color: get(config, 'riviere.color') || true,
+    styles: get(config, 'riviere.styles') || ['extended'],
+    headersRegex: get(config, 'riviere.headersRegex') || '^X-.*',
+    ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
   config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;

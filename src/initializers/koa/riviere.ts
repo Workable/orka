@@ -1,9 +1,9 @@
 import { riviere } from '@workablehr/riviere';
+import { OrkaOptions } from 'orka/typings/orka';
 
-export default config =>
+export default (config, orkaOptions: Partial<OrkaOptions>) =>
   riviere({
     forceIds: true,
-    styles: config.riviere.styles,
     health: [
       {
         method: 'GET',
@@ -23,5 +23,9 @@ export default config =>
       enabled: config.riviere.enabled
     } as any,
     headersRegex: new RegExp(config.riviere.headersRegex, 'i'),
-    traceHeaderName: config.traceHeaderName
+    traceHeaderName: config.traceHeaderName,
+    styles: config.riviere.styles,
+    bodyKeys: config.riviere.bodyKeys,
+    color: config.riviere.color,
+    context: orkaOptions.riviereContext
   });

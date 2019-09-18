@@ -43,7 +43,7 @@ export default class OrkaBuilder {
   }
 
   useDefaults() {
-    this.use(() => riviere(this.config));
+    this.use(() => riviere(this.config, this.options));
     this.use(
       () =>
         async function koaCompress(...args) {
