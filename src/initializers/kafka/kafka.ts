@@ -41,6 +41,7 @@ export default class Kafka {
         'socket.keepalive.enable': true,
         'api.version.request': true,
         'socket.blocking.max.ms': 100,
+        'log.connection.close': false,
         ...this.authOptions
       },
       tconf: {
@@ -61,6 +62,7 @@ export default class Kafka {
         'socket.keepalive.enable': true,
         'api.version.request': true,
         'queue.buffering.max.ms': 1000,
+        'log.connection.close': false,
         ...this.authOptions
       },
       tconf: {
