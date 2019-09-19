@@ -1,8 +1,8 @@
 const { orka } = require('../../build');
 
 const w = orka({
-  beforeMiddleware: [
-    async (ctx, next) => {
+  beforeMiddleware: () => [
+    async function defaultMiddleware(ctx, next) {
       ctx.body = 'default body';
       await next();
     }

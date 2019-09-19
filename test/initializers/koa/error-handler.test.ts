@@ -15,7 +15,7 @@ describe('error-handler', function() {
   it('tests custom error handler', async function() {
     const errorHandler = sandbox.stub().callsFake((ctx, err) => (ctx.body = err));
     server = await init(
-      [
+      () => [
         () => {
           throw new Error('test');
         }

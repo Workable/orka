@@ -3,7 +3,7 @@ const config = require('./config');
 const ExampleHandler = require('./example-handler');
 
 orka({
-  beforeMiddleware: [
+  beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
       await next();

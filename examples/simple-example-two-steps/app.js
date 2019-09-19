@@ -7,7 +7,7 @@ const orkaBuilder = builder({
 const w = orka({
   builder: orkaBuilder,
   typescript: false,
-  beforeMiddleware: [
+  beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
       await next();

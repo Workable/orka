@@ -6,7 +6,7 @@ const w = builder(staticOptions)
   .forTypescript(false)
   .useDefaults()
   .with(config => console.log(`Going to Start env: ${config.nodeEnv}`))
-  .use(async (ctx, next) => {
+  .use(() => async (ctx, next) => {
     ctx.body = 'default body';
     await next();
   })

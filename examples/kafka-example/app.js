@@ -2,7 +2,7 @@ const { orka } = require('../../build');
 const config = require('./config');
 
 orka({
-  beforeMiddleware: [
+  beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
       await next();
