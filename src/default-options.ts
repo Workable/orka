@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as Koa from 'koa';
+import OrkaBuilder from './orka-builder';
 
 export default {
   appName: '',
@@ -28,6 +29,7 @@ export default {
     clientId: '',
     brokers: []
   },
+  builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
   errorHandler: (ctx: Koa.Context, err: Error) => undefined
 };

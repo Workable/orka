@@ -7,7 +7,12 @@ const ws: [string, string, Function?][] = [
   ['../../examples/simple-example/app', 'simple-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
   ['../../examples/builder-example/app', 'builder-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
   ['../../examples/simple-example/app', 'simple-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
-  ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')]
+  ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
+  [
+    '../../examples/simple-example-two-steps/app',
+    'simple-example-two-steps',
+    () => delete process.env.NEW_RELIC_LICENSE_KEY
+  ]
 ];
 
 describe('examples', function() {
