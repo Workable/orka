@@ -43,6 +43,7 @@ export default class OrkaBuilder {
   }
 
   useDefaults() {
+    this.use(() => bodyParser());
     this.use(() => riviere(this.config, this.options));
     this.use(
       () =>
@@ -53,7 +54,6 @@ export default class OrkaBuilder {
     this.useCors();
     this.use(() => addRequestId(this.config));
     this.use(() => this.errorHandler(this.config, this.options));
-    this.use(() => bodyParser());
     return this;
   }
 
