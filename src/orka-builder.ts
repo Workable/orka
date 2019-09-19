@@ -17,11 +17,13 @@ import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';
+import * as Koa from 'koa';
 
 export default class OrkaBuilder {
   options: Partial<OrkaOptions>;
   config: any;
   middlewares: Middleware<any>[];
+  koaTasks: ((app: Koa<any, {}>, config: any) => Middleware<any> | Middleware<any>[])[];
   errorHandler: any;
   queue: (() => Promise<void> | void)[];
   server: Server;
@@ -30,30 +32,30 @@ export default class OrkaBuilder {
     this.options = options;
     this.config = config;
     this.middlewares = [];
+    this.koaTasks = [];
     this.errorHandler = errorHandler;
     this.queue = [];
   }
 
-  use(m: Middleware<any> | Middleware<any>[] = []) {
-    m = lodash.flatten([m]).filter(lodash.identity);
-    m.forEach(__ => this.middlewares.push(__));
+  use(task: (app: Koa<any, {}>, config: any) => Middleware<any> | Middleware<any>[] = () => []) {
+    this.koaTasks.push(task);
     return this;
   }
 
   useDefaults() {
-    this.use(riviere(this.config));
-    this.use(compress());
+    this.use(() => riviere(this.config));
+    this.use(() => compress());
     this.useCors();
-    this.use(addRequestId(this.config));
-    this.use(this.errorHandler(this.config, this.options));
-    this.use(bodyParser());
+    this.use(() => addRequestId(this.config));
+    this.use(() => this.errorHandler(this.config, this.options));
+    this.use(() => bodyParser());
     return this;
   }
 
   useCors({ credentials = undefined, allowedOrigins = this.config.allowedOrigins } = this.config.cors || {}) {
     const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
 
-    return this.use(
+    return this.use(() =>
       cors({
         origin: (ctx: Context) => {
           const origin = ctx.request.headers.origin || ctx.request.origin;
@@ -114,9 +116,11 @@ export default class OrkaBuilder {
   }
 
   routes(m: string) {
-    let routes = require(path.resolve(m));
-    routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
-    return this.use(router(routes));
+    return this.use(() => {
+      let routes = require(path.resolve(m));
+      routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
+      return router(routes);
+    });
   }
 
   // Return a request handler callback instead of starting the server
@@ -125,8 +129,10 @@ export default class OrkaBuilder {
     const _logger = getLogger('orka');
     try {
       await this.initTasks();
-      const koa = require('./initializers/koa');
-      return koa.callback(this.middlewares);
+      const koa = await import('./initializers/koa');
+      const app = koa.getApp();
+      this.initMiddleWare(app);
+      return koa.callback(app, this.middlewares);
     } catch (e) {
       _logger.error(e);
       process.exit(1);
@@ -140,15 +146,28 @@ export default class OrkaBuilder {
     return this;
   }
 
+  async initMiddleWare(app) {
+    const logger = getLogger('orka');
+    while (this.koaTasks.length) {
+      let m = this.koaTasks.shift()(app, this.config);
+      m = lodash.flatten([m]).filter(lodash.identity);
+      m.forEach(__ => this.middlewares.push(__));
+    }
+    logger.info(
+      `Using ${this.middlewares.length} middleware: [${this.middlewares.map(x => x.name || '').join(', ')}]...`
+    );
+    return this;
+  }
+
   async start(port: number = this.config.port) {
     const _logger = getLogger('orka');
     try {
-      _logger.info(
-        `Initializing orka processing ${this.queue.length} tasks and ${this.middlewares.length} middlewares…`
-      );
+      _logger.info(`Initializing orka processing ${this.queue.length} tasks and ${this.koaTasks.length} koa tasks...`);
       await this.initTasks();
       const koa = await import('./initializers/koa');
-      this.server = await koa.default(port, this.middlewares, (logger = _logger) => {
+      const app = koa.getApp();
+      this.initMiddleWare(app);
+      this.server = await koa.listen(app, port, this.middlewares, (logger = _logger) => {
         logger.info(`Server listening to http://localhost:${port}/`);
         logger.info(`Server environment: ${this.config.nodeEnv}`);
       });
