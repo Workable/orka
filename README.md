@@ -83,9 +83,9 @@ builder({…some static options here…})
   .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
   .withMongoDB()
-  .use(async (ctx, next) => {…before middleware…})
+  .use(() => async (ctx, next) => {…before middleware…})
   .useDefaults() // riviere, cors, etc.
-  .use(async (ctx, next) => {…after middleware…})
+  .use(() => async (ctx, next) => {…after middleware…})
   .routes('./routes/my-routes')
   .start(8080)
 ```
