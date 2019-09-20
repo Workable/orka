@@ -10,7 +10,7 @@ export const listen = async (app: Koa<any, {}>, port: number, middlewares: Middl
   return app.listen(port, callback);
 };
 
-export const callback = (app: Koa<any, {}>, middlewares: Middleware<any>[]) => {
+export const callback = (app: Koa<any, {}>, middlewares: Middleware<any>[] = []) => {
   middlewares.forEach(middleware => app.use(middleware));
   return app.callback();
 };
