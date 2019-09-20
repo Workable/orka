@@ -12,7 +12,10 @@ orka({
   diamorphosis: { configFolder: './examples/rabbitmq-example' },
   routesPath: './examples/rabbitmq-example/routes.js',
   logoPath: './examples/simple-example/logo.txt',
-  beforeStart: () => console.log(`Going to start env: ${config.nodeEnv}`),
+  beforeStart: () => {
+    const config = require('./config');
+    console.log(`Going to start env: ${config.nodeEnv}`);
+  },
   rabbitOnConnected: () => {
     console.log('Custom rabbitOnConnected');
     new ExampleHandler('example_queue');
