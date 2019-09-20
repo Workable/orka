@@ -16,8 +16,8 @@ export default {
     envFolder: '',
     loadDotEnv: ['development']
   },
-  beforeMiddleware: [],
-  afterMiddleware: [],
+  beforeMiddleware: () => [],
+  afterMiddleware: () => [],
   beforeStart: [],
   kafka: {
     certificates: {

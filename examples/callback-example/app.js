@@ -7,7 +7,7 @@ const orkaBuilder = builder({
 const w = orka({
   builder: orkaBuilder,
   typescript: false,
-  beforeMiddleware: [
+  beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
       await next();
@@ -22,7 +22,8 @@ const w = orka({
 });
 
 if (!module.parent) {
-  w.start();
+  const http = require('http');
+  http.createServer(w.callback()).listen(3000);
 }
 
 module.exports = w;
