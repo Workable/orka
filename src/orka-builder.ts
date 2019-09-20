@@ -154,7 +154,7 @@ export default class OrkaBuilder {
   async initMiddleWare(app) {
     const logger = getLogger('orka');
     while (this.koaTasks.length) {
-      let m = this.koaTasks.shift()(app, this.config);
+      let m = await this.koaTasks.shift()(app, this.config);
       m = lodash.flatten([m]).filter(lodash.identity);
       m.forEach(__ => this.middlewares.push(__));
     }
@@ -171,7 +171,7 @@ export default class OrkaBuilder {
       await this.initTasks();
       const koa = await import('./initializers/koa');
       const app = koa.getApp();
-      this.initMiddleWare(app);
+      await this.initMiddleWare(app);
       this.server = await koa.listen(app, port, this.middlewares, (logger = _logger) => {
         logger.info(`Server listening to http://localhost:${port}/`);
         logger.info(`Server environment: ${this.config.nodeEnv}`);
