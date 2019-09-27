@@ -17,7 +17,8 @@ export default function mongodb(config) {
   const options: mongoose.ConnectionOptions = lodash.defaultsDeep(config.mongodb.options, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useUnifiedTopology: true
   });
 
   mongoose.connect(dbUrl, options);
