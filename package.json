@@ -52,7 +52,7 @@
     "instrument": true
   },
   "dependencies": {
-    "@workablehr/riviere": "github:workable/riviere#master",
+    "@workablehr/riviere": "github:workable/riviere",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.1",
     "fast-koa-router": "^1.0.1",
