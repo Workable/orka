@@ -43,7 +43,9 @@ export default class OrkaBuilder {
   }
 
   useDefaults() {
-    this.use(() => riviere(this.config));
+    this.use(() => bodyParser());
+    this.use(() => riviere(this.config, this.options));
+    this.use(() => this.errorHandler(this.config, this.options));
     this.use(
       () =>
         async function koaCompress(...args) {
@@ -52,8 +54,6 @@ export default class OrkaBuilder {
     );
     this.useCors();
     this.use(() => addRequestId(this.config));
-    this.use(() => this.errorHandler(this.config, this.options));
-    this.use(() => bodyParser());
     return this;
   }
 

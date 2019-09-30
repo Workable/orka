@@ -14,9 +14,14 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.port = config.port || 3000;
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
-  config.headersRegex = config.headersRegex || '^X-.*';
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
-  config.riviere = config.riviere || true;
+  config.riviere = {
+    enabled: true,
+    color: true,
+    styles: ['extended'],
+    headersRegex: '^X-.*',
+    ...config.riviere
+  };
   diamorphosis(orkaOptions.diamorphosis);
   config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
 };

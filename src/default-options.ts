@@ -31,5 +31,6 @@ export default {
   },
   builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
-  errorHandler: (ctx: Koa.Context, err: Error) => undefined
+  errorHandler: (ctx: Koa.Context, err: Error) => undefined,
+  riviereContext: (ctx: Koa.Context) => ({})
 };
