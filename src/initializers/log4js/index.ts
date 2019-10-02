@@ -26,7 +26,8 @@ export default async config => {
 
   if (config.honeybadgerApiKey) {
     appenders.honeybadger = {
-      type: path.resolve(path.join(__dirname, './honeybadger-appender'))
+      type: path.resolve(path.join(__dirname, './honeybadger-appender')),
+      filter_status: config.honeybadgerFilterStatus
     };
     appendersList.push('honeybadger');
   }

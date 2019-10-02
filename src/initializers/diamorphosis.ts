@@ -5,6 +5,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
   config.honeybadgerApiKey = config.honeybadgerApiKey || '';
   config.honeybadgerEnvironment = config.honeybadgerEnvironment || '';
+  config.honeybadgerFilterStatus = config.honeybadgerFilterStatus || [];
   config.printLogo = config.printLogo || true;
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
