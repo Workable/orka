@@ -15,6 +15,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
+  config.jsonLogging = config.jsonLogging || false;
   config.riviere = {
     enabled: true,
     color: true,

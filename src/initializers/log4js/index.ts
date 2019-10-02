@@ -31,6 +31,13 @@ export default async config => {
     appendersList.push('honeybadger');
   }
 
+  if (config.jsonLogging) {
+    appenders.json = {
+      type: path.resolve(path.join(__dirname, './json-appender'))
+    };
+    appendersList.push('json');
+  }
+
   Log4js.configure({
     appenders,
     categories: {
