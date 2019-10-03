@@ -10,12 +10,8 @@ const jsonAppender = () => {
 
 const createErrorLog = logEvent => {
   const data = lodash.flattenDeep(logEvent.data);
-  let context = {};
-  data.forEach(element => {
-    if (typeof element === 'object') {
-      Object.assign(context, element);
-    }
-  });
+
+  const context = getContextObject(data);
 
   return {
     timestamp: logEvent.startTime,
@@ -29,16 +25,9 @@ const createErrorLog = logEvent => {
 
 const createValidLog = logEvent => {
   const data = lodash.flattenDeep(logEvent.data);
-  let context = {};
-  const message = data
-    .map(element => {
-      if (typeof element === 'object') {
-        Object.assign(context, element);
-      } else {
-        return element;
-      }
-    })
-    .join(' ');
+
+  const context = getContextObject(data);
+  const message = getMessageObject(data);
 
   return {
     timestamp: logEvent.startTime,
@@ -47,6 +36,20 @@ const createValidLog = logEvent => {
     message: message,
     context
   };
+};
+
+const getContextObject = data => {
+  let context = {};
+  data
+    .filter(element => typeof element === 'object')
+    .forEach(element => {
+      Object.assign(context, element);
+    });
+  return context;
+};
+
+const getMessageObject = data => {
+  return data.filter(element => typeof element !== 'object').join(' ');
 };
 
 export function configure() {
