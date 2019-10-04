@@ -1,15 +1,16 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
+import { defaultTo } from 'lodash';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
-  (config.honeybadger = {
+  config.honeybadger = {
     apiKey: '',
     environment: config.nodeEnv,
     filterStatus: '',
     ...config.honeybadger
-  }),
-    (config.printLogo = config.printLogo || true);
+  };
+  config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
     level: 'debug',
