@@ -12,27 +12,29 @@ export let getLogger = name => {
 };
 
 export default async config => {
-  const appenders = {
-    console: {
+  let appenders = {} as any;
+  let appendersList = [];
+
+  if (config.log.consoleLogging) {
+    appenders.console = {
       type: 'console',
       layout: {
         type: 'pattern',
         pattern: config.log.pattern
       }
-    }
-  } as any;
+    };
+    appendersList.push('console');
+  }
 
-  const appendersList = ['console'];
-
-  if (config.honeybadgerApiKey) {
+  if (config.honeybadger.apiKey) {
     appenders.honeybadger = {
       type: path.resolve(path.join(__dirname, './honeybadger-appender')),
-      filter_status: config.honeybadgerFilterStatus
+      filter_status: config.honeybadger.filterStatus
     };
     appendersList.push('honeybadger');
   }
 
-  if (config.jsonLogging) {
+  if (config.log.jsonLogging) {
     appenders.json = {
       type: path.resolve(path.join(__dirname, './json-appender'))
     };

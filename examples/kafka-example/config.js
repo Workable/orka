@@ -3,7 +3,9 @@ module.exports = {
   app: {
     name: 'foo'
   },
-  jsonLogging: true,
+  log: {
+    jsonLogging: true
+  },
   kafka: {
     groupId: 'orka.example.consumer',
     clientId: 'orka.example.producer',

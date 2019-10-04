@@ -3,20 +3,24 @@ import { OrkaOptions } from '../typings/orka';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
-  config.honeybadgerApiKey = config.honeybadgerApiKey || '';
-  config.honeybadgerEnvironment = config.honeybadgerEnvironment || '';
-  config.honeybadgerFilterStatus = config.honeybadgerFilterStatus || [];
-  config.printLogo = config.printLogo || true;
+  (config.honeybadger = {
+    apiKey: '',
+    environment: config.nodeEnv,
+    filterStatus: '',
+    ...config.honeybadger
+  }),
+    (config.printLogo = config.printLogo || true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
     level: 'debug',
+    consoleLogging: true,
+    jsonLogging: false,
     ...config.log
   };
   config.port = config.port || 3000;
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
-  config.jsonLogging = config.jsonLogging || false;
   config.riviere = {
     enabled: true,
     color: true,
@@ -25,5 +29,4 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
-  config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
 };
