@@ -4,7 +4,7 @@ module.exports = {
     name: 'foo'
   },
   log: {
-    jsonLogging: true
+    json: true
   },
   kafka: {
     groupId: 'orka.example.consumer',

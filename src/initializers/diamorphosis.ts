@@ -6,7 +6,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
   config.honeybadger = {
     apiKey: '',
-    environment: config.nodeEnv,
+    environment: '',
     filterStatus: '',
     ...config.honeybadger
   };
@@ -14,8 +14,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
     level: 'debug',
-    consoleLogging: true,
-    jsonLogging: false,
+    console: true,
+    json: false,
     ...config.log
   };
   config.port = config.port || 3000;
@@ -30,4 +30,5 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
+  config.honeybadger.environment = config.honeybadger.environment || config.nodeEnv;
 };

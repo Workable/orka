@@ -15,7 +15,7 @@ export default async config => {
   let appenders = {} as any;
   let appendersList = [];
 
-  if (config.log.consoleLogging) {
+  if (config.log.console) {
     appenders.console = {
       type: 'console',
       layout: {
@@ -34,7 +34,7 @@ export default async config => {
     appendersList.push('honeybadger');
   }
 
-  if (config.log.jsonLogging) {
+  if (config.log.json) {
     appenders.json = {
       type: path.resolve(path.join(__dirname, './json-appender'))
     };

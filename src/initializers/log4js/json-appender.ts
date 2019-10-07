@@ -8,7 +8,7 @@ const jsonAppender = () => {
   };
 };
 
-const createErrorLog = logEvent => {
+export const createErrorLog = logEvent => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
@@ -23,7 +23,7 @@ const createErrorLog = logEvent => {
   };
 };
 
-const createValidLog = logEvent => {
+export const createValidLog = logEvent => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
