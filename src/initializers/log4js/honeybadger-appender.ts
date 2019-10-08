@@ -54,7 +54,7 @@ function notifyHoneybadger(filter_status, name, error, ...rest) {
   );
 }
 
-const honeyBadgerAppender = ({ filter_status = [] }) => {
+const honeyBadgerAppender = (filter_status = []) => {
   return logEvent => {
     if (logEvent.level.level < log4jsErrorLevel) {
       return;
@@ -63,9 +63,6 @@ const honeyBadgerAppender = ({ filter_status = [] }) => {
   };
 };
 
-export function configure(config = {} as any) {
-  const { filter_status = [] } = config;
-  return honeyBadgerAppender({
-    filter_status
-  });
+export function configure(honeybadgerFilterStatus = []) {
+  return honeyBadgerAppender(honeybadgerFilterStatus);
 }

@@ -64,9 +64,7 @@ describe('log4js_honeybadger_appender', () => {
   it('should not call Honeybadger.notify if err.status exists in the filter_status', () => {
     const err = new Error('omg') as any;
     err.status = 200;
-    appender.configure({
-      filter_status: [200]
-    })({
+    appender.configure([200])({
       level: {
         level: 40000
       },

@@ -1,14 +1,21 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
+import { defaultTo } from 'lodash';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
-  config.honeybadgerApiKey = config.honeybadgerApiKey || '';
-  config.honeybadgerEnvironment = config.honeybadgerEnvironment || '';
-  config.printLogo = config.printLogo || true;
+  config.honeybadger = {
+    apiKey: '',
+    environment: '',
+    filterStatus: '',
+    ...config.honeybadger
+  };
+  config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
     level: 'debug',
+    console: true,
+    json: false,
     ...config.log
   };
   config.port = config.port || 3000;
@@ -23,5 +30,5 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
-  config.honeybadgerEnvironment = config.honeybadgerEnvironment || config.nodeEnv;
+  config.honeybadger.environment = config.honeybadger.environment || config.nodeEnv;
 };
