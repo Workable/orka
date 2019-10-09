@@ -1,6 +1,8 @@
 import * as Koa from 'koa';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from 'orka/typings/orka';
+import { omit } from 'lodash';
+import { inspect } from 'util';
 
 const logger = getLogger('orka.errorHandler');
 
@@ -20,14 +22,14 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
         component: err.component || 'koa',
         action: err.action || ctx._matchedRoute || ctx.request.path,
         params: {
-          ...ctx.request.query,
+          query: omit(ctx.request.query, orkaOptions.omitErrorKeys),
           requestId: ctx.state.requestId,
-          body: (ctx.request as any).body
+          body: omit(ctx.request.body, orkaOptions.omitErrorKeys)
         }
       });
 
       if (!isBlacklisted(err, config)) {
-        logger.error(err, ctx.state);
+        logger.error(err, { state: inspect(omit(ctx.state, orkaOptions.omitErrorKeys)) });
       } else {
         logger.warn(err);
       }
