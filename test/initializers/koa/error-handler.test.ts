@@ -24,7 +24,7 @@ describe('error-handler', function() {
         }
       ],
       errorHandler,
-      ['bar']
+      ['bar', 'riviereStartedAt']
     );
     const loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'error');
     const { body } = await (supertest('localhost:3000') as any)
