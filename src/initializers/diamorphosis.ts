@@ -25,7 +25,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.riviere = {
     enabled: true,
     color: true,
-    styles: ['extended'],
+    styles: ['simple'],
     headersRegex: '^X-.*',
     ...config.riviere
   };
