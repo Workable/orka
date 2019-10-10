@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as Koa from 'koa';
 import OrkaBuilder from './orka-builder';
+import { Middleware } from 'koa';
 
 export default {
   appName: '',
@@ -15,10 +16,10 @@ export default {
     configPath: '',
     envFolder: '',
     loadDotEnv: ['development']
-  },
-  beforeMiddleware: () => [],
-  afterMiddleware: () => [],
-  beforeStart: [],
+  } as { configFolder: string; configPath?: string; envFolder?: string; loadDotEnv?: string[] },
+  beforeMiddleware: (app: Koa<any, {}>, config: any): Middleware<any> | Middleware<any>[] => [],
+  afterMiddleware: (app: Koa<any, {}>, config: any): Middleware<any> | Middleware<any>[] => [],
+  beforeStart: [] as ((config: any) => void)[] | ((config: any) => void),
   kafka: {
     certificates: {
       key: '',
