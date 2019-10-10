@@ -162,18 +162,45 @@ describe('Diamorphosis Test', () => {
       })
     );
 
-    context('when console:false set in process.env', () =>
-      it('shoud be console:false, json:true, styles:["simple"]', () => {
-        process.env.LOG_CONSOLE = 'false';
+    context('when console:true set in process.env', () => {
+      before(() => {
+        process.env.LOG_CONSOLE = 'true';
+      });
 
+      after(() => {
+        delete process.env.LOG_CONSOLE;
+      });
+
+      it('shoud be console:true, json:false, styles:[]', () => {
         const config = require(options.diamorphosis.configPath);
 
         diamorphosis(config, options);
 
-        config.log.console.should.equal(false);
+        config.log.console.should.equal(true);
         config.log.json.should.equal(false);
         config.riviere.styles.length.should.equal(0);
-      })
-    );
+      });
+    });
+
+    context('when console:true, json:true set in process.env', () => {
+      before(() => {
+        process.env.LOG_CONSOLE = 'true';
+        process.env.LOG_JSON = 'true';
+      });
+
+      after(() => {
+        delete process.env.LOG_CONSOLE;
+      });
+
+      it('shoud be console:true, json:false, styles:[]', () => {
+        const config = require(options.diamorphosis.configPath);
+
+        diamorphosis(config, options);
+
+        config.log.console.should.equal(true);
+        config.log.json.should.equal(true);
+        config.riviere.styles.should.eql(['json']);
+      });
+    });
   });
 });
