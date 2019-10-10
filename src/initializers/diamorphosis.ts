@@ -14,7 +14,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
     level: 'debug',
-    console: true,
+    console: '',
     json: false,
     ...config.log
   };
@@ -25,10 +25,18 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.riviere = {
     enabled: true,
     color: true,
-    styles: ['simple'],
+    styles: [],
     headersRegex: '^X-.*',
     ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
   config.honeybadger.environment = config.honeybadger.environment || config.nodeEnv;
+
+  if (config.log.console === '') {
+    config.log.console = !config.log.json;
+  }
+
+  if (config.riviere.styles.length === 0 && config.log.json) {
+    config.riviere.styles = ['json'];
+  }
 };
