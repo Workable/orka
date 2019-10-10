@@ -77,79 +77,103 @@ describe('Diamorphosis Test', () => {
       delete require.cache[require.resolve(options.diamorphosis.configPath)];
     });
 
-    it('nothing set => console:true, json:false, styles:[] ', () => {
-      let config = {} as any;
+    context('when nothing is set config', () =>
+      it('should be console:true, json:false, styles:[]', () => {
+        let config = {} as any;
 
-      diamorphosis(config, {} as OrkaOptions);
+        diamorphosis(config, {} as OrkaOptions);
 
-      config.log.console.should.equal(true);
-      config.log.json.should.equal(false);
-      config.riviere.styles.length.should.equal(0);
-    });
+        config.log.console.should.equal(true);
+        config.log.json.should.equal(false);
+        config.riviere.styles.length.should.equal(0);
+      })
+    );
 
-    it('console:not set, json:true, styles:[] => console:false, json:true, styles:["json"] ', () => {
-      let config = {
-        log: {
-          json: true
-        }
-      } as any;
+    context('when console:not set, json:true, styles:[]', () =>
+      it('shoud be console:false, json:true, styles:["json"]', () => {
+        let config = {
+          log: {
+            json: true
+          }
+        } as any;
 
-      diamorphosis(config, {} as OrkaOptions);
+        diamorphosis(config, {} as OrkaOptions);
 
-      config.log.console.should.equal(false);
-      config.log.json.should.equal(true);
-      config.riviere.styles.length.should.equal(1);
-      config.riviere.styles[0].should.equal('json');
-    });
+        config.log.console.should.equal(false);
+        config.log.json.should.equal(true);
+        config.riviere.styles.length.should.equal(1);
+        config.riviere.styles[0].should.equal('json');
+      })
+    );
 
-    it('console:true, json:true, styles:[] => console:true, json:true, styles:["json"] ', () => {
-      let config = {
-        log: {
-          console: true,
-          json: true
-        }
-      } as any;
+    context('when console:true, json:true, styles:[]', () =>
+      it('shoud be console:true, json:true, styles:["json"]', () => {
+        let config = {
+          log: {
+            console: true,
+            json: true
+          }
+        } as any;
 
-      diamorphosis(config, {} as OrkaOptions);
+        diamorphosis(config, {} as OrkaOptions);
 
-      config.log.console.should.equal(true);
-      config.log.json.should.equal(true);
-      config.riviere.styles.length.should.equal(1);
-      config.riviere.styles[0].should.equal('json');
-    });
+        config.log.console.should.equal(true);
+        config.log.json.should.equal(true);
+        config.riviere.styles.length.should.equal(1);
+        config.riviere.styles[0].should.equal('json');
+      })
+    );
 
-    it('console:false, json:true, styles:[] => console:false, json:true, styles:["json"] ', () => {
-      let config = {
-        log: {
-          console: false,
-          json: true
-        }
-      } as any;
+    context('when console:false, json:true, styles:[]', () =>
+      it('shoud be console:false, json:true, styles:["json"]', () => {
+        let config = {
+          log: {
+            console: false,
+            json: true
+          }
+        } as any;
 
-      diamorphosis(config, {} as OrkaOptions);
+        diamorphosis(config, {} as OrkaOptions);
 
-      config.log.console.should.equal(false);
-      config.log.json.should.equal(true);
-      config.riviere.styles.length.should.equal(1);
-      config.riviere.styles[0].should.equal('json');
-    });
+        config.log.console.should.equal(false);
+        config.log.json.should.equal(true);
+        config.riviere.styles.length.should.equal(1);
+        config.riviere.styles[0].should.equal('json');
+      })
+    );
 
-    it('console:not set, json:true, styles:["simple"] => console:false, json:true, styles:["simple"] ', () => {
-      let config = {
-        log: {
-          json: true
-        },
-        riviere: {
-          styles: ['simple']
-        }
-      } as any;
+    context('when console:not set, json:true, styles:["simple"]', () =>
+      it('shoud be console:false, json:true, styles:["simple"]', () => {
+        let config = {
+          log: {
+            json: true
+          },
+          riviere: {
+            styles: ['simple']
+          }
+        } as any;
 
-      diamorphosis(config, {} as OrkaOptions);
+        diamorphosis(config, {} as OrkaOptions);
 
-      config.log.console.should.equal(false);
-      config.log.json.should.equal(true);
-      config.riviere.styles.length.should.equal(1);
-      config.riviere.styles[0].should.equal('simple');
-    });
+        config.log.console.should.equal(false);
+        config.log.json.should.equal(true);
+        config.riviere.styles.length.should.equal(1);
+        config.riviere.styles[0].should.equal('simple');
+      })
+    );
+
+    context('when console:false set in process.env', () =>
+      it('shoud be console:false, json:true, styles:["simple"]', () => {
+        process.env.LOG_CONSOLE = 'false';
+
+        const config = require(options.diamorphosis.configPath);
+
+        diamorphosis(config, options);
+
+        config.log.console.should.equal(false);
+        config.log.json.should.equal(false);
+        config.riviere.styles.length.should.equal(0);
+      })
+    );
   });
 });

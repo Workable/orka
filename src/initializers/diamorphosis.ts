@@ -1,6 +1,6 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
-import { defaultTo } from 'lodash';
+import { defaultTo, isBoolean } from 'lodash';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
@@ -34,6 +34,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
 
   if (config.log.console === '') {
     config.log.console = !config.log.json;
+  } else if (!isBoolean(config.log.console)) {
+    config.log.console = config.log.console === 'true';
   }
 
   if (config.riviere.styles.length === 0 && config.log.json) {
