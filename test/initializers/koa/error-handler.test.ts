@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 const init = require('../../../examples/custom-error-handler-example/app');
 import * as log4js from 'log4js';
+import { omit } from 'lodash';
 
 const sandbox = sinon.createSandbox();
 
@@ -14,7 +15,10 @@ describe('error-handler', function() {
   });
 
   it('tests custom error handler', async function() {
-    const errorHandler = sandbox.stub().callsFake((ctx, err) => (ctx.body = err));
+    const errorHandler = sandbox.stub().callsFake((ctx, err, { omitErrorKeys }) => {
+      ctx.body = err;
+      return [err, { state: omit(ctx.state, omitErrorKeys) }];
+    });
     server = await init(
       () => [
         ctx => {
@@ -46,14 +50,6 @@ describe('error-handler', function() {
       params: { requestId: '1', body: {}, query: {} }
     });
     errorHandler.args[0][1].should.eql(error);
-    loggerStub.args.should.eql([
-      [
-        error,
-        {
-          // tslint:disable-next-line: quotemark
-          state: "{ requestId: '1', foo: 'foo' }"
-        }
-      ]
-    ]);
+    loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo' } }]]);
   });
 });

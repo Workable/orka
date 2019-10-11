@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as Koa from 'koa';
 import OrkaBuilder from './orka-builder';
 import { Middleware } from 'koa';
+import { omit } from 'lodash';
 
 export default {
   appName: '',
@@ -38,7 +39,11 @@ export default {
   },
   builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
-  errorHandler: (ctx: Koa.Context, err: Error) => undefined,
+  errorHandler: async (
+    ctx: Koa.Context,
+    err: Error,
+    orkaOptions: { omitErrorKeys?: string[] }
+  ): Promise<[string | Error, ...any[]]> => [err, { state: omit(ctx.state, orkaOptions.omitErrorKeys) }],
   omitErrorKeys: [],
   riviereContext: (ctx: Koa.Context) => ({})
 };
