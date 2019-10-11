@@ -17,8 +17,14 @@ export default {
     envFolder: '',
     loadDotEnv: ['development']
   } as { configFolder: string; configPath?: string; envFolder?: string; loadDotEnv?: string[] },
-  beforeMiddleware: (app: Koa<any, {}>, config: any): Middleware<any> | Middleware<any>[] => [],
-  afterMiddleware: (app: Koa<any, {}>, config: any): Middleware<any> | Middleware<any>[] => [],
+  beforeMiddleware: (
+    app: Koa<any, {}>,
+    config: any
+  ): Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]> => [],
+  afterMiddleware: (
+    app: Koa<any, {}>,
+    config: any
+  ): Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]> => [],
   beforeStart: [] as ((config: any) => void)[] | ((config: any) => void),
   kafka: {
     certificates: {

@@ -23,7 +23,10 @@ export default class OrkaBuilder {
   options: Partial<OrkaOptions>;
   config: any;
   middlewares: Middleware<any>[];
-  koaTasks: ((app: Koa<any, {}>, config: any) => Middleware<any> | Middleware<any>[])[];
+  koaTasks: ((
+    app: Koa<any, {}>,
+    config: any
+  ) => Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]>)[];
   errorHandler: any;
   queue: (() => Promise<void> | void)[];
   server: Server;
@@ -37,7 +40,12 @@ export default class OrkaBuilder {
     this.queue = [];
   }
 
-  use(task: (app: Koa<any, {}>, config: any) => Middleware<any> | Middleware<any>[] = () => []) {
+  use(
+    task: (
+      app: Koa<any, {}>,
+      config: any
+    ) => Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]> = () => []
+  ) {
     this.koaTasks.push(task);
     return this;
   }
