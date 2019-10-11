@@ -2,7 +2,6 @@ import * as Koa from 'koa';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from 'orka/typings/orka';
 import { omit } from 'lodash';
-import { inspect } from 'util';
 
 const logger = getLogger('orka.errorHandler');
 
@@ -28,14 +27,14 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
         }
       });
 
-      if (!isBlacklisted(err, config)) {
-        logger.error(err, { state: inspect(omit(ctx.state, orkaOptions.omitErrorKeys)) });
-      } else {
-        logger.warn(err);
-      }
-
       ctx.body = err.expose ? err.exposedMsg || err.message : ctx.body;
       ctx.status = err.status || 500;
-      await orkaOptions.errorHandler(ctx, err);
+
+      const errorArgs = (await orkaOptions.errorHandler(ctx, err, orkaOptions)) || [err as Error];
+      if (!isBlacklisted(err, config)) {
+        logger.error(...errorArgs);
+      } else {
+        logger.warn(...errorArgs);
+      }
     }
   };
