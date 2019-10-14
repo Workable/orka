@@ -61,8 +61,8 @@ orka({
     envFolder: path.resolve('config/env')
     loadDotEnv: ['development']
   },
-  beforeMiddleware: () => [],
-  afterMiddleware: () => [],
+  beforeMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
+  afterMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
   beforeStart: [] // functions to run before start
 }).start();
 
