@@ -1,5 +1,3 @@
-
-
                 O          .
              O            ' '
                o         '   .
@@ -12,8 +10,6 @@
             '-._     __________...---'''             \   l
                 \   |                                 '._|
                  \__;
-
-
 
 # Orka
 
@@ -65,8 +61,8 @@ orka({
     envFolder: path.resolve('config/env')
     loadDotEnv: ['development']
   },
-  beforeMiddleware: [],
-  afterMiddleware: [],
+  beforeMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
+  afterMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
   beforeStart: [] // functions to run before start
 }).start();
 
@@ -83,9 +79,9 @@ builder({…some static options here…})
   .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
   .withMongoDB()
-  .use(() => async (ctx, next) => {…before middleware…})
+  .use((app, config) => async (ctx, next) => {…before middleware…})
   .useDefaults() // riviere, cors, etc.
-  .use(() => async (ctx, next) => {…after middleware…})
+  .use((app, config) => async (ctx, next) => {…after middleware…})
   .routes('./routes/my-routes')
   .start(8080)
 ```
