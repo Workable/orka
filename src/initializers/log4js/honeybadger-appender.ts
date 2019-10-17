@@ -3,16 +3,12 @@ import * as Honeybadger from 'honeybadger';
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
 
-function notifyHoneybadger(filter_status, name, error, ...rest) {
+function notifyHoneybadger(name, error, ...rest) {
   if (typeof error === 'string') {
     error = new Error(error);
   }
 
   if (!error) {
-    return;
-  }
-
-  if (error && error.status && filter_status.indexOf(error.status) !== -1) {
     return;
   }
 
@@ -54,15 +50,15 @@ function notifyHoneybadger(filter_status, name, error, ...rest) {
   );
 }
 
-const honeyBadgerAppender = (filter_status = []) => {
+const honeyBadgerAppender = () => {
   return logEvent => {
     if (logEvent.level.level < log4jsErrorLevel) {
       return;
     }
-    notifyHoneybadger.apply(this, [filter_status, logEvent.categoryName].concat(logEvent.data));
+    notifyHoneybadger.apply(this, [logEvent.categoryName].concat(logEvent.data));
   };
 };
 
-export function configure(honeybadgerFilterStatus = []) {
-  return honeyBadgerAppender(honeybadgerFilterStatus);
+export function configure() {
+  return honeyBadgerAppender();
 }
