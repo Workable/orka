@@ -61,19 +61,6 @@ describe('log4js_honeybadger_appender', () => {
     notifySpy.callCount.should.equal(0);
   });
 
-  it('should not call Honeybadger.notify if err.status exists in the filter_status', () => {
-    const err = new Error('omg') as any;
-    err.status = 200;
-    appender.configure([200])({
-      level: {
-        level: 40000
-      },
-      categoryName: 'testCategoryName',
-      data: err
-    });
-    notifySpy.callCount.should.equal(0);
-  });
-
   it('should default the component to name and then compute the fingerprint', () => {
     const err = new Error('omg') as any;
     err.status = 200;

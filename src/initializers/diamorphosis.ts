@@ -7,7 +7,6 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.honeybadger = {
     apiKey: '',
     environment: '',
-    filterStatus: '',
     ...config.honeybadger
   };
   config.printLogo = defaultTo(config.printLogo, true);
