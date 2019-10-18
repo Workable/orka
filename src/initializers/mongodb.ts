@@ -14,15 +14,12 @@ export default function mongodb(config) {
     return;
   }
 
-  const options: mongoose.ConnectionOptions = lodash.defaultsDeep(
-    {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: false
-    },
-    config.mongodb.options
-  );
+  const options: mongoose.ConnectionOptions = lodash.defaultsDeep(config.mongodb.options, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: false
+  });
 
   mongoose.connect(dbUrl, options);
   const db = mongoose.connection;
