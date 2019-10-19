@@ -18,6 +18,7 @@ import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';
 import * as Koa from 'koa';
+import * as rTracer from 'cls-rtracer';
 
 export default class OrkaBuilder {
   options: Partial<OrkaOptions>;
@@ -76,6 +77,21 @@ export default class OrkaBuilder {
         },
         credentials
       })
+    );
+  }
+
+  // header name defaults to X-Request-Id case insensitive
+  useLogTracer(headerName?: string) {
+    return this.use(
+      () =>
+        rTracer.koaMiddleware(
+          headerName
+            ? {
+                useHeader: true,
+                headerName
+              }
+            : undefined
+        ) as any
     );
   }
 

@@ -1,4 +1,5 @@
 import * as lodash from 'lodash';
+import * as rTracer from 'cls-rtracer';
 
 const jsonAppender = () => {
   return logEvent => {
@@ -9,9 +10,15 @@ const jsonAppender = () => {
 };
 
 export const createErrorLog = logEvent => {
-  const data = lodash.flattenDeep(logEvent.data);
+  const { context: _context, data: _data } = logEvent;
+  const data = lodash.flattenDeep(_data);
+  const trace = rTracer.id();
 
-  const context = getContextObject(data);
+  const context = {
+    ...getContextObject(data),
+    ..._context,
+    ...(trace ? { trace } : {})
+  };
 
   return {
     timestamp: logEvent.startTime,
@@ -24,9 +31,15 @@ export const createErrorLog = logEvent => {
 };
 
 export const createValidLog = logEvent => {
-  const data = lodash.flattenDeep(logEvent.data);
+  const { context: _context = {}, data: _data } = logEvent;
+  const data = lodash.flattenDeep(_data);
+  const trace = rTracer.id();
 
-  const context = getContextObject(data);
+  const context = {
+    ...getContextObject(data),
+    ..._context,
+    ...(trace ? { trace } : {})
+  };
   const message = getMessageObject(data);
 
   return {

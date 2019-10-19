@@ -10,6 +10,11 @@ const w = builder(staticOptions)
     ctx.body = 'default body';
     await next();
   })
+  .use(() => async (ctx, next) => {
+    ctx.request.headers.visitor = 'test-me';
+    await next();
+  })
+  .useLogTracer('visitor')
   .routes('./examples/simple-example/routes.js')
   .withLogo('./examples/simple-example/logo.txt');
 
