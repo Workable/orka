@@ -1,8 +1,8 @@
 import * as lodash from 'lodash';
 
-const jsonAppender = () => {
+const jsonAppender = layout => {
   return logEvent => {
-    let event = logEvent.level.levelStr === 'ERROR' ? createErrorLog(logEvent) : createValidLog(logEvent);
+    let event = logEvent.level.levelStr === 'ERROR' ? createErrorLog(logEvent) : createValidLog(layout, logEvent);
     var json = JSON.stringify(event);
     console.log(json);
   };
@@ -23,11 +23,11 @@ export const createErrorLog = logEvent => {
   };
 };
 
-export const createValidLog = logEvent => {
+export const createValidLog = (layout, logEvent) => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
-  const message = getMessageObject(data);
+  const message = layout(logEvent);
 
   return {
     timestamp: logEvent.startTime,
@@ -48,10 +48,13 @@ const getContextObject = data => {
   return context;
 };
 
-const getMessageObject = data => {
-  return data.filter(element => typeof element !== 'object').join(' ');
-};
-
-export function configure() {
-  return jsonAppender();
+function configure(config, layouts) {
+  let layout = layouts.messagePassThroughLayout;
+  return jsonAppender(layout);
 }
+
+module.exports.configure = configure;
+
+// export function configure() {
+//   return jsonAppender();
+// }
