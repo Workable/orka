@@ -48,13 +48,7 @@ const getContextObject = data => {
   return context;
 };
 
-function configure(config, layouts) {
-  let layout = layouts.messagePassThroughLayout;
+export function configure(config: any, layouts: { messagePassThroughLayout: any }) {
+  const layout = layouts.messagePassThroughLayout;
   return jsonAppender(layout);
 }
-
-module.exports.configure = configure;
-
-// export function configure() {
-//   return jsonAppender();
-// }

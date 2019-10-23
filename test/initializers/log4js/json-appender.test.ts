@@ -1,6 +1,7 @@
 import * as appender from '../../../src/initializers/log4js/json-appender';
 import 'should';
 import * as sinon from 'sinon';
+import * as Log4js from 'log4js';
 
 const sandbox = sinon.createSandbox();
 
@@ -22,7 +23,13 @@ describe('log4js_json_appender', () => {
   });
 
   it('should call createValidLog and return valid json object', () => {
-    appender.configure()({
+    const layout = {
+      messagePassThroughLayout: log => {
+        return 'test';
+      }
+    };
+
+    appender.configure({}, layout)({
       level: {
         levelStr: 'INFO'
       },
@@ -45,7 +52,13 @@ describe('log4js_json_appender', () => {
   });
 
   it('should call createErrorLog and return error json object', () => {
-    appender.configure()({
+    const layout = {
+      messagePassThroughLayout: log => {
+        return 'test';
+      }
+    };
+
+    appender.configure({}, layout)({
       level: {
         levelStr: 'ERROR'
       },
