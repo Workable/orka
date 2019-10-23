@@ -63,7 +63,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "log4js": "^4.2.0",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.6",
     "rabbit-queue": "4.2.1",
     "source-map-support": "^0.5.12",
     "tmp": "^0.1.0",
