@@ -1,7 +1,17 @@
+const { getLogger } = require('../../build');
+
 module.exports = {
   get: {
     '/test': async (ctx, next) => (ctx.body = 'ok'),
-    '/testPolicy': async (ctx, next) => (ctx.body = 'ok')
+    '/testPolicy': async (ctx, next) => (ctx.body = 'ok'),
+    '/log': async (ctx, next) => {
+      getLogger('log').info('%s world', 'hello', { context: 'foo' });
+      ctx.body = 'logged';
+    },
+    '/logError': async (ctx, next) => {
+      getLogger('log').error(new Error('test'), 'this was a test error', { context: 'foo' });
+      ctx.throw(new Error('test'), 505);
+    }
   },
   policy: {
     '/testPolicy': async (ctx, next) => {

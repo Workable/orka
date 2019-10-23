@@ -1,39 +1,41 @@
 import * as lodash from 'lodash';
 
-const jsonAppender = () => {
+const jsonAppender = layout => {
   return logEvent => {
-    let event = logEvent.level.levelStr === 'ERROR' ? createErrorLog(logEvent) : createValidLog(logEvent);
+    let event =
+      logEvent.level.levelStr === 'ERROR' ? createErrorLog(layout, logEvent) : createValidLog(layout, logEvent);
     var json = JSON.stringify(event);
     console.log(json);
   };
 };
 
-export const createErrorLog = logEvent => {
+export const createErrorLog = (layout, logEvent) => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
+  const message = getMessageObject(layout, data);
 
   return {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: logEvent.data[0].message,
+    message: logEvent.data[0].message + (message ? ' - ' + message : ''),
     stack_trace: logEvent.data[0].stack,
     context
   };
 };
 
-export const createValidLog = logEvent => {
+export const createValidLog = (layout, logEvent) => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
-  const message = getMessageObject(data);
+  const message = getMessageObject(layout, data);
 
   return {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: message,
+    message,
     context
   };
 };
@@ -48,10 +50,11 @@ const getContextObject = data => {
   return context;
 };
 
-const getMessageObject = data => {
-  return data.filter(element => typeof element !== 'object').join(' ');
+const getMessageObject = (layout, data) => {
+  return layout({ data: data.filter(element => typeof element !== 'object') });
 };
 
-export function configure() {
-  return jsonAppender();
+export function configure(config: any, layouts: { messagePassThroughLayout: any }) {
+  const layout = layouts.messagePassThroughLayout;
+  return jsonAppender(layout);
 }

@@ -1,7 +1,6 @@
 import 'should';
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-const init = require('../../../examples/custom-error-handler-example/app');
 import * as log4js from 'log4js';
 import { omit } from 'lodash';
 
@@ -19,6 +18,10 @@ describe('error-handler', function() {
       ctx.body = err;
       return [err, { state: omit(ctx.state, omitErrorKeys) }];
     });
+    delete require.cache[require.resolve('../../../examples/custom-error-handler-example/app')];
+    delete require.cache[require.resolve('../../../examples/simple-example/config')];
+    const init = require('../../../examples/custom-error-handler-example/app');
+
     server = await init(
       () => [
         ctx => {
