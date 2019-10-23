@@ -1,7 +1,6 @@
 import * as appender from '../../../src/initializers/log4js/json-appender';
 import 'should';
 import * as sinon from 'sinon';
-import * as Log4js from 'log4js';
 
 const sandbox = sinon.createSandbox();
 
@@ -74,18 +73,18 @@ describe('log4js_json_appender', () => {
     configureSpy.calledOnce.should.equal(true);
     createValidLogSpy.calledOnce.should.equal(false);
     createErrorLogSpy.calledOnce.should.equal(true);
-    createErrorLogSpy
-      .returned({
+    createErrorLogSpy.returnValues.should.eql([
+      {
         timestamp: '01-01-1970',
         severity: 'ERROR',
         categoryName: 'testCategoryName',
-        message: 'test error',
+        message: 'test error - test',
         stack_trace: 'stack trace',
         context: {
           message: 'test error',
           stack: 'stack trace'
         }
-      })
-      .should.equal(true);
+      }
+    ]);
   });
 });
