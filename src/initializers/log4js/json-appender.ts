@@ -2,22 +2,24 @@ import * as lodash from 'lodash';
 
 const jsonAppender = layout => {
   return logEvent => {
-    let event = logEvent.level.levelStr === 'ERROR' ? createErrorLog(logEvent) : createValidLog(layout, logEvent);
+    let event =
+      logEvent.level.levelStr === 'ERROR' ? createErrorLog(layout, logEvent) : createValidLog(layout, logEvent);
     var json = JSON.stringify(event);
     console.log(json);
   };
 };
 
-export const createErrorLog = logEvent => {
+export const createErrorLog = (layout, logEvent) => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
+  const message = getMessageObject(layout, data);
 
   return {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: logEvent.data[0].message,
+    message: logEvent.data[0].message + (message ? ' - ' + message : ''),
     stack_trace: logEvent.data[0].stack,
     context
   };
@@ -27,13 +29,13 @@ export const createValidLog = (layout, logEvent) => {
   const data = lodash.flattenDeep(logEvent.data);
 
   const context = getContextObject(data);
-  const message = layout(logEvent);
+  const message = getMessageObject(layout, data);
 
   return {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: message,
+    message,
     context
   };
 };
@@ -46,6 +48,10 @@ const getContextObject = data => {
       Object.assign(context, element);
     });
   return context;
+};
+
+const getMessageObject = (layout, data) => {
+  return layout({ data: data.filter(element => typeof element !== 'object') });
 };
 
 export function configure(config: any, layouts: { messagePassThroughLayout: any }) {
