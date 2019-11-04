@@ -4,9 +4,12 @@ import { defaultTo, isBoolean } from 'lodash';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
+  config.app = {
+    env: '',
+    ...config.app
+  };
   config.honeybadger = {
     apiKey: '',
-    environment: '',
     ...config.honeybadger
   };
   config.printLogo = defaultTo(config.printLogo, true);
@@ -29,7 +32,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.riviere
   };
   diamorphosis(orkaOptions.diamorphosis);
-  config.honeybadger.environment = config.honeybadger.environment || config.nodeEnv;
+  config.app.env = config.app.env || config.nodeEnv;
 
   if (config.log.console === '') {
     config.log.console = !config.log.json;

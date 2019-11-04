@@ -2,10 +2,10 @@ import requireInjected from '../../require-injected';
 import { getLogger } from '../log4js';
 
 let newrelic;
-export default (appName: string) => {
+export default (config, appName: string) => {
   process.env.NEW_RELIC_HOME = __dirname;
   if (process.env.NEW_RELIC_LICENSE_KEY) {
-    process.env.NEW_RELIC_APP_NAME = `${appName} ${process.env.NODE_ENV}`;
+    process.env.NEW_RELIC_APP_NAME = `${appName} ${config.app.env}`;
     newrelic = requireInjected('newrelic');
   }
 };
