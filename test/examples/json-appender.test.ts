@@ -1,6 +1,7 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import { longStackTraces } from 'bluebird';
+import * as appender from '../../src/initializers/log4js/json-appender';
 const sandbox = sinon.createSandbox();
 
 describe('json-appender', function() {
@@ -43,6 +44,29 @@ describe('json-appender', function() {
           categoryName: 'log',
           message: 'hello world',
           context: { context: 'foo' }
+        })
+      ]
+    ]);
+  });
+
+  it('/log returns 200 and logs info circular', async function() {
+    const logSpy = sandbox.stub(console, 'log');
+    const { text } = await (supertest('localhost:3000') as any).get('/logCircular?').expect(200);
+    text.should.eql('logged');
+    logSpy.args.should.eql([
+      [
+        JSON.stringify({
+          timestamp: '2019-01-01T00:00:00.000Z',
+          severity: 'INFO',
+          categoryName: 'log',
+          message: 'hello world',
+          context: {
+            context: {
+              id: 'id',
+              message: 'circular',
+              circularField: 'circular_ref'
+            }
+          }
         })
       ]
     ]);

@@ -11,6 +11,16 @@ module.exports = {
     '/logError': async (ctx, next) => {
       getLogger('log').error(new Error('test'), 'this was a test error', { context: 'foo' });
       ctx.throw(new Error('test'), 505);
+    },
+    '/logCircular': async (ctx, next) => {
+      var context = {
+        id: 'id',
+        message: 'circular'
+      };
+      context.circularField = context;
+
+      getLogger('log').info('%s world', 'hello', { context });
+      ctx.body = 'logged';
     }
   },
   policy: {
