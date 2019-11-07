@@ -4,22 +4,30 @@ const jsonAppender = layout => {
   return logEvent => {
     let event =
       logEvent.level.levelStr === 'ERROR' ? createErrorLog(layout, logEvent) : createValidLog(layout, logEvent);
-    var json = JSON.stringify(event, circularReplacer());
+    const json = safeStringify(event);
     console.log(json);
   };
 };
 
-const circularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return 'circular_ref';
+const safeStringify = event => {
+  try {
+    return JSON.stringify(event);
+  } catch (error) {
+    let seen = new WeakSet();
+
+    const circularJson = JSON.stringify(event, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return 'circular_ref';
+        }
+        seen.add(value);
       }
-      seen.add(value);
-    }
-    return value;
-  };
+      return value;
+    });
+
+    seen = null;
+    return circularJson;
+  }
 };
 
 export const createErrorLog = (layout, logEvent) => {
