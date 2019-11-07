@@ -1,7 +1,6 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-import { longStackTraces } from 'bluebird';
-import * as appender from '../../src/initializers/log4js/json-appender';
+
 const sandbox = sinon.createSandbox();
 
 describe('json-appender', function() {
