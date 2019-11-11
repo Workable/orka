@@ -182,7 +182,7 @@ export default class OrkaBuilder {
       await this.initMiddleWare(app);
       this.server = await koa.listen(app, port, this.middlewares, (logger = _logger) => {
         logger.info(`Server listening to http://localhost:${port}/`);
-        logger.info(`Server environment: ${this.config.nodeEnv}`);
+        logger.info(`Server environment: ${this.config.app.env}`);
       });
     } catch (e) {
       _logger.error(e);

@@ -40,7 +40,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   if (require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized');
 
   // Always call newrelic
-  newrelic(options.appName);
+  newrelic(config, options.appName);
 
   const log4js = require('./initializers/log4js').default;
   // Always use logger

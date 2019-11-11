@@ -26,7 +26,13 @@ Orka uses some defaults for the below values in your config.js
 ```js
 config = {
   nodeEnv :'development';
-  honeyBadgerApiKey: '', // will not add honeybadger by default
+  app: {
+    name: 'orka', // will be used as newrelic name, rabbit-queue prefix
+    env: 'demo' // will be used as newrelic, honeybadger env - defaults to NODE_ENV
+  }
+  honeybadger:{
+    apiKey: '', // will not add honeybadger by default
+  }
   newRelicLicenseKey: '', // will not add newrelic by default
   log : {
     pattern: '%[[%d] [%p] %c%] %m',
@@ -49,7 +55,7 @@ const { orka } = require('@workablehr/orka');
 
 // these options are the defaults
 orka({
-  appName: '',
+  appName: '', // defaults to config.app.name
   typescript: false,
   honeyBadger: {
     developmentEnvironments: ['development', 'test']
