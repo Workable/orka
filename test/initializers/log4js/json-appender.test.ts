@@ -1,6 +1,8 @@
 import * as appender from '../../../src/initializers/log4js/json-appender';
 import 'should';
 import * as sinon from 'sinon';
+import * as path from 'path';
+import * as Log4js from 'log4js';
 
 const sandbox = sinon.createSandbox();
 
@@ -86,5 +88,50 @@ describe('log4js_json_appender', () => {
         }
       }
     ]);
+  });
+
+  it('should correctly print circular json', () => {
+    let clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    const logSpy = sandbox.stub(console, 'log');
+
+    const appenders = {
+      json: {
+        type: path.resolve(path.join(__dirname, '../../../src/initializers/log4js/json-appender'))
+      }
+    } as any;
+
+    const appendersList = ['json'];
+
+    Log4js.configure({
+      appenders,
+      categories: {
+        default: {
+          appenders: appendersList,
+          level: 'debug'
+        }
+      }
+    });
+
+    let circular = {
+      id: 'id',
+      temp: {}
+    };
+    circular.temp = circular;
+
+    var logger = Log4js.getLogger();
+    logger.debug(circular);
+
+    logSpy.args.should.eql([
+      [
+        JSON.stringify({
+          timestamp: '2019-01-01T00:00:00.000Z',
+          severity: 'DEBUG',
+          categoryName: 'default',
+          message: '',
+          context: { id: 'id', temp: { id: 'id', temp: 'circular_ref' } }
+        })
+      ]
+    ]);
+    clock.restore();
   });
 });
