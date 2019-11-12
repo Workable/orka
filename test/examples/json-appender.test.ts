@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-import { longStackTraces } from 'bluebird';
+
 const sandbox = sinon.createSandbox();
 
 describe('json-appender', function() {
