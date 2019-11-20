@@ -17,6 +17,7 @@ describe('Test mongodb connection', function() {
   beforeEach(async function() {
     onStub = sandbox.stub();
     connectStub = sandbox.stub();
+    delete require.cache[require.resolve('../../src/initializers/mongodb')];
     mock('mongoose', { connect: connectStub, connection: { on: onStub } });
     ({ default: mongodb } = await import('../../src/initializers/mongodb'));
   });

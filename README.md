@@ -29,6 +29,16 @@ config = {
   app: {
     name: 'orka', // will be used as newrelic name, rabbit-queue prefix
     env: 'demo' // will be used as newrelic, honeybadger env - defaults to NODE_ENV
+  },
+  mongodb: {
+    url: '',
+    options: {}
+  },
+  redis: {
+    url:'',
+    options: {
+      
+    }
   }
   honeybadger:{
     apiKey: '', // will not add honeybadger by default
@@ -85,6 +95,7 @@ builder({…some static options here…})
   .withRabbitMQ('my-app-name')
   .withHoneyBadger({…})
   .withMongoDB()
+  .withRedis()
   .use((app, config) => async (ctx, next) => {…before middleware…})
   .useDefaults() // riviere, cors, etc.
   .use((app, config) => async (ctx, next) => {…after middleware…})

@@ -7,3 +7,4 @@ export const orka = Orka;
 export { getNewRelic } from './initializers/newrelic';
 export { getKafka } from './initializers/kafka';
 export { getRabbit } from './initializers/rabbitmq';
+export { getRedis, createRedisConnection } from './initializers/redis';

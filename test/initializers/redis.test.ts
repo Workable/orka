@@ -20,6 +20,7 @@ describe('Redis connection', function() {
   beforeEach(async function() {
     onStub = sandbox.stub();
     connectStub = sandbox.stub().returns({ on: onStub });
+    delete require.cache[require.resolve('../../src/initializers/redis')];
     mock('redis', { createClient: connectStub });
     ({ createRedisConnection: redis } = await import('../../src/initializers/redis'));
   });

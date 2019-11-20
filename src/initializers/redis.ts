@@ -44,10 +44,14 @@ export function createRedisConnection(config) {
   if (!firstClient) firstClient = client;
   client.on('connect', () => {
     const socket = client.stream;
-    socket.setKeepAlive(options.socketKeepalive, options.socketInitialDelay);
+    (socket as any).setKeepAlive(options.socketKeepalive, options.socketInitialDelay);
     logger.info(`Redis connected ${getHost(redisUrl)}`);
   });
-  client.on('error', () => logger.error(`Redis disconnected ${getHost(redisUrl)}`));
+
+  client.on('error', e => {
+    if (Array.isArray(e.args)) e.args[0] = getHost(redisUrl);
+    logger.error(e, `Redis disconnected`);
+  });
 
   return client;
 }

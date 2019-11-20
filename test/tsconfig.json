@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "rootDir": "../",
+    "sourceRoot": "../",
+    "baseUrl": "../",
+    "sourceMap": true,
+    "paths": {
+      "orka/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
