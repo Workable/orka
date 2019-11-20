@@ -6,11 +6,9 @@ const sandbox = sinon.createSandbox();
 
 describe('Redis connection', function() {
   const config = {
-    redis: {
-      url: 'redis://localhost:6379/',
-      options: {
-        sample: 'sample'
-      }
+    url: 'redis://localhost:6379/',
+    options: {
+      sample: 'sample'
     }
   };
   let redis;

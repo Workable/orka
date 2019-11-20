@@ -36,9 +36,7 @@ config = {
   },
   redis: {
     url:'',
-    options: {
-      
-    }
+    options: {}
   }
   honeybadger:{
     apiKey: '', // will not add honeybadger by default

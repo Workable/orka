@@ -4,7 +4,7 @@ import { getLogger } from './log4js';
 const logger = getLogger('services.redisService');
 
 function getRedisUrl(config) {
-  return config.redis && config.redis.url;
+  return config && config.url;
 }
 
 function getHost(url) {
@@ -24,7 +24,7 @@ export function createRedisConnection(config) {
     reconnectAfterMultiplier: 1000,
     socketKeepalive: true,
     socketInitialDelay: 60000,
-    ...config.redis.options
+    ...config.options
   };
 
   options.retry_strategy = function(opts) {

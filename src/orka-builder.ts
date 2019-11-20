@@ -119,7 +119,7 @@ export default class OrkaBuilder {
   }
 
   withRedis() {
-    this.queue.push(() => createRedisConnection(this.config));
+    this.queue.push(() => createRedisConnection(this.config.redis));
     return this;
   }
 
