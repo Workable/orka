@@ -1,6 +1,7 @@
 const mock = require('mock-require');
 import * as sinon from 'sinon';
 import 'should';
+import { cloneDeep } from 'lodash';
 
 const sandbox = sinon.createSandbox();
 
@@ -8,7 +9,12 @@ describe('Redis connection', function() {
   const config = {
     url: 'redis://localhost:6379/',
     options: {
-      sample: 'sample'
+      sample: 'sample',
+      tls: {
+        ca: [],
+        cert: '',
+        key: ''
+      }
     }
   };
   let redis;
@@ -30,7 +36,8 @@ describe('Redis connection', function() {
 
   it('should connect to redis', () => {
     redis(config);
-    connectStub.args.should.containDeep([
+    delete connectStub.args[0][1].retry_strategy;
+    connectStub.args.should.eql([
       [
         'redis://localhost:6379/',
         {
@@ -40,6 +47,29 @@ describe('Redis connection', function() {
           socketKeepalive: true,
           socketInitialDelay: 60000,
           sample: 'sample'
+        }
+      ]
+    ]);
+  });
+
+  it('should connect to redis with tls', () => {
+    const newConfig = cloneDeep(config);
+    newConfig.options.tls.key = 'key';
+    redis(newConfig);
+    delete connectStub.args[0][1].retry_strategy;
+    connectStub.args.should.eql([
+      [
+        'redis://localhost:6379/',
+        {
+          timesConnected: 10,
+          totalRetryTime: 3600000,
+          reconnectAfterMultiplier: 1000,
+          socketKeepalive: true,
+          socketInitialDelay: 60000,
+          sample: 'sample',
+          tls: {
+            key: 'key'
+          }
         }
       ]
     ]);

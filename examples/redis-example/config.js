@@ -5,11 +5,11 @@ module.exports = {
   redis: {
     url: 'redis://localhost:6379/',
     options: {
-      /*tls: {
-        ca: ['ca'],
-        cert: 'cert',
-        key: 'key'
-      }*/
+      tls: {
+        ca: [],
+        cert: '',
+        key: ''
+      }
     }
   }
 };

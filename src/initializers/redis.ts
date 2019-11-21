@@ -1,5 +1,6 @@
 import { createClient, RedisClient } from 'redis';
 import { getLogger } from './log4js';
+import { isEmpty, cloneDeep } from 'lodash';
 
 const logger = getLogger('services.redisService');
 
@@ -15,8 +16,16 @@ const exhaustError = new Error('Retry retry_strategy options.total_retry_time ex
 let firstClient: RedisClient;
 
 export function createRedisConnection(config) {
+  config = cloneDeep(config);
   const redisUrl = getRedisUrl(config);
   if (!redisUrl) return;
+
+  if (config.options.tls) {
+    if (isEmpty(config.options.tls.ca)) delete config.options.tls.ca;
+    if (isEmpty(config.options.tls.cert)) delete config.options.tls.cert;
+    if (isEmpty(config.options.tls.key)) delete config.options.tls.key;
+    if (isEmpty(config.options.tls)) delete config.options.tls;
+  }
 
   const options = {
     timesConnected: 10,

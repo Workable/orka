@@ -36,7 +36,13 @@ config = {
   },
   redis: {
     url:'',
-    options: {}
+    options: {
+      tls: {     // If those fileds are empty they will not be passed in
+        ca: [],  // Redis driver. This way you can have the same app working 
+        cert: '',// with a redis that support tls and a redis that doesn't with 
+        key: ''  // environment variable changes only.
+      }
+    }
   }
   honeybadger:{
     apiKey: '', // will not add honeybadger by default
