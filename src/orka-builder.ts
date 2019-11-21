@@ -8,6 +8,7 @@ import * as bodyParser from 'koa-bodyparser';
 import honeybadger from './initializers/honeybadger';
 import rabbitmq from './initializers/rabbitmq';
 import mongodb from './initializers/mongodb';
+import { createRedisConnection } from './initializers/redis';
 import { getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
@@ -28,7 +29,7 @@ export default class OrkaBuilder {
     config: any
   ) => Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]>)[];
   errorHandler: any;
-  queue: (() => Promise<void> | void)[];
+  queue: (() => Promise<void> | void | any)[];
   server: Server;
 
   constructor(options, config, errorHandler) {
@@ -114,6 +115,11 @@ export default class OrkaBuilder {
 
   withMongoDB() {
     this.queue.push(() => mongodb(this.config));
+    return this;
+  }
+
+  withRedis() {
+    this.queue.push(() => createRedisConnection(this.config.redis));
     return this;
   }
 

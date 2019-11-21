@@ -1,14 +1,52 @@
+import * as sinon from 'sinon';
+import OrkaBuilder from '../src/orka-builder';
+import orka from '../src/orka';
+
+const sandbox = sinon.createSandbox();
 
 describe('Orka', function() {
-  describe('start', function() {
-    it('updates config from config.orka');
-    it('initializes typescript');
+  let builderStub;
+  beforeEach(function() {
+    builderStub = sandbox.createStubInstance(OrkaBuilder);
+  });
 
-    it('initializes diamorphosis');
-    it('initializes honeybadger');
+  afterEach(function() {
+    sandbox.restore();
+  });
 
-    it('initializes log4js');
-    it('initializes newrelic');
-    it('initializes koa');
+  it('initializes orka', function() {
+    builderStub.forTypescript.returns(builderStub);
+    builderStub.use.returns(builderStub);
+    builderStub.useDefaults.returns(builderStub);
+    builderStub.withLogo.returns(builderStub);
+    builderStub.withRabbitMQ.returns(builderStub);
+    builderStub.withHoneyBadger.returns(builderStub);
+    builderStub.withKafka.returns(builderStub);
+    builderStub.withMongoDB.returns(builderStub);
+    builderStub.withRedis.returns(builderStub);
+    builderStub.with.returns(builderStub);
+    builderStub.routes.returns(builderStub);
+
+    const stub = sandbox.stub();
+    orka({
+      builder: builderStub,
+      beforeMiddleware: stub,
+      afterMiddleware: stub,
+      logoPath: 'logoPath',
+      rabbitOnConnected: stub,
+      routesPath: 'routes'
+    });
+
+    builderStub.forTypescript.args.should.eql([[false]]);
+    builderStub.use.args.should.eql([[stub], [stub]]);
+    builderStub.useDefaults.args.should.eql([[]]);
+    builderStub.withLogo.args.should.eql([['logoPath']]);
+    builderStub.withRabbitMQ.args.should.eql([[stub]]);
+    builderStub.withHoneyBadger.args.should.eql([[]]);
+    builderStub.withKafka.args.should.eql([[]]);
+    builderStub.withMongoDB.args.should.eql([[]]);
+    builderStub.withRedis.args.should.eql([[]]);
+    builderStub.with.args.should.eql([[[]]]);
+    builderStub.routes.args.should.eql([['routes']]);
   });
 });
