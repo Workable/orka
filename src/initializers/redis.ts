@@ -11,7 +11,7 @@ function getHost(url) {
   return url.split('@')[1] || url;
 }
 
-const exhastError = new Error('Retry retry_strategy options.total_retry_time exhausted');
+const exhaustError = new Error('Retry retry_strategy options.total_retry_time exhausted');
 let firstClient: RedisClient;
 
 export function createRedisConnection(config) {
@@ -29,7 +29,7 @@ export function createRedisConnection(config) {
 
   options.retry_strategy = function(opts) {
     if (opts.error && opts.error.code === 'ECONNREFUSED') logger.error(opts.error);
-    if (opts.total_retry_time > options.totalRetryTime) return exhastError;
+    if (opts.total_retry_time > options.totalRetryTime) return exhaustError;
     if (opts.times_connected > options.timesConnected) {
       const msg =
         'redis error retry_strategy options.times_connected exhausted.' +
