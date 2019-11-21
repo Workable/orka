@@ -116,3 +116,10 @@ To run the examples:
 - npm run build
 - you should be ready to run one of the examples locally. E.g.:
   `node examples/simple-example/app.js`
+  
+## Kafka
+If you're going to use kafka from a MacOS, you'll need to add the following to your bash_profile/zshrc file
+```
+export LDFLAGS="-L/usr/local/opt/libiconv/lib"
+export CPPFLAGS="-I/usr/local/opt/libiconv/include"
+```
