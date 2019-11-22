@@ -75,6 +75,25 @@ describe('Redis connection', function() {
     ]);
   });
 
+  it('should connect to redis without options in config', () => {
+    const newConfig = cloneDeep(config);
+    delete newConfig.options;
+    redis(newConfig);
+    delete connectStub.args[0][1].retry_strategy;
+    connectStub.args.should.eql([
+      [
+        'redis://localhost:6379/',
+        {
+          timesConnected: 10,
+          totalRetryTime: 3600000,
+          reconnectAfterMultiplier: 1000,
+          socketKeepalive: true,
+          socketInitialDelay: 60000
+        }
+      ]
+    ]);
+  });
+
   it('should not connect to redis', () => {
     redis({});
     connectStub.args.should.eql([]);
