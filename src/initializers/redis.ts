@@ -20,7 +20,7 @@ export function createRedisConnection(config) {
   const redisUrl = getRedisUrl(config);
   if (!redisUrl) return;
 
-  if (config.options.tls) {
+  if (config.options?.tls) {
     if (isEmpty(config.options.tls.ca)) delete config.options.tls.ca;
     if (isEmpty(config.options.tls.cert)) delete config.options.tls.cert;
     if (isEmpty(config.options.tls.key)) delete config.options.tls.key;
