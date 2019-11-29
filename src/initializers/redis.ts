@@ -1,4 +1,4 @@
-import { createClient, RedisClient } from 'redis';
+import { createClient as createClientType, RedisClient as RedisClientType } from 'redis';
 import { getLogger } from './log4js';
 import { isEmpty, cloneDeep } from 'lodash';
 
@@ -13,9 +13,10 @@ function getHost(url) {
 }
 
 const exhaustError = new Error('Retry retry_strategy options.total_retry_time exhausted');
-let firstClient: RedisClient;
+let firstClient: RedisClientType;
 
 export function createRedisConnection(config) {
+  const { createClient }: { createClient: typeof createClientType } = require('redis');
   config = cloneDeep(config);
   const redisUrl = getRedisUrl(config);
   if (!redisUrl) return;
