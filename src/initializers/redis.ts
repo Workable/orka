@@ -12,7 +12,6 @@ function getHost(url) {
   return url.split('@')[1] || url;
 }
 
-const exhaustError = new Error('Retry retry_strategy options.total_retry_time exhausted');
 let firstClient: RedisClientType;
 
 export function createRedisConnection(config) {
@@ -38,16 +37,20 @@ export function createRedisConnection(config) {
   };
 
   options.retry_strategy = function(opts) {
-    if (opts.error && opts.error.code === 'ECONNREFUSED') logger.error(opts.error);
-    if (opts.total_retry_time > options.totalRetryTime) return exhaustError;
+    logger.error(opts.error);
+    if (opts.error && opts.error.code === 'ECONNREFUSED') return new Error('The server refused the connection');
+    if (opts.total_retry_time > options.totalRetryTime) return new Error('Retry time exhausted');
     if (opts.times_connected > options.timesConnected) {
       const msg =
         'redis error retry_strategy options.times_connected exhausted.' +
         'Please verify that the redis-server "timeout" config is large enough or disabled(0).' +
         'Redis-cli:"config get timeout" ';
+      // This will be thrown globally and will stop the server
       throw new Error(msg);
     }
-    return;
+    const retryInMS = Math.pow(2, opts.attempt) * options.reconnectAfterMultiplier;
+    logger.info(`Retrying to connect to redis in ${retryInMS}ms`);
+    return retryInMS;
   };
 
   const client = createClient(redisUrl, options);

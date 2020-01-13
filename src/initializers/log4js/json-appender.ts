@@ -37,8 +37,8 @@ export const createErrorLog = (layout, logEvent) => {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: logEvent.data[0].message + (message ? ' - ' + message : ''),
-    stack_trace: logEvent.data[0].stack,
+    message: logEvent.data[0]?.message + (message ? ' - ' + message : ''),
+    stack_trace: logEvent.data[0]?.stack,
     context
   };
 };
