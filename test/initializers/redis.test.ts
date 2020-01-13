@@ -98,4 +98,30 @@ describe('Redis connection', function() {
     redis({});
     connectStub.args.should.eql([]);
   });
+
+  describe('retry_strategy', () => {
+    it('returns server refused error', () => {
+      redis(config);
+      connectStub.args[0][1]
+        .retry_strategy({ error: { code: 'ECONNREFUSED' } })
+        .should.eql(new Error('The server refused the connection'));
+    });
+
+    it('returns retry time exhausted error', () => {
+      redis(config);
+      connectStub.args[0][1]
+        .retry_strategy({ total_retry_time: 1000 * 60 * 60 + 1 })
+        .should.eql(new Error('Retry time exhausted'));
+    });
+
+    it('throws error after 10 times connected - server will restart after that', () => {
+      redis(config);
+      (() => connectStub.args[0][1].retry_strategy({ times_connected: 11 })).should.throwError();
+    });
+
+    it('returns ms to retry connection', function() {
+      redis(config);
+      connectStub.args[0][1].retry_strategy({ attempt: 2 }).should.equal(4000);
+    });
+  });
 });
