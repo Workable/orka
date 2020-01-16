@@ -8,6 +8,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     env: '',
     ...config.app
   };
+  config.clouddebugger = false;
   config.honeybadger = {
     apiKey: '',
     ...config.honeybadger

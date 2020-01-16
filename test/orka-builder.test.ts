@@ -12,7 +12,7 @@ describe('orka-builder', function() {
   it('calls redis', async function() {
     const config = {};
     const stub = sandbox.stub(redis, 'createRedisConnection');
-    const builder = new OrkaBuilder({}, { redis: config }, () => {});
+    const builder = new OrkaBuilder({}, { redis: config }, () => undefined);
     builder.withRedis();
     await builder.initTasks();
     stub.args.should.eql([[config]]);
