@@ -8,7 +8,7 @@ function mongodbUrl(config) {
   return config.mongodb && config.mongodb.url;
 }
 
-export default function mongodb(config) {
+export default function mongodb(config, mongoOnConnected = () => undefined) {
   const dbUrl = mongodbUrl(config);
   if (!dbUrl) {
     return;
@@ -24,7 +24,10 @@ export default function mongodb(config) {
   mongoose.connect(dbUrl, options);
   const db = mongoose.connection;
 
-  db.on('connected', () => logger.info(`Connected to mongodb! (${dbUrl.split('@')[1] || dbUrl})`));
+  db.on('connected', () => {
+    logger.info(`Connected to mongodb! (${dbUrl.split('@')[1] || dbUrl})`);
+    mongoOnConnected();
+  });
   db.on('disconnected', () => logger.error('Mongodb disconnected'));
   db.on('reconnected', () => logger.info('MongoDB reconnected!'));
   db.on('error', function(err) {

@@ -39,6 +39,7 @@ export default {
   },
   builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
+  mongoOnConnected: () => undefined,
   errorHandler: async (
     ctx: Koa.Context,
     err: Error,

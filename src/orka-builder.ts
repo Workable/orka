@@ -121,8 +121,8 @@ export default class OrkaBuilder {
     return this;
   }
 
-  withMongoDB() {
-    this.queue.push(() => mongodb(this.config));
+  withMongoDB(mongoOnConnected = () => undefined) {
+    this.queue.push(() => mongodb(this.config, mongoOnConnected));
     return this;
   }
 
