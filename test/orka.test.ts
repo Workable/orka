@@ -35,6 +35,7 @@ describe('Orka', function() {
       afterMiddleware: stub,
       logoPath: 'logoPath',
       rabbitOnConnected: stub,
+      mongoOnConnected: stub,
       routesPath: 'routes'
     });
 
@@ -46,7 +47,7 @@ describe('Orka', function() {
     builderStub.withRabbitMQ.args.should.eql([[stub]]);
     builderStub.withHoneyBadger.args.should.eql([[]]);
     builderStub.withKafka.args.should.eql([[]]);
-    builderStub.withMongoDB.args.should.eql([[]]);
+    builderStub.withMongoDB.args.should.eql([[stub]]);
     builderStub.withRedis.args.should.eql([[]]);
     builderStub.with.args.should.eql([[[]]]);
     builderStub.routes.args.should.eql([['routes']]);
