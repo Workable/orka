@@ -5,8 +5,9 @@ import { omit } from 'lodash';
 
 const logger = getLogger('orka.errorHandler');
 
-const isBlacklisted = (err: { status: number } = {} as any, config) =>
-  err.status && config.blacklistedErrorCodes.includes(err.status);
+export const isBlacklisted = (err: { status: number } = {} as any, config) =>
+  // tslint:disable-next-line:triple-equals
+  err.status && config.blacklistedErrorCodes.some(b => err.status == b);
 
 export default (config, orkaOptions: Partial<OrkaOptions>) =>
   async function errorHandler(ctx: Koa.Context, next: () => Promise<any>) {
