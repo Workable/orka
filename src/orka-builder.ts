@@ -20,6 +20,7 @@ import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';
 import * as Koa from 'koa';
+import defaultRoutes from './initializers/koa/routes';
 
 export default class OrkaBuilder {
   options: Partial<OrkaOptions>;
@@ -146,6 +147,7 @@ export default class OrkaBuilder {
     return this.use(() => {
       let routes = require(path.resolve(m));
       routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
+      routes = lodash.merge({}, defaultRoutes, routes);
       return router(routes);
     });
   }

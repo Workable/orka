@@ -35,6 +35,15 @@ describe('examples', function() {
         server.start();
       });
 
+      it('/health returns ok (overrides default)', async function() {
+        await (supertest('localhost:3000') as any).get('/health').expect(500);
+      });
+
+      it('/status returns body (no default provided)', async function() {
+        const { body } = await (supertest('localhost:3000') as any).get('/status').expect(200);
+        Object.keys(body).should.eql(['rss', 'heapTotal', 'heapUsed', 'loadAvg']);
+      });
+
       it('/test returns ok', async function() {
         const { text } = await (supertest('localhost:3000') as any).get('/test').expect(200);
         text.should.eql('ok changed by prefix');

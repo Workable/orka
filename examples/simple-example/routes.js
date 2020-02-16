@@ -2,6 +2,7 @@ const { getLogger } = require('../../build');
 
 module.exports = {
   get: {
+    '/health': async ctx => (ctx.status = 500),
     '/test': async (ctx, next) => (ctx.body = 'ok'),
     '/testPolicy': async (ctx, next) => (ctx.body = 'ok'),
     '/log': async (ctx, next) => {
