@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import * as log4js from 'log4js';
 import { omit } from 'lodash';
+import { isBlacklisted } from '../../../src/initializers/koa/error-handler';
 
 const sandbox = sinon.createSandbox();
 
@@ -54,5 +55,15 @@ describe('error-handler', function() {
     });
     errorHandler.args[0][1].should.eql(error);
     loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo' } }]]);
+  });
+
+  it('tests error code blacklisting', () => {
+    const config = { blacklistedErrorCodes: ['400', 500] };
+    isBlacklisted({ status: 400 }, config).should.equal(true);
+    isBlacklisted({ status: '400' } as any, config).should.equal(true);
+    isBlacklisted({ status: 500 }, config).should.equal(true);
+    isBlacklisted({ status: '500' } as any, config).should.equal(true);
+    isBlacklisted({ status: 200 } as any, config).should.equal(false);
+    isBlacklisted({ status: '200' } as any, config).should.equal(false);
   });
 });
