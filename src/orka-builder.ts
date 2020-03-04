@@ -24,6 +24,7 @@ import * as Koa from 'koa';
 export default class OrkaBuilder {
   options: Partial<OrkaOptions>;
   config: any;
+  defaultRouter: ReturnType<typeof router>;
   middlewares: Middleware<any>[];
   koaTasks: ((
     app: Koa<any, {}>,
@@ -146,7 +147,8 @@ export default class OrkaBuilder {
     return this.use(() => {
       let routes = require(path.resolve(m));
       routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
-      return router(routes);
+      this.defaultRouter = router(routes);
+      return this.defaultRouter;
     });
   }
 
