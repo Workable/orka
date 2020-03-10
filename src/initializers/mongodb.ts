@@ -4,6 +4,8 @@ import * as lodash from 'lodash';
 
 const logger = getLogger('orka.mongodb');
 
+let connection: mongoose.Connection;
+
 function mongodbUrl(config) {
   return config.mongodb && config.mongodb.url;
 }
@@ -22,6 +24,7 @@ export default function mongodb(config, mongoOnConnected = () => undefined) {
   });
 
   mongoose.connect(dbUrl, options);
+  connection = mongoose.connection;
   const db = mongoose.connection;
 
   db.on('connected', () => {
@@ -35,3 +38,14 @@ export default function mongodb(config, mongoOnConnected = () => undefined) {
     throw err;
   });
 }
+
+export const getConnection = (
+  err: () => any = () => {
+    throw new Error('mongodb is not initialized');
+  }
+) => {
+  if (!connection) {
+    err();
+  }
+  return connection;
+};

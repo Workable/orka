@@ -1,6 +1,6 @@
 const { orka } = require('../../build');
 
-orka({
+const w = orka({
   beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
@@ -14,4 +14,10 @@ orka({
     const config = require('./config');
     console.log(`Going to start env: ${config.nodeEnv}`);
   }
-}).start();
+});
+
+if (!module.parent) {
+  w.start();
+}
+
+module.exports = w;
