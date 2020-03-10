@@ -123,3 +123,22 @@ If you're going to use kafka from a MacOS, you'll need to add the following to y
 export LDFLAGS="-L/usr/local/opt/libiconv/lib"
 export CPPFLAGS="-I/usr/local/opt/libiconv/include"
 ```
+
+## Health Middleware
+It supports a health middleware that currently checks the availablity of mongo
+configuration and responds wheather the connectivity with the underlying database is stable. This is essential for liveness probes of several cloud providers such as K8s.
+
+Example route configuration
+
+```js
+const { health } = require('../../build/middlewares');
+
+module.exports = {
+  get: {
+    '/health': health, 
+    '/users': async (ctx, next) => {
+      ctx.body = await User.find();
+    }
+  }
+};
+```
