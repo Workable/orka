@@ -131,7 +131,7 @@ configuration and responds wheather the connectivity with the underlying databas
 Example route configuration
 
 ```js
-const { health } = require('../../build/middlewares');
+const { health } = require('@workablehr/orka/middlewares');
 
 module.exports = {
   get: {

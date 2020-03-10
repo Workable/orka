@@ -1,5 +1,5 @@
 const User = require('./user');
-const { middlewares: {health} } = require('../../build');
+const { health } = require('../../build/middlewares');
 
 module.exports = {
   get: {
