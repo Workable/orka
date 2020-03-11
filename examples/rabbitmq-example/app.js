@@ -1,8 +1,7 @@
 const { orka } = require('../../build');
-const config = require('./config');
 const ExampleHandler = require('./example-handler');
 
-orka({
+const w = orka({
   beforeMiddleware: () => [
     async (ctx, next) => {
       ctx.body = 'default body';
@@ -12,12 +11,17 @@ orka({
   diamorphosis: { configFolder: './examples/rabbitmq-example' },
   routesPath: './examples/rabbitmq-example/routes.js',
   logoPath: './examples/simple-example/logo.txt',
-  beforeStart: () => {
-    const config = require('./config');
+  beforeStart: config => {
     console.log(`Going to start env: ${config.nodeEnv}`);
   },
   rabbitOnConnected: () => {
     console.log('Custom rabbitOnConnected');
     new ExampleHandler('example_queue');
   }
-}).start();
+});
+
+if (!module.parent) {
+  w.start();
+}
+
+module.exports = w;

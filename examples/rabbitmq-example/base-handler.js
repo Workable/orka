@@ -1,10 +1,10 @@
 /* tslint:disable:no-empty */
 const { BaseQueueHandler } = require('rabbit-queue');
 const { getRabbit } = require('../../build');
-const config = require('./config');
 
 class BaseHandler extends BaseQueueHandler {
   constructor(queueName, logEnabled = true) {
+    const config = require('./config');
     super(queueName, getRabbit(), {
       logEnabled,
       retries: config.queue.maxRetries,
