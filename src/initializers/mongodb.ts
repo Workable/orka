@@ -25,7 +25,6 @@ export default function mongodb(config, mongoOnConnected = () => undefined) {
 
   mongoose.connect(dbUrl, options);
   connection = mongoose.connection;
-  console.log('setting mongo connection');
   const db = mongoose.connection;
 
   db.on('connected', () => {
