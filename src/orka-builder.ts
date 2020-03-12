@@ -54,7 +54,7 @@ export default class OrkaBuilder {
   }
 
   useDefaults() {
-    this.use(() => bodyParser());
+    this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => riviere(this.config, this.options));
     this.use(() => this.errorHandler(this.config, this.options));
     this.use(
