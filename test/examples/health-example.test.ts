@@ -20,6 +20,7 @@ describe('Health examples', () => {
       delete require.cache[require.resolve(serverPath)];
       server = require(serverPath);
       await server.start();
+      await new Promise(t => setTimeout(t, 1000));
     });
 
     it('/health returns ok', async () => {
