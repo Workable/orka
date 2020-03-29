@@ -10,3 +10,4 @@ export { getKafka } from './initializers/kafka';
 export { getRabbit } from './initializers/rabbitmq';
 export { getRedis, createRedisConnection } from './initializers/redis';
 export { middlewares };
+export { validateBody, validateQueryString } from './initializers/koa/validate-params';
