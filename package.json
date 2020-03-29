@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@google-cloud/debug-agent": "^4.2.1",
+    "@hapi/joi": "^17.1.0",
     "@workablehr/riviere": "^1.6.0",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.1",
