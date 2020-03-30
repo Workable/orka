@@ -38,8 +38,8 @@ config = {
     url:'',
     options: {
       tls: {     // If those fileds are empty they will not be passed in
-        ca: [],  // Redis driver. This way you can have the same app working 
-        cert: '',// with a redis that support tls and a redis that doesn't with 
+        ca: [],  // Redis driver. This way you can have the same app working
+        cert: '',// with a redis that support tls and a redis that doesn't with
         key: ''  // environment variable changes only.
       }
     }
@@ -116,7 +116,7 @@ To run the examples:
 - npm run build
 - you should be ready to run one of the examples locally. E.g.:
   `node examples/simple-example/app.js`
-  
+
 ## Kafka
 If you're going to use kafka from a MacOS, you'll need to add the following to your bash_profile/zshrc file
 ```
@@ -135,10 +135,33 @@ const { middlewares: { health } } = require('@workablehr/orka');
 
 module.exports = {
   get: {
-    '/health': health, 
+    '/health': health,
     '/users': async (ctx, next) => {
       ctx.body = await User.find();
     }
   }
+};
+```
+
+## ValidateBody and ValidateQueryString Middlewares
+It supports validation middlewares for both body or query string parameters
+using the joi validation module. @hapi/joi is now a dependency of orka.
+
+Example route configuration
+
+```js
+const { middlewares: { validateBody, validateQueryString } } = require('@workablehr/orka');
+
+module.exports = {
+  get: {
+    '/users': [validateQueryString(SOME_SCHEMA), async (ctx, next) => {
+      // Do something
+    }]
+  },
+  post: {
+    '/users': [validateBody(SOME_SCHEMA), async (ctx, next) => {
+      // Do something
+    }]
+  },
 };
 ```
