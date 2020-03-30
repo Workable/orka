@@ -63,6 +63,14 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Validation example",
+      "program": "${workspaceFolder}/examples/validation-example/app.js",
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "preLaunchTask": "build"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mocha Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
