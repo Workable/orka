@@ -1,7 +1,7 @@
 import 'should';
 import * as sinon from 'sinon';
 import * as Joi from '@hapi/joi';
-import { validateBody, validateQueryString } from '../../../src/initializers/koa/validate-params';
+import { validateBody, validateQueryString } from '../../../src/middlewares/validate-params';
 
 const sandbox = sinon.createSandbox();
 
