@@ -1,4 +1,6 @@
-const { validateQueryString, validateBody } = require('../../build');
+const {
+  middlewares: { validateQueryString, validateBody }
+} = require('../../build');
 const Joi = require('@hapi/joi');
 
 const schema = Joi.object().keys({

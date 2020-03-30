@@ -1,6 +1,6 @@
 import 'should';
 import * as sinon from 'sinon';
-import { ValidationError } from '../../../../src/initializers/koa/errors/validation-error';
+import { ValidationError } from '../../../../src/middlewares/errors/validation-error';
 
 const sandbox = sinon.createSandbox();
 
