@@ -8,13 +8,18 @@ export default abstract class BaseKafkaHandler<Input, Output> {
   topic: string;
   batchSize: number;
   logger: Logger;
+  autoOffsetReset: string;
 
-  constructor(kafka: Kafka, options: { topic: string; logger: Logger; batchSize?: number }) {
-    const { topic, batchSize, logger } = options;
+  constructor(
+    kafka: Kafka,
+    options: { topic: string; logger: Logger; batchSize?: number; autoOffsetReset?: 'earliest' | 'latest' }
+  ) {
+    const { topic, batchSize, logger, autoOffsetReset } = options;
     this.topic = topic;
     this.batchSize = batchSize || 1;
+    this.autoOffsetReset = autoOffsetReset || 'earliest';
     this.logger = logger;
-    this.consumer = kafka.createConsumer(this.topic);
+    this.consumer = kafka.createConsumer(this.topic, <'earliest' | 'latest'>this.autoOffsetReset);
     this.consumer.connect().then(() => {
       this.logger.info(`Kafka consumer connected to topic: ${this.topic}`);
       this.consume().catch(err => this.logger.error(err));
