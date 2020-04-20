@@ -24,6 +24,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.port = config.port || 3000;
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
   config.traceHeaderName = config.traceHeaderName || 'X-Request-Id';
+  config.visitor = config.visitor || { cookie: 'wmc' };
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
   config.riviere = {
     enabled: true,
