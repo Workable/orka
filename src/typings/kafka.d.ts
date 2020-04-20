@@ -182,6 +182,7 @@ export interface KafkaMessage {
   offset: number;
   key: Buffer | string;
   value: Buffer | string | any;
+  headers: { [key: string]: string }[];
   size: number;
   timestamp: number;
 }
@@ -304,7 +305,7 @@ export class NProducer {
     _partition?: number,
     _key?: string | Buffer,
     _partitionKey?: string,
-    _opaqueKey?: string
+    _headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   buffer(
@@ -313,7 +314,8 @@ export class NProducer {
     payload: object,
     partition?: number,
     version?: number,
-    partitionKey?: string
+    partitionKey?: string,
+    headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   bufferFormat(
@@ -322,7 +324,8 @@ export class NProducer {
     payload: object,
     version?: number,
     compressionType?: number,
-    partitionKey?: string
+    partitionKey?: string,
+    headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   bufferFormatPublish(
@@ -332,7 +335,8 @@ export class NProducer {
     version?: number,
     _?: null,
     partitionKey?: string,
-    partition?: number
+    partition?: number,
+    headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   bufferFormatUpdate(
@@ -342,7 +346,8 @@ export class NProducer {
     version?: number,
     _?: null,
     partitionKey?: string,
-    partition?: number
+    partition?: number,
+    headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   bufferFormatUnpublish(
@@ -352,7 +357,8 @@ export class NProducer {
     version?: number,
     _?: null,
     partitionKey?: string,
-    partition?: number
+    partition?: number,
+    headers?: { [key: string]: string }[]
   ): Promise<MessageReturn>;
 
   pause(): void;

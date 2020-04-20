@@ -20,3 +20,5 @@ export const getKafka = () => {
   }
   return kafka;
 };
+
+export { Kafka };

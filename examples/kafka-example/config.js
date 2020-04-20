@@ -22,13 +22,13 @@ module.exports = {
     debug: true,
     consumer: {
       topics: {
-        name: 'orka.example.consume',
+        name: 'orka.example.test',
         batchSize: 10
       }
     },
     producer: {
       topics: {
-        test: 'orka.example.produce'
+        test: 'orka.example.test'
       }
     }
   }
