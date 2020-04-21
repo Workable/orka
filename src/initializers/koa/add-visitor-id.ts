@@ -11,7 +11,7 @@ export default function(config): Middleware {
     }
     const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie);
     const { cookie_id: visitor } = decode(cookie);
-    ctx.state = { ...(ctx.state || {}), visitor };
+    ctx.state.visitor = visitor;
     return await next();
   };
 }
