@@ -84,6 +84,7 @@
     "mocha": "^6.2.2",
     "mock-require": "^3.0.3",
     "newrelic": "*",
+    "node-rdkafka": "^2.8.1",
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
     "should": "^13.2.3",
