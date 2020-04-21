@@ -54,7 +54,7 @@ describe('error-handler', function() {
       params: { requestId: '1', body: {}, query: {} }
     });
     errorHandler.args[0][1].should.eql(error);
-    loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo', visitor: undefined } }]]);
+    loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo' } }]]);
   });
 
   it('tests error code blacklisting', () => {

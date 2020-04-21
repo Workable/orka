@@ -4,10 +4,8 @@ export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURICompon
 
 export default function(config): Middleware {
   return async function addVisitorId(ctx: Context, next: () => void) {
-    switch (ctx.path) {
-      case '/health':
-        return await next();
-      default:
+    if (ctx.path === '/health' || !config.visitor || !config.visitor.cookie) {
+      return await next();
     }
     const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie);
     const { cookie_id: visitor } = decode(cookie);
