@@ -35,9 +35,9 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
 
   options.appName = options.appName || (config.app && config.app.name);
 
-  if (require.cache[require.resolve('koa')]) logger.warn('Koa was initialized');
-  if (require.cache[require.resolve('mongoose')]) logger.warn('Mongoose was initialized');
-  if (require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized');
+  if (require.cache[require.resolve('koa')]) logger.warn('Koa was initialized before orka');
+  if (require.cache[require.resolve('mongoose')]) logger.warn('Mongoose was initialized before orka');
+  if (require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized before orka');
 
   // Always call newrelic
   newrelic(config, options.appName);
