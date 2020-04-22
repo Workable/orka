@@ -5,16 +5,7 @@ import 'should';
 const sandbox = sinon.createSandbox();
 
 describe('Test rabbitmq connection', function() {
-  const config = {
-    queue: {
-      prefetch: 100,
-      url: 'amqp://localhost',
-      frameMax: 0x1000,
-      maxRetries: 0,
-      retryDelay: 1000,
-      connectDelay: 5000
-    }
-  };
+  let config;
   const orkaOptions = {
     appName: 'test'
   };
@@ -23,6 +14,16 @@ describe('Test rabbitmq connection', function() {
   let getRabbit;
 
   beforeEach(async function() {
+    config = {
+      queue: {
+        prefetch: 100,
+        url: 'amqp://localhost',
+        frameMax: 0x1000,
+        maxRetries: 0,
+        retryDelay: 1000,
+        connectDelay: 5000
+      }
+    };
     onStub = sandbox.stub();
     stub = sandbox.stub().returns({
       on: onStub
@@ -48,8 +49,39 @@ describe('Test rabbitmq connection', function() {
   });
 
   it('should not connect to rabbitmq, already connected', () => {
+    getRabbit(config, orkaOptions);
+    getRabbit(config, orkaOptions);
+    stub.args.should.eql([
+      [
+        'amqp://localhost?frameMax=4096',
+        {
+          prefetch: 100,
+          prefix: 'test',
+          scheduledPublish: true,
+          socketOptions: {
+            servername: 'localhost'
+          }
+        }
+      ]
+    ]);
+  });
+
+  it('should ovewrite options from config', () => {
+    config.queue.options = {};
+    config.queue.options.scheduledPublish = false;
     const rabbit = getRabbit(config, orkaOptions);
-    const rabbit_second = getRabbit(config, orkaOptions);
-    stub.calledOnce.should.be.true();
+    stub.args.should.eql([
+      [
+        'amqp://localhost?frameMax=4096',
+        {
+          prefetch: 100,
+          prefix: 'test',
+          scheduledPublish: false,
+          socketOptions: {
+            servername: 'localhost'
+          }
+        }
+      ]
+    ]);
   });
 });
