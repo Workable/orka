@@ -1,9 +1,10 @@
 import { Context } from 'koa';
-import { getConnection } from '../initializers/mongodb';
 import { isHealthy } from '../initializers/rabbitmq';
-import * as mongoose from 'mongoose';
 
 export default async function(ctx: Context) {
+  const mongoose = await import('mongoose');
+  const { getConnection } = await import('../initializers/mongodb');
+
   // tslint:disable-next-line: no-empty
   const mongoConnection = getConnection(() => {});
   // tslint:disable-next-line: no-empty
