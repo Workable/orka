@@ -2,6 +2,7 @@ import * as Url from 'url';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 import * as RabbitType from 'rabbit-queue';
+import * as lodash from 'lodash';
 
 const logger = getLogger('orka.rabbit');
 
@@ -24,12 +25,15 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     servername: Url.parse(url).hostname
   };
 
-  connection = new Rabbit(url, {
-    socketOptions,
-    scheduledPublish: true,
-    prefetch: config.queue.prefetch,
-    prefix: orkaOptions.appName
-  });
+  connection = new Rabbit(
+    url,
+    lodash.defaultsDeep(config.queue.options, {
+      socketOptions,
+      scheduledPublish: true,
+      prefetch: config.queue.prefetch,
+      prefix: orkaOptions.appName
+    })
+  );
 
   connection.on('connected', () => {
     healthy = true;
