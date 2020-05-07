@@ -8,8 +8,12 @@ let tmp = name => {
 };
 
 export let getLogger = name => {
-  return tmp(name);
+  if (loggers[name]) return loggers[name];
+
+  loggers[name] = tmp(name);
+  return loggers[name];
 };
+const loggers = {};
 
 export default async config => {
   let appenders = {} as any;
