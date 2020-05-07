@@ -5,6 +5,7 @@ import * as RabbitType from 'rabbit-queue';
 import * as lodash from 'lodash';
 
 const logger = getLogger('orka.rabbit');
+const rabbitLogger = getLogger('RMQ');
 
 let connection: RabbitType.Rabbit;
 let shouldReconnect: Boolean = true;
@@ -48,6 +49,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       setTimeout(() => connection.reconnect(), config.queue.connectDelay);
     }
   });
+  connection.on('log', (component, level, ...args) => rabbitLogger[level](component, ...args));
 };
 
 export const getRabbit = () => {

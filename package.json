@@ -63,7 +63,7 @@
     "lodash": "^4.17.15",
     "log4js": "^4.2.0",
     "mongoose": "^5.7.11",
-    "rabbit-queue": "^4.6.0",
+    "rabbit-queue": "*",
     "redis": "^2.8.0",
     "source-map-support": "^0.5.16",
     "tmp": "^0.1.0",
