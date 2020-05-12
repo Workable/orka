@@ -13,6 +13,7 @@ import { createRedisConnection } from './initializers/redis';
 import { getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
+import addVisitorId from './initializers/koa/add-visitor-id';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
 import assert = require('assert');
@@ -65,6 +66,7 @@ export default class OrkaBuilder {
     );
     this.useCors();
     this.use(() => addRequestId(this.config));
+    this.use(() => addVisitorId(this.config));
     return this;
   }
 
