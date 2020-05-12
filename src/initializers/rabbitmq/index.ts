@@ -48,6 +48,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       setTimeout(() => connection.reconnect(), config.queue.connectDelay);
     }
   });
+  connection.on('log', (component, level, ...args) => getLogger(component)[level](component, ...args));
 };
 
 export const getRabbit = () => {
