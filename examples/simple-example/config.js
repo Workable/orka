@@ -4,6 +4,6 @@ module.exports = {
     name: 'foo'
   },
   cors: {
-    starPrefixes: ['/api/allowAll']
+    publicPrefixes: ['/api/allowAll']
   }
 };

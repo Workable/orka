@@ -69,7 +69,8 @@ export default class OrkaBuilder {
   }
 
   useCors(
-    { credentials = undefined, allowedOrigins = this.config.allowedOrigins, starPrefixes = [] } = this.config.cors || {}
+    { credentials = undefined, allowedOrigins = this.config.allowedOrigins, publicPrefixes = [] } = this.config.cors ||
+      {}
   ) {
     const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
 
@@ -77,7 +78,7 @@ export default class OrkaBuilder {
       cors({
         origin: (ctx: Context) => {
           const origin = ctx.request.headers.origin || ctx.request.origin;
-          if (starPrefixes.some(p => ctx.path.startsWith(p))) return '*';
+          if (publicPrefixes.some(p => ctx.path.startsWith(p))) return '*';
           return allowedOrigin.test(origin) ? origin : allowedOrigins[0];
         },
         credentials
