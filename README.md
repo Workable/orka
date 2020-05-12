@@ -56,6 +56,7 @@ config = {
   cors: {
     allowedOrigins: ['localhost', 'lvh.me'],
     credentials: true, // Adds cors needed for exchanging cookies over https.
+    starPrefixes: ['/publicEndpoints/foo/bar'] // ctx.path prefixes that will return access-control-allow-origin: *
     …
   },
   traceHeaderName: 'X-Request-Id', // for logging in http requests

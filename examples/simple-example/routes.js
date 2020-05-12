@@ -11,7 +11,8 @@ module.exports = {
     '/logError': async (ctx, next) => {
       getLogger('log').error(new Error('test'), 'this was a test error', { context: 'foo' });
       ctx.throw(new Error('test'), 505);
-    }
+    },
+    '/api/allowAll/accounts/:subdomain': async (ctx, next) => (ctx.body = 'ok')
   },
   policy: {
     '/testPolicy': async (ctx, next) => {
