@@ -11,6 +11,7 @@ import mongodb from './initializers/mongodb';
 import clouddebugger from './initializers/clouddebugger';
 import { createRedisConnection } from './initializers/redis';
 import { getLogger } from './initializers/log4js';
+import bull from './initializers/bull';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import addVisitorId from './initializers/koa/add-visitor-id';
@@ -134,6 +135,11 @@ export default class OrkaBuilder {
     return this;
   }
 
+  withBull() {
+    this.queue.push(() => bull(this.config));
+    return this;
+  }
+
   withMongoDB(mongoOnConnected = () => undefined) {
     this.queue.push(() => mongodb(this.config, mongoOnConnected));
     return this;
@@ -195,7 +201,7 @@ export default class OrkaBuilder {
       m.forEach(__ => this.middlewares.push(__));
     }
     logger.info(
-      `Using ${this.middlewares.length} middleware: [${this.middlewares.map(x => x.name || '').join(', ')}]...`
+      `Using ${this.middlewares.length} middleware: [${this.middlewares.map((x) => x.name || '').join(', ')}]...`
     );
     return this;
   }

@@ -5,7 +5,8 @@ import { OrkaOptions } from './typings/orka';
 
 const fromOptions = (options: Partial<OrkaOptions>) => {
   if (options.builder) {
-    options.builder.options = lodash.defaultsDeep(options, options.builder.options, defaults);
+    options.builder.options = lodash.defaultsDeep(options, options.builder.options, defaults
+    );
   }
   return (options.builder || builder(lodash.defaultsDeep(options, defaults)))
     .forTypescript(options.typescript)
@@ -19,6 +20,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withKafka()
     .withMongoDB(options.mongoOnConnected)
     .withRedis()
+    .withBull()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };
