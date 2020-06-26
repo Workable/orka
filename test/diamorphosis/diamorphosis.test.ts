@@ -1,7 +1,7 @@
 import diamorphosis from '../../src/initializers/diamorphosis';
 import { OrkaOptions } from '../../src/typings/orka';
 import * as path from 'path';
-import { assert } from 'console';
+import * as assert from 'assert';
 
 describe('Diamorphosis Test', () => {
   describe('should set environment variables', () => {
@@ -61,9 +61,7 @@ describe('Diamorphosis Test', () => {
     });
 
     it('noop if kafka not exist in config', () => {
-      process.env = {
-        KAFKA_PRODUCER_BROKERS: 'confluent1,confluent2'
-      };
+      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
 
       const config = require(options.diamorphosis.configPath);
       delete config.kafka;
@@ -73,11 +71,9 @@ describe('Diamorphosis Test', () => {
     });
 
     it('kafka.producer options should set if exist in process.env', () => {
-      process.env = {
-        KAFKA_PRODUCER_BROKERS: 'confluent1,confluent2',
-        KAFKA_PRODUCER_SASL_USERNAME: 'producer username',
-        KAFKA_PRODUCER_SASL_PASSWORD: 'producer password'
-      };
+      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+      process.env.KAFKA_PRODUCER_SASL_USERNAME = 'producer username';
+      process.env.KAFKA_PRODUCER_SASL_PASSWORD = 'producer password';
 
       const config = require(options.diamorphosis.configPath);
 
