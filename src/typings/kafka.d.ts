@@ -11,6 +11,18 @@ export interface KafkaConfig {
   groupId: string;
   clientId: string;
   brokers: string[];
+  producer: {
+    brokers: string[];
+    certificates?: {
+      key: string;
+      cert: string;
+      ca: string;
+    };
+    sasl?: {
+      username: string;
+      password: string;
+    };
+  };
 }
 
 export interface KafkaHealthConfig {

@@ -1,6 +1,7 @@
 import diamorphosis from '../../src/initializers/diamorphosis';
 import { OrkaOptions } from '../../src/typings/orka';
 import * as path from 'path';
+import * as assert from 'assert';
 
 describe('Diamorphosis Test', () => {
   describe('should set environment variables', () => {
@@ -57,6 +58,42 @@ describe('Diamorphosis Test', () => {
       config.app.env.should.equal(config.nodeEnv);
       config.nodeEnv.should.equal(process.env.NODE_ENV);
       config.app.env.should.equal(process.env.NODE_ENV);
+    });
+
+    it('noop if kafka not exist in config', () => {
+      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+
+      const config = require(options.diamorphosis.configPath);
+      delete config.kafka;
+      diamorphosis(config, options);
+
+      assert(config.kafka === undefined);
+    });
+
+    it('kafka.producer options should set if exist in process.env', () => {
+      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+      process.env.KAFKA_PRODUCER_SASL_USERNAME = 'producer username';
+      process.env.KAFKA_PRODUCER_SASL_PASSWORD = 'producer password';
+
+      const config = require(options.diamorphosis.configPath);
+
+      diamorphosis(config, options);
+
+      config.kafka.producer.should.eql({
+        brokers: ['confluent1', 'confluent2'],
+        certificates: {
+          ca: '',
+          cert: '',
+          key: ''
+        },
+        sasl: {
+          username: 'producer username',
+          password: 'producer password'
+        },
+        topics: {
+          topic1: 'topic1'
+        }
+      });
     });
   });
 

@@ -29,7 +29,10 @@ describe('kafka class', () => {
       },
       groupId: 'groupId',
       clientId: 'clientId',
-      brokers: []
+      brokers: [],
+      producer: {
+        brokers: ['broker1']
+      }
     });
     await kafka.connect();
     producerStub.connect.calledOnce.should.eql(true);

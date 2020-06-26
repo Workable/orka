@@ -32,8 +32,35 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     headersRegex: '^X-.*',
     ...config.riviere
   };
+  if (config.kafka) {
+    config.kafka.producer = {
+      brokers: [...(config.kafka.producer?.brokers || [])],
+      certificates: {
+        key: '',
+        cert: '',
+        ca: '',
+        ...config.kafka.producer?.certificates
+      },
+      sasl: {
+        username: '',
+        password: '',
+        ...config.kafka.producer?.sasl
+      },
+      ...config.kafka.producer
+    };
+  }
   diamorphosis(orkaOptions.diamorphosis);
   config.app.env = config.app.env || config.nodeEnv;
+
+  // Override kafka producer config with defaults if brokers is not set
+  if (config.kafka && (!config.kafka.producer?.brokers || config.kafka.producer.brokers.length === 0)) {
+    config.kafka.producer = {
+      ...config.kafka.producer,
+      brokers: config.kafka.brokers,
+      certificates: config.kafka.certificates,
+      sasl: config.kafka.sasl
+    };
+  }
 
   if (config.log.console === '') {
     config.log.console = !config.log.json;
