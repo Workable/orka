@@ -1,6 +1,7 @@
-import diamorphosis from '../../src/initializers/diamorphosis';
+import diamorphosis, { producerConfigOverrides } from '../../src/initializers/diamorphosis';
 import { OrkaOptions } from '../../src/typings/orka';
 import * as path from 'path';
+import { assert } from 'console';
 
 describe('Diamorphosis Test', () => {
   describe('should set environment variables', () => {
@@ -57,6 +58,46 @@ describe('Diamorphosis Test', () => {
       config.app.env.should.equal(config.nodeEnv);
       config.nodeEnv.should.equal(process.env.NODE_ENV);
       config.app.env.should.equal(process.env.NODE_ENV);
+    });
+
+    it('noop if kafka not exist in config', () => {
+      process.env = {
+        KAFKA_PRODUCER_BROKERS: 'confluent1,confluent2'
+      };
+
+      const config = require(options.diamorphosis.configPath);
+      delete config.kafka;
+      diamorphosis(config, options);
+
+      assert(config.kafka === undefined);
+    });
+
+    it('kafka.producer options should set if exist in process.env', () => {
+      process.env = {
+        KAFKA_PRODUCER_BROKERS: 'confluent1,confluent2',
+        KAFKA_PRODUCER_SASL_USERNAME: 'producer username',
+        KAFKA_PRODUCER_SASL_PASSWORD: 'producer password'
+      };
+
+      const config = require(options.diamorphosis.configPath);
+
+      diamorphosis(config, options);
+
+      config.kafka.producer.should.eql({
+        brokers: ['confluent1', 'confluent2'],
+        certificates: {
+          ca: undefined,
+          cert: undefined,
+          key: undefined
+        },
+        sasl: {
+          username: 'producer username',
+          password: 'producer password'
+        },
+        topics: {
+          topic1: 'topic1'
+        }
+      });
     });
   });
 
@@ -200,6 +241,58 @@ describe('Diamorphosis Test', () => {
         config.log.console.should.equal(true);
         config.log.json.should.equal(true);
         config.riviere.styles.should.eql(['json']);
+      });
+    });
+  });
+
+  describe('producerConfigOverrides', function() {
+    let config = {
+      kafka: {
+        brokers: ['confluent'],
+        certificates: {
+          ca: 'ca',
+          key: 'key',
+          cert: 'cert'
+        },
+        producer: {
+          option: 'an option'
+        }
+      }
+    };
+    beforeEach(() => {
+      process.env = {};
+    });
+    it('should return defaults if KAFKA_PRODUCER_BROKERS is not defined', () => {
+      producerConfigOverrides(config).should.eql({
+        option: 'an option',
+        brokers: ['confluent'],
+        certificates: {
+          ca: 'ca',
+          key: 'key',
+          cert: 'cert'
+        },
+        sasl: undefined
+      });
+    });
+
+    it('should return producer env if KAFKA_PRODUCER_BROKERS is defined', () => {
+      process.env = {
+        KAFKA_PRODUCER_BROKERS: 'aiven1,aiven2',
+        KAFKA_PRODUCER_SASL_USERNAME: 'producer username',
+        KAFKA_PRODUCER_SASL_PASSWORD: 'producer password'
+      };
+      producerConfigOverrides(config).should.eql({
+        brokers: process.env.KAFKA_PRODUCER_BROKERS.split(','),
+        option: 'an option',
+        sasl: {
+          username: process.env.KAFKA_PRODUCER_SASL_USERNAME,
+          password: process.env.KAFKA_PRODUCER_SASL_PASSWORD
+        },
+        certificates: {
+          ca: undefined,
+          cert: undefined,
+          key: undefined
+        }
       });
     });
   });

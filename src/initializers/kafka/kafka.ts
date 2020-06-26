@@ -15,14 +15,14 @@ export default class Kafka {
   }
 
   public async connect() {
-    const { certificates = {}, sasl = {}, brokers } = this.options;
+    const { certificates = {}, sasl = {}, brokers, producer } = this.options;
     const authInput = { ...certificates, ...sasl };
     this.authOptions = authOptions(authInput);
     this.producer = this.createProducer();
     const logger = getLogger('orka.kafka.connect');
     this.producer.on('error', err => logger.error(err));
     await this.producer.connect();
-    logger.info(`Kafka connected ${brokers.join(',')}`);
+    logger.info(`Kafka producer connected ${producer?.brokers?.join(', ') || brokers.join(', ')}`);
   }
 
   public async send(
@@ -66,17 +66,24 @@ export default class Kafka {
   }
 
   public createProducer() {
-    const { clientId, brokers } = this.options;
+    const { clientId, producer } = this.options;
+    const producerAuthOptions = authOptions({
+      key: producer.certificates?.key,
+      cert: producer.certificates?.cert,
+      ca: producer.certificates?.ca,
+      username: producer.sasl?.username,
+      password: producer.sasl?.password
+    });
     const config = {
       logger: getLogger('orka.kafka.producer.internal'),
       noptions: {
-        'metadata.broker.list': brokers.join(','),
+        'metadata.broker.list': producer.brokers.join(','),
         'client.id': clientId,
         'socket.keepalive.enable': true,
         'api.version.request': true,
         'queue.buffering.max.ms': 1000,
         'log.connection.close': false,
-        ...this.authOptions
+        ...producerAuthOptions
       },
       tconf: {
         'request.required.acks': 1
