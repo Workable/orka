@@ -34,7 +34,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   };
   if (config.kafka) {
     config.kafka.producer = {
-      brokers: [],
+      brokers: [...config.kafka.producer?.brokers],
       certificates: {
         key: '',
         cert: '',
