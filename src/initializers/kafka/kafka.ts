@@ -43,7 +43,7 @@ export default class Kafka {
     getLogger('orka.kafka.send').info(`partition(${_partition})[${offset}][${_key}] produced for topic ${topic}`);
   }
 
-  public createConsumer(topic: string, autoOffsetReset?: 'earliest' | 'latest') {
+  public createConsumer(topic: string | string[], autoOffsetReset?: 'earliest' | 'latest') {
     const { groupId, brokers } = this.options;
     const config = {
       groupId,
