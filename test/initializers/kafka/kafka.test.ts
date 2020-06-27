@@ -7,7 +7,12 @@ import * as fs from 'fs';
 const sandbox = sinon.createSandbox();
 
 describe('kafka class', () => {
-  const producerStub = { connect: sandbox.stub(), on: sandbox.stub(), send: sandbox.stub().returns({}) };
+  const producerStub = {
+    connect: sandbox.stub(),
+    getMetadata: sandbox.stub(),
+    on: sandbox.stub(),
+    send: sandbox.stub().returns({})
+  };
   const consumeStub = {};
   before(() => {
     sandbox.stub(fs, 'writeFileSync');
@@ -38,6 +43,7 @@ describe('kafka class', () => {
     producerStub.connect.calledOnce.should.eql(true);
     producerStub.on.calledOnce.should.eql(true);
     producerStub.connect.calledOnce.should.eql(true);
+    producerStub.getMetadata.calledOnce.should.eql(true);
     producerStub.on.calledWith('error').should.eql(true);
 
     await kafka.send('topic', 'msg');
