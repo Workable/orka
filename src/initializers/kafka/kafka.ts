@@ -9,6 +9,7 @@ export default class Kafka {
   private producer: NProducer;
   private options: KafkaConfig;
   private authOptions: any;
+  private _metadata: any;
 
   constructor(options: KafkaConfig) {
     this.options = options;
@@ -22,6 +23,7 @@ export default class Kafka {
     const logger = getLogger('orka.kafka.connect');
     this.producer.on('error', err => logger.error(err));
     await this.producer.connect();
+    this._metadata = await this.producer.getMetadata(5000);
     logger.info(`Kafka producer connected ${producer?.brokers?.join(', ') || brokers.join(', ')}`);
   }
 
@@ -43,7 +45,11 @@ export default class Kafka {
     getLogger('orka.kafka.send').info(`partition(${_partition})[${offset}][${_key}] produced for topic ${topic}`);
   }
 
-  public createConsumer(topic: string, autoOffsetReset?: 'earliest' | 'latest') {
+  public metadata() {
+    return this._metadata;
+  }
+
+  public createConsumer(topic: string | string[], autoOffsetReset?: 'earliest' | 'latest') {
     const { groupId, brokers } = this.options;
     const config = {
       groupId,

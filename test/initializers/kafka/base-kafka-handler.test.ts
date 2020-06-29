@@ -44,6 +44,17 @@ describe('base kafka handler class', async () => {
     sandbox.restore();
   });
 
+  it('should call consumer with multiple topics', async () => {
+    sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
+    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
+    const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+    const handler = new TestKafkaHandler(kafka, { topic: ['topic1', 'topic2'], logger, batchSize: 2 });
+    await new Promise(resolve => setTimeout(resolve, 10));
+    sandbox.assert.calledOnce(createConsumer);
+    sandbox.assert.calledWith(createConsumer, ['topic1', 'topic2']);
+    assertConsume();
+  });
+
   describe('with default autoOffsetReset', () => {
     it('should call correct methods with correct args', async () => {
       sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);

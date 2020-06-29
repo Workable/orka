@@ -5,14 +5,14 @@ import { NConsumer, KafkaMessage } from '../../typings/kafka';
 
 export default abstract class BaseKafkaHandler<Input, Output> {
   consumer: NConsumer;
-  topic: string;
+  topic: string | string[];
   batchSize: number;
   logger: Logger;
   autoOffsetReset: string;
 
   constructor(
     kafka: Kafka,
-    options: { topic: string; logger: Logger; batchSize?: number; autoOffsetReset?: 'earliest' | 'latest' }
+    options: { topic: string | string[]; logger: Logger; batchSize?: number; autoOffsetReset?: 'earliest' | 'latest' }
   ) {
     const { topic, batchSize, logger, autoOffsetReset } = options;
     this.topic = topic;
