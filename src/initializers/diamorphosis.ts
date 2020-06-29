@@ -27,6 +27,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.blacklistedErrorCodes = config.blacklistedErrorCodes || [404];
   config.riviere = {
     enabled: true,
+    inbound: {
+      request: {
+        enabled: false
+      }
+    },
     color: true,
     styles: [],
     headersRegex: '^X-.*',
