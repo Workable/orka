@@ -17,7 +17,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
     },
     inbound: {
       level: 'info',
-      enabled: config.riviere.enabled
+      enabled: config.riviere.enabled,
+      request: {
+        enabled: config.riviere.inbound.request.enabled
+      }
     } as any,
     errors: {
       enabled: config.riviere.enabled
