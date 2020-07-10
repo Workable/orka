@@ -13,7 +13,7 @@ export default async function(ctx: Context) {
   if ((!mongoConnection || mongoConnection.readyState === mongoose.Connection.STATES.connected) && isRabbitHealthy) {
     ctx.status = 200;
     ctx.body = {
-      env: OrkaBuilder.INSTANCE.config.env,
+      env: OrkaBuilder.INSTANCE.config.nodeEnv,
       version: process.env.npm_package_version
     };
   } else {
