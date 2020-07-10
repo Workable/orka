@@ -19,11 +19,14 @@ describe('Health middleware', function() {
   });
 
   it('returns 200 when mongo connection is ok and rabbitmq is healthy', async function() {
+    const version = process.env.npm_package_version;
+    process.env.npm_package_version = '2.44.0';
     const ctx = {} as Context;
     getConnectionStub.returns({ readyState: 1 });
     isHealthyStub.returns(true);
     await health(ctx);
     ctx.status.should.eql(200);
+    ctx.body.version.should.eql('v2.44.0');
   });
 
   it('returns 503 when mongo connection is down', async function() {
