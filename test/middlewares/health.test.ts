@@ -4,11 +4,12 @@ import 'should';
 import health from '../../src/middlewares/health';
 import * as mongodb from '../../src/initializers/mongodb';
 import * as rabbitmq from '../../src/initializers/rabbitmq';
+import OrkaBuilder from '../../src/orka-builder';
 
 const sandbox = sinon.createSandbox();
 
 describe('Health middleware', function() {
-  let getConnectionStub, isHealthyStub;
+  let getConnectionStub, isHealthyStub, orkaBuilderStub;
   beforeEach(function() {
     getConnectionStub = sandbox.stub(mongodb, 'getConnection');
     isHealthyStub = sandbox.stub(rabbitmq, 'isHealthy');
@@ -19,11 +20,17 @@ describe('Health middleware', function() {
   });
 
   it('returns 200 when mongo connection is ok and rabbitmq is healthy', async function() {
+    const version = process.env.npm_package_version;
+    process.env.npm_package_version = '2.44.0';
     const ctx = {} as Context;
     getConnectionStub.returns({ readyState: 1 });
+    OrkaBuilder.INSTANCE = { config: { nodeEnv: 'test' } } as any;
     isHealthyStub.returns(true);
     await health(ctx);
     ctx.status.should.eql(200);
+    ctx.body.version.should.eql('2.44.0');
+    ctx.body.env.should.eql('test');
+    process.env.npm_package_version = version;
   });
 
   it('returns 503 when mongo connection is down', async function() {
