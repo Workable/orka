@@ -23,6 +23,7 @@ import kafka from './initializers/kafka';
 import * as Koa from 'koa';
 
 export default class OrkaBuilder {
+  public static INSTANCE: OrkaBuilder;
   options: Partial<OrkaOptions>;
   config: any;
   defaultRouter: ReturnType<typeof router>;
@@ -42,6 +43,9 @@ export default class OrkaBuilder {
     this.koaTasks = [];
     this.errorHandler = errorHandler;
     this.queue = [];
+    if (!OrkaBuilder.INSTANCE) {
+      OrkaBuilder.INSTANCE = this;
+    }
   }
 
   use(

@@ -1,5 +1,6 @@
 import { Context } from 'koa';
 import { isHealthy } from '../initializers/rabbitmq';
+import OrkaBuilder from '../orka-builder';
 
 export default async function(ctx: Context) {
   const mongoose = await import('mongoose');
@@ -12,6 +13,7 @@ export default async function(ctx: Context) {
   if ((!mongoConnection || mongoConnection.readyState === mongoose.Connection.STATES.connected) && isRabbitHealthy) {
     ctx.status = 200;
     ctx.body = {
+      env: OrkaBuilder.INSTANCE.config.env,
       version: process.env.npm_package_version
     };
   } else {
