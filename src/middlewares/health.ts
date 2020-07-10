@@ -11,9 +11,8 @@ export default async function(ctx: Context) {
   const isRabbitHealthy = isHealthy();
   if ((!mongoConnection || mongoConnection.readyState === mongoose.Connection.STATES.connected) && isRabbitHealthy) {
     ctx.status = 200;
-    const v = process.env.npm_package_version;
     ctx.body = {
-      version: v ? `v${v}` : null
+      version: process.env.npm_package_version
     };
   } else {
     ctx.status = 503;

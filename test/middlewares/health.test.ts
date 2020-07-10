@@ -26,7 +26,8 @@ describe('Health middleware', function() {
     isHealthyStub.returns(true);
     await health(ctx);
     ctx.status.should.eql(200);
-    ctx.body.version.should.eql('v2.44.0');
+    ctx.body.version.should.eql('2.44.0');
+    process.env.npm_package_version = version;
   });
 
   it('returns 503 when mongo connection is down', async function() {
