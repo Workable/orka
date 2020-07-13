@@ -26,17 +26,21 @@ describe('Health middleware', function() {
     getConnectionStub.returns({ readyState: 1 });
     OrkaBuilder.INSTANCE = { config: { nodeEnv: 'test' } } as any;
     isHealthyStub.returns(true);
-    await health(ctx);
+    const next = sandbox.stub();
+    await health(ctx, next);
     ctx.status.should.eql(200);
     ctx.body.version.should.eql('2.44.0');
     ctx.body.env.should.eql('test');
+    next.called.should.be.true();
     process.env.npm_package_version = version;
   });
 
   it('returns 503 when mongo connection is down', async function() {
     const ctx = {} as Context;
     getConnectionStub.returns({ readyState: 2 });
-    await health(ctx);
+    const next = sandbox.stub();
+    await health(ctx, next);
+    next.called.should.be.true();
     ctx.status.should.eql(503);
   });
 
@@ -44,7 +48,9 @@ describe('Health middleware', function() {
     const ctx = {} as Context;
     getConnectionStub.returns({ readyState: 1 });
     isHealthyStub.returns(false);
-    await health(ctx);
+    const next = sandbox.stub();
+    await health(ctx, next);
+    next.called.should.be.true();
     ctx.status.should.eql(503);
   });
 });
