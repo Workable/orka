@@ -29,7 +29,7 @@ describe('Health middleware', function() {
     const next = sandbox.stub();
     await health(ctx, next);
     ctx.status.should.eql(200);
-    ctx.body.version.should.eql('2.44.0');
+    ctx.body.version.should.eql('v2.44.0');
     ctx.body.env.should.eql('test');
     next.called.should.be.true();
     process.env.npm_package_version = version;
