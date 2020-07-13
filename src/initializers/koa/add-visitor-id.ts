@@ -10,7 +10,7 @@ export default function(config): Middleware {
     if (ctx.path === '/health' || !config.visitor || !config.visitor.cookie) {
       return await next();
     }
-    const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie)
+    const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie);
     try {
       const { cookie_id: visitor } = decode(cookie);
       ctx.state.visitor = visitor;
