@@ -2,7 +2,7 @@ import { Context } from 'koa';
 import { isHealthy } from '../initializers/rabbitmq';
 import OrkaBuilder from '../orka-builder';
 
-export default async function(ctx: Context) {
+export default async function(ctx: Context, next: () => Promise<null>) {
   const mongoose = await import('mongoose');
   const { getConnection } = await import('../initializers/mongodb');
 
@@ -19,4 +19,5 @@ export default async function(ctx: Context) {
   } else {
     ctx.status = 503;
   }
+  await next();
 }
