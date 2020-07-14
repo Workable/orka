@@ -18,7 +18,7 @@ const ws: [string, string, Function?][] = [
   ]
 ];
 
-describe.only('examples', function() {
+describe('examples', function() {
   let loggerSpy;
   before(function() {
     mockRequire('newrelic', () => console.log('initialized newrelic'));
@@ -45,9 +45,7 @@ describe.only('examples', function() {
         delete require.cache[require.resolve('../../build/builder.js')];
         delete require.cache[require.resolve('../../build/index.js')];
         if (setEnv) setEnv();
-        console.log('before', require.cache[require.resolve('mongoose')]);
         server = require(serverPath);
-        console.log('after', require.cache[require.resolve('mongoose')]);
         server.start();
       });
 
