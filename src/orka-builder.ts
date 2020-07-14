@@ -58,7 +58,7 @@ export default class OrkaBuilder {
     return this;
   }
 
-  useDefaults() {
+  useDefaults({ includeVisitor = true } = {}) {
     this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => riviere(this.config, this.options));
     this.use(() => this.errorHandler(this.config, this.options));
@@ -70,7 +70,9 @@ export default class OrkaBuilder {
     );
     this.useCors();
     this.use(() => addRequestId(this.config));
-    this.use(() => addVisitorId(this.config));
+    if (includeVisitor) {
+      this.use(() => addVisitorId(this.config));
+    }
     return this;
   }
 
