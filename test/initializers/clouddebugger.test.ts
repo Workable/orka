@@ -25,8 +25,8 @@ describe('Test cloud debugger', function() {
 
   it('should use npm_package_version', async () => {
     await clouddebugger({ appName: 'test-app' });
-    debugagent.start.args[0][0].should.eql({
-      serviceContext: { service: 'test-app', version: '0.31.5' },
+    debugagent.start.args[0][0].should.containDeep({
+      serviceContext: { service: 'test-app' },
       allowExpressions: true
     });
   });
