@@ -70,7 +70,7 @@ export default class OrkaBuilder {
     );
     this.useCors();
     this.use(() => addRequestId(this.config));
-    if (this.config.visitor && this.config.visitor.orkaEnabled) {
+    if (this.config.visitor && this.config.visitor.orka) {
       this.use(() => addVisitorId(this.config));
     }
     return this;

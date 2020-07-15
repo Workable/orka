@@ -60,7 +60,7 @@ config = {
     …
   },
   traceHeaderName: 'X-Request-Id', // for logging in http requests
-  visitor: { cookie : 'wmc' }, // for adding visitor id in ctx.state
+  visitor: { orka: true, cookie : 'wmc' }, // for adding visitor id in ctx.state
   headersRegex: '^X-.*', // for logging headers in http requests
   blacklistedErrorCodes: [404] // will not send to honeybadger requests with this status
 }
