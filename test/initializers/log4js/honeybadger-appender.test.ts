@@ -106,6 +106,7 @@ describe('log4js_honeybadger_appender', () => {
     err.status = 200;
     err.component = 'testController';
     err.action = '/test/endpoint';
+    err.name = 'CustomName';
     appender.configure()({
       level: {
         level: 40000
@@ -115,6 +116,7 @@ describe('log4js_honeybadger_appender', () => {
     });
     notifySpy.callCount.should.equal(1);
     notifySpy.args[0][0].message.should.equal('omg. a. b. c');
+    notifySpy.args[0][0].name.should.equal('CustomName');
   });
 
   it('should assign any additional json values to the context', () => {

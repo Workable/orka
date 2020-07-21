@@ -3,7 +3,7 @@ import * as Honeybadger from 'honeybadger';
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
 
-function notifyHoneybadger(name, error, ...rest) {
+function notifyHoneybadger(categoryName, error, ...rest) {
   if (typeof error === 'string') {
     error = new Error(error);
   }
@@ -28,14 +28,14 @@ function notifyHoneybadger(name, error, ...rest) {
   delete context.action;
   delete context.component;
 
-  let { headers = {}, action = actionFallback, component = componentFallback, params = {} } = error;
+  let { headers = {}, action = actionFallback, component = componentFallback, params = {}, name } = error;
 
   Object.assign(context, error.context);
 
-  const computedComponent = component || name;
+  const computedComponent = component || categoryName;
 
   Honeybadger.notify(
-    { stack: error.stack, message },
+    { stack: error.stack, message, name },
     {
       context,
       headers,
@@ -45,7 +45,7 @@ function notifyHoneybadger(name, error, ...rest) {
       action,
       component: computedComponent,
       params,
-      fingerprint: action && computedComponent ? `${computedComponent}_${action}` : name
+      fingerprint: action && computedComponent ? `${computedComponent}_${action}` : categoryName
     }
   );
 }
