@@ -37,7 +37,7 @@ export function createRedisConnection(config) {
   };
 
   options.retry_strategy = function(opts) {
-    logger.error(opts.error);
+    logger.error('Retrying to connect to Redis', opts);
     if (opts.error && opts.error.code === 'ECONNREFUSED') return new Error('The server refused the connection');
     if (opts.total_retry_time > options.totalRetryTime) return new Error('Retry time exhausted');
     if (opts.times_connected > options.timesConnected) {
