@@ -13,6 +13,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     apiKey: '',
     ...config.honeybadger
   };
+  config.newRelic = {
+    appName: '',
+    ...config.newRelic
+  };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %m',
