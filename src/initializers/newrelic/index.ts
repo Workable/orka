@@ -5,9 +5,7 @@ let newrelic;
 export default (config, appName: string) => {
   process.env.NEW_RELIC_HOME = __dirname;
   if (process.env.NEW_RELIC_LICENSE_KEY) {
-    if (!process.env.NEW_RELIC_APP_NAME) {
-      process.env.NEW_RELIC_APP_NAME = `${appName} ${config.app.env}`;
-    }
+    process.env.NEW_RELIC_APP_NAME = process.env.NEW_RELIC_APP_NAME || `${appName} ${config.app.env}`;
     newrelic = requireInjected('newrelic');
   }
 };
