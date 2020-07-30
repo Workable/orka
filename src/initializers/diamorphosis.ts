@@ -14,7 +14,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.honeybadger
   };
   config.newRelic = {
-    appName: ''
+    appName: '',
+    ...config.newRelic
   };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
