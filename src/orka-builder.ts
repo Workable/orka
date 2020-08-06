@@ -20,6 +20,7 @@ import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';
+import bull from './initializers/bull';
 import * as Koa from 'koa';
 
 export default class OrkaBuilder {
@@ -141,6 +142,11 @@ export default class OrkaBuilder {
 
   withRedis() {
     this.queue.push(() => createRedisConnection(this.config.redis));
+    return this;
+  }
+
+  withBull(appName: string = this.options.appName) {
+    this.queue.push(() => bull(this.config, { appName }));
     return this;
   }
 

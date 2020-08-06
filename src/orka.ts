@@ -19,6 +19,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withKafka()
     .withMongoDB(options.mongoOnConnected)
     .withRedis()
+    .withBull()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };

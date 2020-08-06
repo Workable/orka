@@ -24,6 +24,7 @@ describe('Orka', function() {
     builderStub.withHoneyBadger.returns(builderStub);
     builderStub.withKafka.returns(builderStub);
     builderStub.withMongoDB.returns(builderStub);
+    builderStub.withBull.returns(builderStub);
     builderStub.withRedis.returns(builderStub);
     builderStub.with.returns(builderStub);
     builderStub.routes.returns(builderStub);
