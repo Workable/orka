@@ -7,6 +7,7 @@ module.exports = {
     json: false
   },
   bull: {
+    metricsSchedule: '*/10 * * * * *',
     redis: {
       url: 'redis://localhost:6379/',
       tls: {

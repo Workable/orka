@@ -29,9 +29,24 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   ready = true;
 };
 
-export const getQueue = (name: string) => {
+const redinessCheck = () => {
   if (!ready) {
     throw new Error('bull is not initialized');
   }
+};
+
+export const getQueue = (name: string) => {
+  redinessCheck();
   return bull.getQueue(name);
+};
+
+export const getStats = (): Promise<{ queue: string; count: number; failed: number }[]> => {
+  redinessCheck();
+  return bull.getStats();
+};
+
+export const queueMetrics = async cronExpression => {
+  redinessCheck();
+  const metrics = (await import('./metrics')).default;
+  metrics(cronExpression);
 };

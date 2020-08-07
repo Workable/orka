@@ -2,9 +2,8 @@ import { defaultsDeep, has } from 'lodash';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 
-const Queue = requireInjected('bull');
-
 const CACHE = {};
+const Queue = requireInjected('bull');
 const logger = getLogger('orka.bull');
 
 export const createQueue = (prefix, queueConfig, defaultOptions, redisOpts) => {
@@ -50,4 +49,21 @@ export const getQueue = (name: string) => {
     throw new Error('no such queue');
   }
   return CACHE[name];
+};
+
+/**
+ * Returns an array with all the queues.
+ */
+export const getQueues = () => {
+  return Object.values(CACHE);
+};
+
+export const getStats = async (): Promise<{ queue: string; count: number; failed: number }[]> => {
+  const fetchStats = async queue => ({
+    queue: queue.name,
+    count: await queue.count(),
+    failed: await queue.getFailedCount()
+  });
+  const stats = getQueues().map(fetchStats);
+  return Promise.all(stats);
 };

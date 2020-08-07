@@ -45,7 +45,7 @@ module.exports = {
     },
     '/stats': async (ctx, next) => {
       const stats = await bull.getStats();
-      ctx.body += `Stats\n   ==================\n${stats.map(JSON.stringify).join('\n')}`;
+      ctx.body += `Stats\n==================\n${stats.map(JSON.stringify).join('\n')}`;
       ctx.status = 200;
     }
   }
