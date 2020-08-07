@@ -1,8 +1,10 @@
 import { isEmpty } from 'lodash';
 import { parseURL } from 'ioredis/built/utils';
+import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 
-let bull;
+let bull: any;
+const logger = getLogger('orka.initializers.bull');
 
 export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   if (!config.bull || !config.bull.queue?.queues || (!config.bull.redis?.url && !config.redis?.url)) {
@@ -22,23 +24,18 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   }
   const redisOpts = {
     ...parseURL(redis.url),
-    tls: redis.tls,
+    tls: redis.tls || redis.options?.tls,
     enableReadyCheck: false
   };
-
-  bull = await import('./bull');
-  bull.init(prefix, queues, defaultOptions, redisOpts);
+  const Bull = (await import('./bull')).default;
+  bull = new Bull(prefix, queues, defaultOptions, redisOpts);
+  logger.info(`Bull initialized with redis: ${redisOpts.host}:${redisOpts.port} (tls: ${!isEmpty(redisOpts.tls)})`);
+  logger.info(`Bull configured queues: ${queues.map(q => q.name).join(', ')} (namespace: ${prefix})`);
 };
 
-export const getQueue = (name: string) => {
-  return bull.getQueue(name);
-};
-
-export const getStats = (): Promise<{ queue: string; count: number; failed: number }[]> => {
-  return bull.getStats();
-};
-
-export const queueMetrics = async cronExpression => {
-  const metrics = (await import('./metrics')).default;
-  metrics(cronExpression);
+export const getBull = () => {
+  if (!bull) {
+    throw new Error('bull is not initialized');
+  }
+  return bull;
 };

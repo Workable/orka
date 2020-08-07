@@ -27,7 +27,7 @@ module.exports = {
         },
         {
           name: 'queue_two',
-          options: {}
+          options: { delay: 15000 }
         }
       ]
     }

@@ -1,4 +1,4 @@
-const { orka, queueMetrics } = require('../../build');
+const { orka, getBull } = require('../../build');
 
 const app = orka({
   diamorphosis: {
@@ -11,7 +11,7 @@ app
   .initTasks()
   .then(() => {
     const config = require('./config');
-    return queueMetrics(config.bull.metricsSchedule);
+    return getBull().startMetrics(config.bull.metricsSchedule);
   })
   .catch(e => {
     console.error(e);
