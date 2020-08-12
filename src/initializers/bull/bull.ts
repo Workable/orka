@@ -85,7 +85,7 @@ export default class Bull {
 
   public startMetrics(cronExpression) {
     if (!cron.validate(cronExpression)) {
-      throw new Error(`Cannot schedule metrics reporting. Invalid cron expression: ${cronExpression}`);
+      throw new Error(`Invalid cron expression: ${cronExpression}`);
     }
     if (this.metricsTask) {
       throw new Error('Metrics task already running');
