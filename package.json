@@ -63,6 +63,7 @@
     "lodash": "^4.17.15",
     "log4js": "^4.2.0",
     "mongoose": "^5.7.11",
+    "node-cron": "^2.0.3",
     "rabbit-queue": "*",
     "redis": "^2.8.0",
     "source-map-support": "^0.5.16",
@@ -71,6 +72,7 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",
+    "@types/bull": "^3.14.0",
     "@types/koa": "^2.0.52",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/lodash": "^4.14.147",
@@ -79,6 +81,7 @@
     "@types/node": "^11.15.2",
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
+    "bull": "^3.16.0",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.3",
     "mocha": "^6.2.2",
@@ -96,6 +99,7 @@
     "typescript": "^3.7.2"
   },
   "optionalPeerDependencies": {
+    "bull": "*",
     "newrelic": "*",
     "sinek": "*"
   }
