@@ -1,5 +1,4 @@
 import { isEmpty } from 'lodash';
-import { parseURL } from 'ioredis/built/utils';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 
@@ -10,6 +9,7 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   if (!config.bull || !config.bull.queue?.queues || (!config.bull.redis?.url && !config.redis?.url)) {
     return;
   }
+  const { parseURL } = await import('ioredis/built/utils');
 
   const prefix = orkaOptions.appName;
   const defaultOptions = config.bull.queue.options;
