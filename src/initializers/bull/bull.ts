@@ -111,7 +111,7 @@ const handleFailure = (name, job, error) => {
   if (job.attemptsMade === job.opts.attempts) {
     getLogger(name).error(error);
   } else {
-    getLogger(name).warn(`Job with ${job.id} failed. Attempt ${job.attemptsMade}/${job.opts.attempts} Retrying`);
+    getLogger(name).warn(`Job #${job.id} failed. Attempt ${job.attemptsMade}/${job.opts.attempts} Retrying`);
   }
 };
 
