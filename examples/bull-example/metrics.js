@@ -11,7 +11,7 @@ app
   .initTasks()
   .then(() => {
     const config = require('./config');
-    return getBull().startMetrics(config.bull.metricsSchedule);
+    return getBull().startMetrics(config.bull.metricsSchedule, 'kebabCase');
   })
   .catch(e => {
     console.error(e);
