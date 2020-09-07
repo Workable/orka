@@ -61,6 +61,13 @@ describe('bull init', () => {
       }
     }
   };
+  const moreRedisOpts = {
+    bull: {
+      redis: {
+        enableReadyCheck: true
+      }
+    }
+  };
   it('should handle the absence of bull config', async () => {
     await init({} as any, orkaOptions);
     should.throws(() => {
@@ -92,6 +99,18 @@ describe('bull init', () => {
         port: '6379',
         tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
         enableReadyCheck: false
+      };
+      bull.redisOpts.should.be.eql(expectedRedisOpts);
+    });
+    it('should allow passing more redis options', async () => {
+      const config = merge({}, baseConfig, orkaRedisConfig, bullRedisConfig, moreRedisOpts);
+      await init(config as any, orkaOptions);
+      const bull = getBull();
+      const expectedRedisOpts = {
+        host: 'bull',
+        port: '6379',
+        tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
+        enableReadyCheck: true
       };
       bull.redisOpts.should.be.eql(expectedRedisOpts);
     });
