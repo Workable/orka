@@ -1,9 +1,11 @@
-import { defaultsDeep, has, keyBy, map } from 'lodash';
+import * as _ from 'lodash';
 import * as cron from 'node-cron';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 const Queue = requireInjected('bull');
 const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? requireInjected('newrelic') : null;
+
+const caseModifiers = ['camelCase', 'snakeCase', 'lowerCase', 'upperCase', 'kebabCase', 'startCase'];
 
 export default class Bull {
   private logger = getLogger('orka.bull');
@@ -18,8 +20,8 @@ export default class Bull {
   constructor(prefix, queueOpts, defaultOptions, redisOpts) {
     this.prefix = prefix;
     this.defaultOptions = defaultOptions;
-    this.queueOpts = keyBy(queueOpts, 'name');
-    this.queueNames = map(queueOpts, 'name');
+    this.queueOpts = _.keyBy(queueOpts, 'name');
+    this.queueNames = _.map(queueOpts, 'name');
     this.redisOpts = redisOpts;
   }
 
@@ -27,7 +29,7 @@ export default class Bull {
     const fullName = `${this.prefix}:${name}`;
     const options = this.queueOpts[name].options;
     this.logger.info(`Creating Queue: ${fullName}`);
-    const defaultJobOptions = defaultsDeep({}, options, this.defaultOptions);
+    const defaultJobOptions = _.defaultsDeep({}, options, this.defaultOptions);
     const queue = new Queue(fullName, { redis: this.redisOpts, defaultJobOptions });
     queue
       .on('drained', () => {
@@ -44,10 +46,10 @@ export default class Bull {
   }
 
   public getQueue(name: string) {
-    if (!has(this.queueOpts, name)) {
+    if (!_.has(this.queueOpts, name)) {
       throw new Error('no such queue');
     }
-    if (!has(this.instances, name)) {
+    if (!_.has(this.instances, name)) {
       this.createQueue(name);
     }
     return this.instances[name];
@@ -75,15 +77,16 @@ export default class Bull {
     }
   }
 
-  private async reportStats() {
+  private async reportStats(queueNameCase?: string) {
     const stats = await this.getStats();
+    const queueNameTransform = caseModifiers.includes(queueNameCase) ? _[queueNameCase] : _.camelCase;
     stats.forEach(entry => {
-      this.recordMetric(`Bull/Queues/${entry.queue}`, entry.count);
-      this.recordMetric(`Bull/QueuesFailed/${entry.queue}`, entry.failed);
+      this.recordMetric(`Bull/Queues/${queueNameTransform(entry.queue)}`, entry.count);
+      this.recordMetric(`Bull/QueuesFailed/${queueNameTransform(entry.queue)}`, entry.failed);
     });
   }
 
-  public startMetrics(cronExpression) {
+  public startMetrics(cronExpression, queueNameCase?: string) {
     if (!cron.validate(cronExpression)) {
       throw new Error(`Invalid cron expression: ${cronExpression}`);
     }
@@ -94,7 +97,7 @@ export default class Bull {
     const output = newrelic ? 'new relic' : 'logs';
     this.metricsTask = cron.schedule(cronExpression, async () => {
       getLogger('bull.metrics').info(`Sending queue metrics to ${output}`);
-      await this.reportStats();
+      await this.reportStats(queueNameCase);
     });
   }
 
@@ -111,7 +114,7 @@ const handleFailure = (name, job, error) => {
   if (job.attemptsMade === job.opts.attempts) {
     getLogger(name).error(error);
   } else {
-    getLogger(name).warn(`Job with ${job.id} failed. Attempt ${job.attemptsMade}/${job.opts.attempts} Retrying`);
+    getLogger(name).warn(`Job #${job.id} failed. Attempt ${job.attemptsMade}/${job.opts.attempts} Retrying`);
   }
 };
 

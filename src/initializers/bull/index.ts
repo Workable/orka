@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 
@@ -14,6 +14,7 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   const prefix = orkaOptions.appName;
   const defaultOptions = config.bull.queue.options;
   const redis = config.bull.redis || config.redis;
+  const options = { enableReadyCheck: false, ...omit(config.bull.redis || config.redis.options, ['url', 'tls']) };
   const queues = config.bull.queue.queues;
 
   if (config.bull.redis?.tls) {
@@ -22,11 +23,13 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
     });
     if (isEmpty(config.bull.redis.tls)) delete config.bull.redis.tls;
   }
+
   const redisOpts = {
     ...parseURL(redis.url),
-    tls: redis.tls || redis.options?.tls,
-    enableReadyCheck: false
+    ...options,
+    tls: redis.tls || redis.options?.tls
   };
+
   const Bull = (await import('./bull')).default;
   bull = new Bull(prefix, queues, defaultOptions, redisOpts);
   logger.info(`Bull initialized with redis: ${redisOpts.host}:${redisOpts.port} (tls: ${!isEmpty(redisOpts.tls)})`);
