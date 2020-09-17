@@ -14,6 +14,9 @@ module.exports = {
     },
     '/api/allowAll/accounts/:subdomain': async (ctx, next) => (ctx.body = 'ok')
   },
+  post: {
+    '/test': async (ctx, next) => (ctx.body = 'ok')
+  },
   policy: {
     '/testPolicy': async (ctx, next) => {
       if (ctx.request.query.secret_key === 'success') {

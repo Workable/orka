@@ -29,6 +29,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
     traceHeaderName: config.traceHeaderName,
     styles: config.riviere.styles,
     bodyKeys: config.riviere.bodyKeys,
+    bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
     color: config.riviere.color,
     context: orkaOptions.riviereContext
   });
