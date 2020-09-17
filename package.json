@@ -1,6 +1,6 @@
 {
   "name": "@workablehr/orka",
-  "version": "0.33.3",
+  "version": "0.33.4",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -51,7 +51,7 @@
   "dependencies": {
     "@google-cloud/debug-agent": "^4.2.1",
     "@hapi/joi": "^17.1.0",
-    "@workablehr/riviere": "^1.8.0",
+    "@workablehr/riviere": "^1.9.0",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.1",
     "fast-koa-router": "^1.2.0",
