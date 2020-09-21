@@ -1,5 +1,6 @@
 import { riviere } from '@workablehr/riviere';
 import { OrkaOptions } from 'orka/typings/orka';
+import * as Koa from 'koa';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) =>
   riviere({
@@ -31,5 +32,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
     bodyKeys: config.riviere.bodyKeys,
     bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
     color: config.riviere.color,
-    context: orkaOptions.riviereContext
+    context: (ctx: Koa.Context) => {
+      return {
+        visitor: ctx.state.visitor,
+        ...orkaOptions.riviereContext(ctx)
+      };
+    }
   });
