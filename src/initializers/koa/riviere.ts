@@ -14,14 +14,16 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
     outbound: {
       enabled: config.riviere.enabled,
       https: true,
-      level: 'info'
+      level: 'info',
+      maxBodyValueChars: config.riviere.maxBodyValueChars
     },
     inbound: {
       level: 'info',
       enabled: config.riviere.enabled,
       request: {
         enabled: config.riviere.inbound.request.enabled
-      }
+      },
+      maxBodyValueChars: config.riviere.maxBodyValueChars
     } as any,
     errors: {
       enabled: config.riviere.enabled

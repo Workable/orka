@@ -39,6 +39,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     color: true,
     styles: [],
     headersRegex: '^X-.*',
+    maxBodyValueChars: undefined,
     ...config.riviere
   };
   if (config.kafka) {
