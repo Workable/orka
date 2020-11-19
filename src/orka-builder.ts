@@ -14,6 +14,7 @@ import { getLogger } from './initializers/log4js';
 import riviere from './initializers/koa/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import addVisitorId from './initializers/koa/add-visitor-id';
+import addRequestContext from './initializers/koa/add-request-context';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
 import assert = require('assert');
@@ -22,6 +23,7 @@ import logo from './initializers/logo';
 import kafka from './initializers/kafka';
 import bull from './initializers/bull';
 import * as Koa from 'koa';
+import { AsyncLocalStorage } from 'async_hooks';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;
@@ -36,14 +38,16 @@ export default class OrkaBuilder {
   errorHandler: any;
   queue: (() => Promise<void> | void | any)[];
   server: Server;
+  als: AsyncLocalStorage<Map<string, any>>;
 
-  constructor(options, config, errorHandler) {
+  constructor(options, config, errorHandler, als) {
     this.options = options;
     this.config = config;
     this.middlewares = [];
     this.koaTasks = [];
     this.errorHandler = errorHandler;
     this.queue = [];
+    this.als = als;
     if (!OrkaBuilder.INSTANCE) {
       OrkaBuilder.INSTANCE = this;
     }
@@ -60,6 +64,10 @@ export default class OrkaBuilder {
   }
 
   useDefaults() {
+    this.use(() => addRequestId(this.config));
+    if (this.config.requestContext) {
+      this.use(() => addRequestContext(this.als));
+    }
     this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => riviere(this.config, this.options));
     this.use(() => this.errorHandler(this.config, this.options));
@@ -70,7 +78,6 @@ export default class OrkaBuilder {
         }
     );
     this.useCors();
-    this.use(() => addRequestId(this.config));
     if (this.config.visitor && this.config.visitor.orka) {
       this.use(() => addVisitorId(this.config));
     }

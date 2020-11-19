@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2019",
     "module": "commonjs",
     "noImplicitAny": false,
     "removeComments": true,
@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "orka/*": ["./*"]
-    }
+    },
+    "lib": ["es2019"]
   },
   "filesGlob": ["./*.ts"]
 }

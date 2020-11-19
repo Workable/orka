@@ -4,6 +4,10 @@ import _defaults from './default-options';
 import * as lodash from 'lodash';
 import { getLogger } from './initializers/log4js';
 import orkaType from './orka-builder';
+import { AsyncLocalStorage } from 'async_hooks';
+
+const als = new AsyncLocalStorage<Map<string, any>>();
+export const getRequestContext = () => als.getStore();
 
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
@@ -50,5 +54,5 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const errorHandler = require('./initializers/koa/error-handler').default;
 
   const OrkaBuilder: typeof orkaType = require('./orka-builder').default;
-  return new OrkaBuilder(options, config, errorHandler);
+  return new OrkaBuilder(options, config, errorHandler, als);
 };
