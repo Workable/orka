@@ -1,4 +1,4 @@
-import { nodeVersionGreaterThanEqual } from '../src/utis';
+import { nodeVersionGreaterThanEqual } from '../src/utils';
 
 describe('utils', function() {
   describe('nodeVersionGreaterThanEqual', function() {

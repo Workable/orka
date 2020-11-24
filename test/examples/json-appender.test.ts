@@ -1,7 +1,7 @@
 import { pickBy } from 'lodash';
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-import { alsSupported } from '../../src/utis';
+import { alsSupported } from '../../src/utils';
 
 const sandbox = sinon.createSandbox();
 

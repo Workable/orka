@@ -3,7 +3,7 @@ import * as supertest from 'supertest';
 import * as mockRequire from 'mock-require';
 import { getLogger } from '../../build/initializers/log4js';
 import * as sinon from 'sinon';
-import { alsSupported } from '../../src/utis';
+import { alsSupported } from '../../src/utils';
 
 const hasALS = alsSupported();
 const sandbox = sinon.createSandbox();
