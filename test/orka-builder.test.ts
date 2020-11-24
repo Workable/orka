@@ -1,6 +1,7 @@
 import OrkaBuilder from '../src/orka-builder';
 import * as sinon from 'sinon';
 import * as redis from '../src/initializers/redis';
+import * as rc from '../src/initializers/koa/add-request-context';
 
 const sandbox = sinon.createSandbox();
 
@@ -12,7 +13,7 @@ describe('orka-builder', function() {
   it('calls redis', async function() {
     const config = {};
     const stub = sandbox.stub(redis, 'createRedisConnection');
-    const builder = new OrkaBuilder({}, { redis: config }, () => undefined);
+    const builder = new OrkaBuilder({}, { redis: config }, () => undefined, sandbox.stub());
     builder.withRedis();
     await builder.initTasks();
     stub.args.should.eql([[config]]);

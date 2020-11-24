@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2019",
     "module": "commonjs",
     "rootDir": "../",
     "sourceRoot": "../",
@@ -8,8 +8,9 @@
     "sourceMap": true,
     "paths": {
       "orka/*": ["./src/*"]
-    }
+    },
+    "lib": ["es2019"]
   },
   "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
