@@ -19,7 +19,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
-    pattern: '%[[%d] [%p] %c%] %m',
+    pattern: '%[[%d] [%p] %c%] %x{logTracer} %m',
     level: 'debug',
     console: '',
     json: false,
@@ -59,6 +59,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       ...config.kafka.producer
     };
   }
+  config.requestContext = {
+    enabled: true,
+    logKeys: ['requestId', 'visitor'],
+    ...config.requestContext
+  };
   diamorphosis(orkaOptions.diamorphosis);
   config.app.env = config.app.env || config.nodeEnv;
 

@@ -65,7 +65,7 @@ export default class OrkaBuilder {
 
   useDefaults() {
     this.use(() => addRequestId(this.config));
-    if (this.config.requestContext) {
+    if (this.config.requestContext.enabled) {
       this.use(() => addRequestContext(this.als));
     }
     this.use(() => bodyParser(this.config.bodyParser));

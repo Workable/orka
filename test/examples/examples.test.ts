@@ -46,7 +46,7 @@ describe('examples', function() {
         delete require.cache[require.resolve('../../build/index.js')];
         if (setEnv) setEnv();
         server = require(serverPath);
-        server.start();
+        return server.start();
       });
 
       afterEach(function() {

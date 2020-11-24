@@ -1,7 +1,6 @@
 import OrkaBuilder from '../src/orka-builder';
 import * as sinon from 'sinon';
 import * as redis from '../src/initializers/redis';
-import * as rc from '../src/initializers/koa/add-request-context';
 
 const sandbox = sinon.createSandbox();
 

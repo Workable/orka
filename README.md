@@ -231,24 +231,9 @@ If you don't specify anything in your `config.requestContext` it defaults to:
 ```js
 {
   "requestContext": {
+    "enabled": true
     "logKeys": ["requestId", "visitor"]  // These are the keys that will be appended automatically to your logs
   }
-}
-```
-
-If you want to override the configuration you can do easily do it:
-```js
-{
-  "requestContext": {
-    "logKeys": ["anotherKey"]
-  }
-}
-```
-
-If you want to disable request context, just pass:
-```js
-{
-  "requestContext": false
 }
 ```
 
