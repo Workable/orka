@@ -1,9 +1,12 @@
 import * as lodash from 'lodash';
+import { getRequestContext } from '../../builder';
 
-const jsonAppender = layout => {
+const jsonAppender = (layout, config) => {
   return logEvent => {
     let event =
-      logEvent.level.levelStr === 'ERROR' ? createErrorLog(layout, logEvent) : createValidLog(layout, logEvent);
+      logEvent.level.levelStr === 'ERROR'
+        ? createErrorLog(layout, logEvent, config)
+        : createValidLog(layout, logEvent, config);
     let json = '';
     try {
       json = JSON.stringify(event);
@@ -27,10 +30,13 @@ const jsonAppender = layout => {
   };
 };
 
-export const createErrorLog = (layout, logEvent) => {
+const requestContextKeys = config =>
+  lodash.pick(Object.fromEntries(getRequestContext() || new Map()), config?.logKeys || []);
+
+export const createErrorLog = (layout, logEvent, config) => {
   const data = lodash.flattenDeep(logEvent.data);
 
-  const context = getContextObject(data);
+  const context = { ...requestContextKeys(config), ...getContextObject(data) };
   const message = getMessageObject(layout, data);
 
   return {
@@ -43,10 +49,9 @@ export const createErrorLog = (layout, logEvent) => {
   };
 };
 
-export const createValidLog = (layout, logEvent) => {
+export const createValidLog = (layout, logEvent, config) => {
   const data = lodash.flattenDeep(logEvent.data);
-
-  const context = getContextObject(data);
+  const context = { ...requestContextKeys(config), ...getContextObject(data) };
   const message = getMessageObject(layout, data);
 
   return {
@@ -74,5 +79,5 @@ const getMessageObject = (layout, data) => {
 
 export function configure(config: any, layouts: { messagePassThroughLayout: any }) {
   const layout = layouts.messagePassThroughLayout;
-  return jsonAppender(layout);
+  return jsonAppender(layout, config);
 }

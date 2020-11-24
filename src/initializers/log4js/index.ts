@@ -1,5 +1,7 @@
+import { pick } from 'lodash';
 import * as Log4js from 'log4js';
 import * as path from 'path';
+import { getRequestContext } from '../../builder';
 
 let tmp = name => {
   const logger = Log4js.getLogger('initializing.' + name);
@@ -24,7 +26,18 @@ export default async config => {
       type: 'console',
       layout: {
         type: 'pattern',
-        pattern: config.log.pattern
+        pattern: config.log.pattern,
+        tokens: {
+          logTracer: () => {
+            const tracerObject = pick(
+              Object.fromEntries(getRequestContext() || new Map()),
+              config.requestContext.logKeys
+            );
+            const values = Object.values(tracerObject);
+            if (!values.length) return '';
+            return values.map(v => `[${v}]`).join(' ');
+          }
+        }
       }
     };
     appendersList.push('console');
@@ -39,7 +52,8 @@ export default async config => {
 
   if (config.log.json) {
     appenders.json = {
-      type: path.resolve(path.join(__dirname, './json-appender'))
+      type: path.resolve(path.join(__dirname, './json-appender')),
+      logKeys: config.requestContext.logKeys || []
     };
     appendersList.push('json');
   }

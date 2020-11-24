@@ -23,8 +23,8 @@ describe('json-appender', function() {
     const serverPath = '../../examples/simple-example/app';
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
-    server.start();
     clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    return server.start();
   });
 
   afterEach(function() {
@@ -33,7 +33,10 @@ describe('json-appender', function() {
 
   it('/log returns 200 and logs info', async function() {
     const logSpy = sandbox.stub(console, 'log');
-    const { text } = await (supertest('localhost:3000') as any).get('/log?').expect(200);
+    const { text } = await (supertest('localhost:3000') as any)
+      .get('/log?')
+      .set('x-request-id', 'test-id')
+      .expect(200);
     text.should.eql('logged');
     logSpy.args.should.eql([
       [
@@ -42,7 +45,10 @@ describe('json-appender', function() {
           severity: 'INFO',
           categoryName: 'log',
           message: 'hello world',
-          context: { context: 'foo' }
+          context: {
+            requestId: 'test-id',
+            context: 'foo'
+          }
         })
       ]
     ]);
@@ -50,7 +56,10 @@ describe('json-appender', function() {
 
   it('/logError returns 505 and logs error', async function() {
     const logSpy = sandbox.stub(console, 'log');
-    const { text } = await (supertest('localhost:3000') as any).get('/logError').expect(505);
+    const { text } = await (supertest('localhost:3000') as any)
+      .get('/logError')
+      .set('x-request-id', 'test-id')
+      .expect(505);
     text.should.eql('default body');
     const cleanStack = msg => {
       const stack = JSON.parse(msg);
@@ -67,7 +76,10 @@ describe('json-appender', function() {
             categoryName: 'log',
             message: 'test - this was a test error',
             stack_trace: 'Error: test\n    at /logError ',
-            context: { context: 'foo' }
+            context: {
+              requestId: 'test-id',
+              context: 'foo'
+            }
           }
         ],
         [
@@ -83,8 +95,9 @@ describe('json-appender', function() {
               status: 505,
               component: 'koa',
               action: '/logError',
-              params: { query: {}, body: {} },
-              state: { riviereStartedAt: 1546300800000 }
+              params: { query: {}, body: {}, requestId: 'test-id' },
+              state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
+              requestId: 'test-id'
             }
           }
         ]
