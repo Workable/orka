@@ -5,7 +5,7 @@ import * as lodash from 'lodash';
 import { getLogger } from './initializers/log4js';
 import orkaType from './orka-builder';
 import { AsyncLocalStorage } from 'async_hooks';
-import { alsSupported } from './utis';
+import { alsSupported } from './utils';
 
 let als;
 if (alsSupported()) {

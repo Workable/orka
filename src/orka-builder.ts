@@ -24,7 +24,7 @@ import kafka from './initializers/kafka';
 import bull from './initializers/bull';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
-import { alsSupported } from './utis';
+import { alsSupported } from './utils';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;

@@ -1,7 +1,7 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
 import { defaultTo, isBoolean } from 'lodash';
-import { alsSupported } from '../utis';
+import { alsSupported } from '../utils';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
