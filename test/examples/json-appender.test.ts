@@ -1,11 +1,14 @@
+import { pickBy } from 'lodash';
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
+import { alsSupported } from '../../src/utils';
 
 const sandbox = sinon.createSandbox();
 
 describe('json-appender', function() {
   let server;
   let clock;
+  const hasALS = alsSupported();
   before(function() {
     process.env.LOG_LEVEL = 'info';
     process.env.LOG_JSON = 'true';
@@ -45,10 +48,10 @@ describe('json-appender', function() {
           severity: 'INFO',
           categoryName: 'log',
           message: 'hello world',
-          context: {
-            requestId: 'test-id',
+          context: pickBy({
+            requestId: hasALS ? 'test-id' : undefined,
             context: 'foo'
-          }
+          })
         })
       ]
     ]);
@@ -76,10 +79,10 @@ describe('json-appender', function() {
             categoryName: 'log',
             message: 'test - this was a test error',
             stack_trace: 'Error: test\n    at /logError ',
-            context: {
-              requestId: 'test-id',
+            context: pickBy({
+              requestId: hasALS ? 'test-id' : undefined,
               context: 'foo'
-            }
+            })
           }
         ],
         [
@@ -89,16 +92,19 @@ describe('json-appender', function() {
             categoryName: 'orka.errorHandler',
             message: 'test',
             stack_trace: 'Error: test\n    at /logError ',
-            context: {
-              expose: false,
-              statusCode: 505,
-              status: 505,
-              component: 'koa',
-              action: '/logError',
-              params: { query: {}, body: {}, requestId: 'test-id' },
-              state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
-              requestId: 'test-id'
-            }
+            context: pickBy(
+              {
+                expose: false,
+                statusCode: 505,
+                status: 505,
+                component: 'koa',
+                action: '/logError',
+                params: { query: {}, body: {}, requestId: 'test-id' },
+                state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
+                requestId: hasALS ? 'test-id' : undefined
+              },
+              _ => _ !== undefined
+            )
           }
         ]
       ]);

@@ -5,9 +5,14 @@ import * as lodash from 'lodash';
 import { getLogger } from './initializers/log4js';
 import orkaType from './orka-builder';
 import { AsyncLocalStorage } from 'async_hooks';
+import { alsSupported } from './utils';
 
-const als = new AsyncLocalStorage<Map<string, any>>();
-export const getRequestContext = () => als.getStore();
+let als;
+if (alsSupported()) {
+  als = new AsyncLocalStorage<Map<string, any>>();
+}
+
+export const getRequestContext = () => als?.getStore();
 
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
