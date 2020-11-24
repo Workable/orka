@@ -1,6 +1,7 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
 import { defaultTo, isBoolean } from 'lodash';
+import { alsSupported } from '../utis';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
@@ -60,7 +61,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     };
   }
   config.requestContext = {
-    enabled: true,
+    enabled: alsSupported(),
     logKeys: ['requestId', 'visitor'],
     ...config.requestContext
   };

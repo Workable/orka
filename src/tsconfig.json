@@ -15,7 +15,7 @@
     "paths": {
       "orka/*": ["./*"]
     },
-    "lib": ["es2019"]
+    "lib": ["es2019", "es2020.string"]
   },
   "filesGlob": ["./*.ts"]
 }

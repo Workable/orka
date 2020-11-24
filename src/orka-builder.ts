@@ -24,6 +24,7 @@ import kafka from './initializers/kafka';
 import bull from './initializers/bull';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
+import { alsSupported } from './utis';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;
@@ -67,6 +68,10 @@ export default class OrkaBuilder {
     this.use(() => addRequestId(this.config));
     if (this.config.requestContext.enabled) {
       this.use(() => addRequestContext(this.als));
+    } else if (!alsSupported()) {
+      getLogger('orka').warn(
+        'RequestContext is disabled!! You need to have version v12.17.0+, v13.14.0+ or v14.0.0+ if you want to enable it.'
+      );
     }
     this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => riviere(this.config, this.options));

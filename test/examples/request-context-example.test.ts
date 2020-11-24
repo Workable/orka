@@ -1,5 +1,6 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
+import { alsSupported } from '../../src/utis';
 
 const sandbox = sinon.createSandbox();
 
@@ -7,6 +8,7 @@ describe('request-context', function() {
   let server;
   let clock;
   let request;
+  const hasALS = alsSupported();
 
   before(function() {
     process.env.LOG_LEVEL = 'info';
@@ -47,7 +49,7 @@ describe('request-context', function() {
       severity: 'INFO',
       categoryName: 'log',
       message,
-      context
+      context: hasALS ? context : {}
     })
   ];
 
