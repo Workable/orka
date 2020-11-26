@@ -6,6 +6,7 @@ import { getLogger } from './initializers/log4js';
 import orkaType from './orka-builder';
 import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
+import datadog from './initializers/datadog';
 
 let als;
 if (alsSupported()) {
@@ -50,6 +51,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
 
   // Always call newrelic
   newrelic(config, options.appName);
+  datadog(config);
 
   const log4js = require('./initializers/log4js').default;
   // Always use logger

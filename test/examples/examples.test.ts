@@ -12,6 +12,11 @@ const ws: [string, string, Function?][] = [
   ['../../examples/builder-example/app', 'builder-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
   ['../../examples/simple-example/app', 'simple-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
   ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
+  [
+    '../../examples/builder-example/app',
+    'builder-example datadog',
+    () => ((process.env.DD_SERVICE = 'foo'), (process.env.DD_ENV = 'production'))
+  ],
   ['../../examples/two-steps-example/app', 'two-steps-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
   [
     '../../examples/callback-example/app',
@@ -24,6 +29,7 @@ describe('examples', function() {
   let loggerSpy;
   before(function() {
     mockRequire('newrelic', () => console.log('initialized newrelic'));
+    mockRequire('tracer', () => console.log('initialized datadog tracer'));
     const logger = getLogger('orka');
     loggerSpy = sandbox.stub(logger, 'warn');
   });

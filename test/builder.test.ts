@@ -1,4 +1,3 @@
-
 describe('builder', function() {
   it('initializes typescript');
 
@@ -7,6 +6,7 @@ describe('builder', function() {
 
   it('initializes log4js');
   it('initializes newrelic');
+  it('initializes datadog tracer');
   it('initializes koa');
 
   it('appends middleware koa');
