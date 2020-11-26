@@ -6,7 +6,7 @@ export default config => {
   if (process.env.DD_SERVICE && process.env.DD_ENV) {
     tracer = requireInjected('dd-trace').init();
     tracer.use('koa', {
-      blacklist: config?.datadog?.blacklistedPaths?.split(',') || ['/health']
+      blacklist: config?.datadog?.blacklistedPaths
     });
   }
 };
