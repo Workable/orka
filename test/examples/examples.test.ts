@@ -24,6 +24,7 @@ describe('examples', function() {
   let loggerSpy;
   before(function() {
     mockRequire('newrelic', () => console.log('initialized newrelic'));
+    mockRequire('tracer', () => console.log('initialized datadog tracer'));
     const logger = getLogger('orka');
     loggerSpy = sandbox.stub(logger, 'warn');
   });

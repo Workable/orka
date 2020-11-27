@@ -18,6 +18,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     appName: '',
     ...config.newRelic
   };
+  config.datadog = {
+    blacklistedPaths: ['/health'],
+    ...config.datadog
+  };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %x{logTracer} %m',
