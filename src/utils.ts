@@ -1,4 +1,4 @@
-const regex = /^v(\d+)\.(\d+)\.(\d+)$/;
+const regex = /^v(\d+)\.(\d+)\.(\d+)$/g;
 
 export const alsSupported = () =>
   nodeVersionGreaterThanEqual('v12.17.0') ||
