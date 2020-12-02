@@ -167,6 +167,56 @@ module.exports = {
   },
 };
 ```
+## Metrics Middleware
+It supports exporting custom application metrics that can be picked by *Prometheus*.
+In order to use this middleware you should also enable the *prometheus plugin* described in the following section.
+
+Example route configuration
+
+```js
+const { middlewares: { metrics } } = require('@workablehr/orka');
+
+module.exports = {
+  get: {
+    '/metrics': metrics,
+    '/users': async (ctx, next) => {
+      ctx.body = await User.find();
+    }
+  }
+};
+```
+## Prometheus metrics
+Prometheus is optional. In order to enable it install the dependency first:
+
+```sh
+npm i prom-client
+```
+And add to your configuration
+
+```js
+{
+  prometheus:{
+    enabled: true
+  }
+}
+```
+
+It can either be used in conjunction with the `metrics` middleware (pull mode) or if you wish to use it in a non web context, using the *PushGateway* via the provided `#push()` method.
+
+The `#push()` method will fail with an error, unless you configure the push gateway url:
+
+```js
+{
+  prometheus:{
+    enabled: true,
+    gatewayUrl: 'http://your.push.gateway'
+  }
+}
+```
+
+Bull is configured to export bull queue depth/failed metrics, so if you use Bull, 
+you should also enable Prometheus, otherwise you will receive some complaints in the 
+logs.
 
 ## Bull Queues
 Bull is an optional dependency. Should you want to use it in your project with Orka, install it first
