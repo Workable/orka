@@ -4,9 +4,7 @@ import { getBull } from '../../../src/initializers/bull/index';
 import should = require('should');
 
 describe('bull init', () => {
-  const orkaOptions = {
-    appName: 'test'
-  };
+  const appName = 'test';
   const orkaRedisConfig = {
     redis: {
       url: 'redis://orka:6379/',
@@ -69,7 +67,7 @@ describe('bull init', () => {
     }
   };
   it('should handle the absence of bull config', async () => {
-    await init({} as any, orkaOptions);
+    await init({} as any, appName);
     should.throws(() => {
       getBull();
     }, 'bull is not initialized');
@@ -78,7 +76,7 @@ describe('bull init', () => {
   describe('when using common redis options', () => {
     it('should initialize bull with orka redis options', async () => {
       const config = merge({}, baseConfig, orkaRedisConfig);
-      await init(config as any, orkaOptions);
+      await init(config as any, appName);
       const bull = getBull();
       const expectedRedisOpts = {
         host: 'orka',
@@ -86,13 +84,13 @@ describe('bull init', () => {
         tls: { ca: ['orka-ca'], cert: 'orka-cert', key: 'orka-key' },
         enableReadyCheck: false
       };
-      bull.redisOpts.should.be.eql(expectedRedisOpts);
+      bull['redisOpts'].should.be.eql(expectedRedisOpts);
     });
   });
   describe('when using bull specific redis options', () => {
     it('should initialize bull with specific redis options', async () => {
       const config = merge({}, baseConfig, orkaRedisConfig, bullRedisConfig);
-      await init(config as any, orkaOptions);
+      await init(config as any, appName);
       const bull = getBull();
       const expectedRedisOpts = {
         host: 'bull',
@@ -100,11 +98,11 @@ describe('bull init', () => {
         tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
         enableReadyCheck: false
       };
-      bull.redisOpts.should.be.eql(expectedRedisOpts);
+      bull['redisOpts'].should.be.eql(expectedRedisOpts);
     });
     it('should allow passing more redis options', async () => {
       const config = merge({}, baseConfig, orkaRedisConfig, bullRedisConfig, moreRedisOpts);
-      await init(config as any, orkaOptions);
+      await init(config as any, appName);
       const bull = getBull();
       const expectedRedisOpts = {
         host: 'bull',
@@ -112,19 +110,19 @@ describe('bull init', () => {
         tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
         enableReadyCheck: true
       };
-      bull.redisOpts.should.be.eql(expectedRedisOpts);
+      bull['redisOpts'].should.be.eql(expectedRedisOpts);
     });
   });
   it('should initialize bull with queue options from configuration', async () => {
     const config = merge({}, baseConfig, bullRedisConfig, queueConfig);
-    await init(config as any, orkaOptions);
+    await init(config as any, appName);
     const bull = getBull();
-    bull.prefix.should.be.eql(orkaOptions.appName);
-    bull.defaultOptions.should.be.eql(queueConfig.bull.queue.options);
+    bull['prefix'].should.be.eql(appName);
+    bull['defaultOptions'].should.be.eql(queueConfig.bull.queue.options);
     const expectedQueues = {
       queue_one: { name: 'queue_one', options: { priority: 1 } },
       queue_two: { name: 'queue_two', options: { delay: 15000 } }
     };
-    bull.queueOpts.should.be.eql(expectedQueues);
+    bull['queueOpts'].should.be.eql(expectedQueues);
   });
 });

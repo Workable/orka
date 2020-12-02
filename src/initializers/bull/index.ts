@@ -1,17 +1,18 @@
 import { isEmpty, omit } from 'lodash';
 import { getLogger } from '../log4js';
-import { OrkaOptions } from '../../typings/orka';
+import { getPrometheus } from '../prometheus';
+import Bull from './bull';
 
-let bull: any;
+let bull: Bull;
 const logger = getLogger('orka.initializers.bull');
 
-export default async (config, orkaOptions: Partial<OrkaOptions>) => {
+export default async (config, appName: string) => {
   if (!config.bull || !config.bull.queue?.queues || (!config.bull.redis?.url && !config.redis?.url)) {
     return;
   }
   const { parseURL } = await import('ioredis/built/utils');
 
-  const prefix = orkaOptions.appName;
+  const prefix = appName;
   const defaultOptions = config.bull.queue.options;
   const redis = config.bull.redis || config.redis;
   const options = { enableReadyCheck: false, ...omit(config.bull.redis || config.redis.options, ['url', 'tls']) };
@@ -31,12 +32,12 @@ export default async (config, orkaOptions: Partial<OrkaOptions>) => {
   };
 
   const Bull = (await import('./bull')).default;
-  bull = new Bull(prefix, queues, defaultOptions, redisOpts);
+  bull = new Bull(prefix, queues, defaultOptions, redisOpts, getPrometheus());
   logger.info(`Bull initialized with redis: ${redisOpts.host}:${redisOpts.port} (tls: ${!isEmpty(redisOpts.tls)})`);
   logger.info(`Bull configured queues: ${queues.map(q => q.name).join(', ')} (namespace: ${prefix})`);
 };
 
-export const getBull = () => {
+export const getBull = (): Bull => {
   if (!bull) {
     throw new Error('bull is not initialized');
   }

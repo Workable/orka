@@ -1,7 +1,6 @@
 import should = require('should');
 const mock = require('mock-require');
 import * as sinon from 'sinon';
-import * as cron from 'node-cron';
 
 const sandbox = sinon.createSandbox();
 
@@ -76,46 +75,63 @@ describe('bull class', () => {
       stats.should.be.eql([{ queue: 'test_one', count: 10, failed: 3 }]);
     });
   });
-  describe('startMetrics', () => {
-    describe('when invalid cron expression is provided', () => {
-      it('should throw invalid cron expression error', () => {
-        const cronExpression = 'invalid cron expression';
-        should.throws(() => bull.startMetrics(cronExpression), `Invalid cron expression: ${cronExpression}`);
+
+  describe('updateMetrics', () => {
+    describe('when prometheus is not available', () => {
+      it('should noop and log error', async () => {
+        const errorLogSpy = sandbox.spy(bull.logger, 'error');
+        const getStatsSpy = sandbox.spy(bull, 'getStats');
+        await bull.updateMetrics();
+        sandbox.assert.notCalled(getStatsSpy);
+        sandbox.assert.calledOnce(errorLogSpy);
+        should(errorLogSpy.args[0][0].message).be.equal(
+          'Prometheus metrics not enabled, Bull queue metrics will not be exported'
+        );
       });
     });
-    describe('when metrics not started before', () => {
-      it('should schedule a metrics reporting task bases on the provided cron expression', () => {
-        const cronExpression = '*/10 * * * * *';
-        const scheduleMock = sandbox.stub(cron, 'schedule');
-        bull.startMetrics(cronExpression);
-        sandbox.assert.calledOnce(scheduleMock);
-        sandbox.assert.calledWith(scheduleMock, cronExpression);
+    describe('when prometheus is available', () => {
+      let depth, failed, register;
+      beforeEach(async () => {
+        depth = sandbox.stub();
+        failed = sandbox.stub();
+        register = sandbox.stub();
+        register.onCall(0).returns({ set: depth });
+        register.onCall(1).returns({ set: failed });
+        const prometheus = {
+          registerGauge: register
+        };
+        const Bull = (await import('../../../src/initializers/bull/bull')).default;
+        bull = new Bull(prefix, queues, defaultOptions, redisOptions, prometheus);
+      });
+      it('should add queue metrics to prometheus', async () => {
+        const queue = 'test_one';
+        const getStatsSpy = sandbox.spy(bull, 'getStats');
+        await bull.updateMetrics();
+        sandbox.assert.calledOnce(getStatsSpy);
+        sandbox.assert.calledOnce(depth);
+        sandbox.assert.calledWith(depth, { queue }, 10);
+        sandbox.assert.calledOnce(failed);
+        sandbox.assert.calledWith(failed, { queue }, 3);
       });
     });
-    describe('when metrics already started', () => {
-      it('should throw "metrics task already running" error', () => {
-        const cronExpression = '*/10 * * * * *';
-        const scheduleMock = sandbox.stub(cron, 'schedule').returns({});
-        bull.startMetrics(cronExpression);
-        should.throws(() => bull.startMetrics(cronExpression), 'Metrics task already running');
-        sandbox.assert.calledOnce(scheduleMock);
+    describe('deprecated methods', () => {
+      const expected =
+        '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***';
+      let warnLogSpy;
+      beforeEach(() => {
+        warnLogSpy = sandbox.spy(bull.logger, 'warn');
       });
-    });
-  });
-  describe('stopMetrics', () => {
-    describe('when no task is running', () => {
-      it('should throw task not currently running error', () => {
-        should.throws(() => bull.stopMetrics(), 'Metrics task not currently running');
+      describe('startMetrics', () => {
+        it('should log deprecation warning', () => {
+          bull.startMetrics();
+          sandbox.assert.calledWith(warnLogSpy, expected);
+        });
       });
-    });
-    describe('when a task is running', () => {
-      it('should stop the task', () => {
-        const destroyMock = sandbox.stub();
-        const cronExpression = '*/10 * * * * *';
-        sandbox.stub(cron, 'schedule').returns({ destroy: destroyMock });
-        bull.startMetrics(cronExpression);
-        bull.stopMetrics();
-        sandbox.assert.calledOnce(destroyMock);
+      describe('stopMetrics', () => {
+        it('should log deprecation warning', () => {
+          bull.stopMetrics();
+          sandbox.assert.calledWith(warnLogSpy, expected);
+        });
       });
     });
   });

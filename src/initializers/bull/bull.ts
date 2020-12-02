@@ -1,12 +1,8 @@
 import * as _ from 'lodash';
-import * as cron from 'node-cron';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
+
 const Queue = requireInjected('bull');
-const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? requireInjected('newrelic') : null;
-
-const caseModifiers = ['camelCase', 'snakeCase', 'lowerCase', 'upperCase', 'kebabCase', 'startCase'];
-
 export default class Bull {
   private logger = getLogger('orka.bull');
   private prefix: string;
@@ -15,14 +11,17 @@ export default class Bull {
   private queueOpts: { [x: string]: { options: any } };
   private queueNames: string[];
   private instances = {};
-  private metricsTask: any;
+  private metrics;
+  private prometheus;
 
-  constructor(prefix, queueOpts, defaultOptions, redisOpts) {
+  constructor(prefix, queueOpts, defaultOptions, redisOpts, prometheus?) {
     this.prefix = prefix;
     this.defaultOptions = defaultOptions;
     this.queueOpts = _.keyBy(queueOpts, 'name');
     this.queueNames = _.map(queueOpts, 'name');
     this.redisOpts = redisOpts;
+    this.prometheus = prometheus;
+    this.registerMetrics();
   }
 
   private createQueue(name: string) {
@@ -43,6 +42,39 @@ export default class Bull {
       });
     // Cache the instance
     this.instances[name] = queue;
+  }
+
+  // Register prometheus metrics, if prometheus is available
+  private registerMetrics() {
+    if (!this.prometheus) {
+      this.logger.warn(`Prometheus metrics not enabled, Bull queue metrics will not be exported`);
+      return;
+    }
+    try {
+      this.metrics = {
+        depth: this.prometheus.registerGauge('bull_queue_depth', 'Bull Jobs in Queue', ['queue']),
+        failed: this.prometheus.registerGauge('bull_queue_failed', 'Bull Jobs Failed', ['queue'])
+      };
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  // Update prometheus metrics on demand
+  public async updateMetrics() {
+    if (!this.prometheus || !this.metrics) {
+      this.logger.error(new Error('Prometheus metrics not enabled, Bull queue metrics will not be exported'));
+      return;
+    }
+    try {
+      const stats = await this.getStats();
+      stats.forEach(({ queue, count, failed }) => {
+        this.metrics.depth.set({ queue }, count);
+        this.metrics.failed.set({ queue }, failed);
+      });
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   public getQueue(name: string) {
@@ -69,44 +101,16 @@ export default class Bull {
     return Promise.all(stats);
   }
 
-  private recordMetric(key: string, value: number) {
-    if (newrelic) {
-      newrelic.recordMetric(key, value);
-    } else {
-      getLogger('bull.metrics').info(`${key}: ${value}`);
-    }
-  }
-
-  private async reportStats(queueNameCase?: string) {
-    const stats = await this.getStats();
-    const queueNameTransform = caseModifiers.includes(queueNameCase) ? _[queueNameCase] : _.camelCase;
-    stats.forEach(entry => {
-      this.recordMetric(`Bull/Queues/${queueNameTransform(entry.queue)}`, entry.count);
-      this.recordMetric(`Bull/QueuesFailed/${queueNameTransform(entry.queue)}`, entry.failed);
-    });
-  }
-
   public startMetrics(cronExpression, queueNameCase?: string) {
-    if (!cron.validate(cronExpression)) {
-      throw new Error(`Invalid cron expression: ${cronExpression}`);
-    }
-    if (this.metricsTask) {
-      throw new Error('Metrics task already running');
-    }
-    this.logger.info(`Scheduled queue metrics reporting with cron: "${cronExpression}"`);
-    const output = newrelic ? 'new relic' : 'logs';
-    this.metricsTask = cron.schedule(cronExpression, async () => {
-      getLogger('bull.metrics').info(`Sending queue metrics to ${output}`);
-      await this.reportStats(queueNameCase);
-    });
+    this.logger.warn(
+      '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***'
+    );
   }
 
   public stopMetrics() {
-    if (!this.metricsTask) {
-      throw new Error('Metrics task not currently running');
-    }
-    this.metricsTask.destroy();
-    this.metricsTask = null;
+    this.logger.warn(
+      '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***'
+    );
   }
 }
 
