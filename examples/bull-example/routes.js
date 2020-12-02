@@ -1,6 +1,7 @@
 const { getBull, getLogger } = require('../../build');
 const path = require('path');
 const uuid = require('uuid/v4');
+const { metrics } = require('../../build/middlewares');
 const bull = getBull();
 
 const logger = getLogger('bull-example');
@@ -8,6 +9,7 @@ const queueLogger = getLogger(`queue_one:${process.pid}`);
 
 module.exports = {
   get: {
+    '/metrics': metrics,
     '/init': async (ctx, next) => {
       bull.getQueue('queue_one').process((job, done) => {
         // with done(error, results) callback
@@ -42,11 +44,6 @@ module.exports = {
           ctx.body += message;
           ctx.status = 200;
         });
-    },
-    '/stats': async (ctx, next) => {
-      const stats = await bull.getStats();
-      ctx.body += `Stats\n==================\n${stats.map(JSON.stringify).join('\n')}`;
-      ctx.status = 200;
     }
   }
 };
