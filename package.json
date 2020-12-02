@@ -81,16 +81,18 @@
     "@types/node": "^12.19.5",
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
-    "bull": "^3.16.0",
+    "bull": "*",
     "dd-trace": "*",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.3",
     "mocha": "^8.1.3",
     "mock-require": "^3.0.3",
     "newrelic": "*",
+    "nock": "^13.0.5",
     "node-rdkafka": "^2.8.1",
     "nyc": "^15.1.0",
     "prettier": "^1.19.1",
+    "prom-client": "*",
     "should": "^13.2.3",
     "sinek": "*",
     "sinon": "^7.5.0",
@@ -103,6 +105,7 @@
     "bull": "*",
     "dd-trace": "*",
     "newrelic": "*",
+    "prom-client": "*",
     "sinek": "*"
   }
 }
