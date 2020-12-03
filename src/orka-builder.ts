@@ -21,6 +21,7 @@ import assert = require('assert');
 import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';
+import prometheus from './initializers/prometheus';
 import bull from './initializers/bull';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
@@ -157,8 +158,13 @@ export default class OrkaBuilder {
     return this;
   }
 
+  withPrometheus(appName: string = this.options.appName) {
+    this.queue.push(() => prometheus(this.config, appName));
+    return this;
+  }
+
   withBull(appName: string = this.options.appName) {
-    this.queue.push(() => bull(this.config, { appName }));
+    this.queue.push(() => bull(this.config, appName));
     return this;
   }
 

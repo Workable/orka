@@ -11,7 +11,7 @@ INSTRUCTIONS:
 1) use /init to start the queue processing
 2) use /add/one to add a job to the queue_one
 3) use /add/two to add a job to the queue_two
-4) use /stats to see queue statistics
+4) use /metrics to see queue exported metrics (prometheus)
 
 `;
       await next();

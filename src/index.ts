@@ -11,4 +11,5 @@ export { getKafka } from './initializers/kafka';
 export { getRabbit } from './initializers/rabbitmq';
 export { getRedis, createRedisConnection } from './initializers/redis';
 export { getBull } from './initializers/bull';
+export { getPrometheus } from './initializers/prometheus';
 export { middlewares };

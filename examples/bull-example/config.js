@@ -6,8 +6,10 @@ module.exports = {
   log: {
     json: false
   },
+  prometheus: {
+    enabled: true
+  },
   bull: {
-    metricsSchedule: '*/10 * * * * *',
     redis: {
       url: 'redis://localhost:6379/',
       tls: {
