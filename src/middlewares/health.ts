@@ -21,7 +21,7 @@ export default async function(ctx: Context, next: () => Promise<null>) {
     ctx.status = 200;
     ctx.body = {
       env: OrkaBuilder.INSTANCE.config.nodeEnv,
-      version: `v${process.env.npm_package_version}`
+      version: process.env.DD_VERSION || `v${process.env.npm_package_version}`
     };
   } else {
     ctx.status = 503;
