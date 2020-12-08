@@ -2,19 +2,20 @@ import should = require('should');
 // const mock = require('mock-require');
 import * as sinon from 'sinon';
 import * as nock from 'nock';
+import Prometheus from '../../../src/initializers/prometheus/prometheus';
 
 const sandbox = sinon.createSandbox();
 
 describe('prometheus class', () => {
-  const prefix = 'prefix';
-  let instance;
+  const appName = 'my_app';
+  let instance: Prometheus;
   afterEach(() => {
     instance = null;
     sandbox.restore();
   });
 
   beforeEach(async () => {
-    instance = await makeInstance(prefix);
+    instance = await makeInstance(appName);
   });
 
   describe('#contentType', () => {
@@ -27,20 +28,20 @@ describe('prometheus class', () => {
     it('should returns metrics as string', () => {
       const counterName = 'counter';
       const gaugeName = 'gauge';
-      const counter = instance.registerCounter(counterName, `${counterName} help`);
-      const gauge = instance.registerGauge(gaugeName, `${gaugeName} help`, ['label']);
+      const counter = instance.registerCounter('custom', counterName, `${counterName} help`);
+      const gauge = instance.registerGauge('external', gaugeName, `${gaugeName} help`, ['label']);
       counter.inc(1);
       counter.inc(10);
       gauge.set({ label: 'one' }, 100);
       gauge.set({ label: 'two' }, 200);
-      const expected = `# HELP prefix_counter counter help
-      # TYPE prefix_counter counter
-      prefix_counter 11
+      const expected = `# HELP custom_my_app_counter counter help
+      # TYPE custom_my_app_counter counter
+      custom_my_app_counter 11
       
-      # HELP prefix_gauge gauge help
-      # TYPE prefix_gauge gauge
-      prefix_gauge{label="one"} 100
-      prefix_gauge{label="two"} 200
+      # HELP external_my_app_gauge gauge help
+      # TYPE external_my_app_gauge gauge
+      external_my_app_gauge{label="one"} 100
+      external_my_app_gauge{label="two"} 200
       `.replace(/[ ]{2,}/g, '');
       should(instance.metrics()).be.equal(expected);
     });
@@ -49,33 +50,39 @@ describe('prometheus class', () => {
   describe('#registerCounter', () => {
     it('should return a Counter metric', () => {
       const name = 'My Counter';
-      const counter = instance.registerCounter(name, 'my counter help', ['foo', 'bar']);
+      const counter = instance.registerCounter('custom', name, 'my counter help', ['foo', 'bar']);
       should(counter).not.be.undefined();
-      should(counter.name).be.equal('prefix_my_counter');
+      should(counter['name']).be.equal('custom_my_app_my_counter');
       should(counter.inc).be.Function();
-      should(counter.labelNames).be.eql(['foo', 'bar']);
-      instance.getMetric(name).should.be.equal(counter);
+      should(counter['labelNames']).be.eql(['foo', 'bar']);
+      instance.getMetric('custom', name).should.be.equal(counter);
     });
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerCounter(name, name);
-      should.throws(() => instance.registerCounter(name, name), 'Metric prefix_my_metric is already registered');
+      instance.registerCounter('custom', name, name);
+      should.throws(
+        () => instance.registerCounter('custom', name, name),
+        'Metric custom_my_app_my_metric is already registered'
+      );
     });
   });
   describe('#registerGauge', () => {
     it('should return a Gauge metric', () => {
       const name = 'my-gauge';
-      const gauge = instance.registerGauge(name, 'my gauge help', ['foo', 'bar']);
+      const gauge = instance.registerGauge('custom', name, 'my gauge help', ['foo', 'bar']);
       should(gauge).not.be.undefined();
-      should(gauge.name).be.equal('prefix_my_gauge');
+      should(gauge['name']).be.equal('custom_my_app_my_gauge');
       should(gauge.set).be.Function();
-      should(gauge.labelNames).be.eql(['foo', 'bar']);
-      instance.getMetric(name).should.be.equal(gauge);
+      should(gauge['labelNames']).be.eql(['foo', 'bar']);
+      instance.getMetric('custom', name).should.be.equal(gauge);
     });
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerGauge(name, name);
-      should.throws(() => instance.registerGauge(name, name), 'Metric prefix_my_metric is already registered');
+      instance.registerGauge('custom', name, name);
+      should.throws(
+        () => instance.registerGauge('custom', name, name),
+        'Metric custom_my_app_my_gauge is already registered'
+      );
     });
   });
   describe('#push', () => {
@@ -88,14 +95,14 @@ describe('prometheus class', () => {
       const gatewayUrl = 'http://push.gateway.local';
       let gatewayMock;
       beforeEach(async () => {
-        instance = await makeInstance(prefix, gatewayUrl);
+        instance = await makeInstance(appName, gatewayUrl);
         gatewayMock = nock(gatewayUrl);
       });
       afterEach(() => {
         nock.cleanAll();
       });
       it('should push metrics to gateway', () => {
-        gatewayMock.put('/metrics/job/prefix').reply(200);
+        gatewayMock.put(`/metrics/job/${appName}`).reply(200);
         return instance
           .push()
           .should.be.fulfilled()
@@ -105,7 +112,7 @@ describe('prometheus class', () => {
       });
       describe('when gateway returns error', () => {
         it('should be rejected with error from gateway', () => {
-          gatewayMock.put('/metrics/job/prefix').replyWithError('Oops!');
+          gatewayMock.put(`/metrics/job/${appName}`).replyWithError('Oops!');
           return instance
             .push()
             .should.be.rejectedWith('Oops!')
@@ -119,6 +126,5 @@ describe('prometheus class', () => {
 });
 
 async function makeInstance(prefix, gatewayUrl = null) {
-  const Prometheus = (await import('../../../src/initializers/prometheus/prometheus')).default;
   return new Prometheus(prefix, gatewayUrl);
 }

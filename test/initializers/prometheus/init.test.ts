@@ -31,7 +31,7 @@ describe('prometheus init', () => {
       await init(config, appName);
       const prom = getPrometheus();
       should(prom).not.be.undefined();
-      prom['prefix'].should.equal('custom_my_test_app');
+      prom['appName'].should.equal('my_test_app');
       should(prom['gateway']).be.undefined();
     });
   });
@@ -47,7 +47,7 @@ describe('prometheus init', () => {
       const prom = getPrometheus();
       should(prom).not.be.undefined();
       should(prom['gateway']).not.be.undefined();
-      prom['prefix'].should.equal('custom_my_test_app');
+      prom['appName'].should.equal('my_test_app');
       prom['gateway']['gatewayUrl'].should.equal('http://somehost.local');
     });
   });

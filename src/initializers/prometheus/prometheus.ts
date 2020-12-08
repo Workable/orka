@@ -1,25 +1,36 @@
 import requireInjected from '../../require-injected';
-import { Registry as RegistryType, Metric, Pushgateway as PushgatewayType } from '../../typings/prometheus';
+import {
+  Registry as RegistryType,
+  Pushgateway as PushgatewayType,
+  Gauge as GaugeType,
+  Counter as CounterType
+} from '../../typings/prometheus';
 const { Registry, Counter, Gauge, Pushgateway } = requireInjected('prom-client');
 import { snakeCase } from 'lodash';
 
+type metricType = 'custom' | 'external';
+
 export default class Prometheus {
   private registry: RegistryType;
-  private prefix: string;
+  private appName: string;
   private gatewayUrl: string;
   private gateway: PushgatewayType;
 
-  constructor(prefix: string, gatewayUrl?: string) {
+  constructor(appName: string, gatewayUrl?: string) {
     this.registry = new Registry();
-    this.prefix = prefix;
+    this.appName = appName;
     this.gatewayUrl = gatewayUrl;
     if (this.gatewayUrl) {
       this.gateway = new Pushgateway(this.gatewayUrl, {}, this.registry);
     }
   }
 
-  private baseConfig(name: string, help: string, labelNames?: string[]) {
-    const fullName = snakeCase(`${this.prefix}_${name}`);
+  private fullName(type: metricType, name: string) {
+    return snakeCase(`${type}_${this.appName}_${name}`);
+  }
+
+  private baseConfig(type: metricType, name: string, help: string, labelNames?: string[]) {
+    const fullName = this.fullName(type, name);
     if (this.registry.getSingleMetric(fullName)) {
       throw new Error(`Metric ${name} is already registered`);
     }
@@ -31,18 +42,18 @@ export default class Prometheus {
     };
   }
 
-  public registerCounter(name: string, help: string, labelNames?: string[]): Metric<string> {
-    const config = this.baseConfig(name, help, labelNames);
+  public registerCounter(type: metricType, name: string, help: string, labelNames?: string[]): CounterType<string> {
+    const config = this.baseConfig(type, name, help, labelNames);
     return new Counter(config);
   }
 
-  public registerGauge(name: string, help: string, labelNames?: string[]): Metric<string> {
-    const config = this.baseConfig(name, help, labelNames);
+  public registerGauge(type: metricType, name: string, help: string, labelNames?: string[]): GaugeType<string> {
+    const config = this.baseConfig(type, name, help, labelNames);
     return new Gauge(config);
   }
 
-  public getMetric(name) {
-    const fullName = snakeCase(`${this.prefix}_${name}`);
+  public getMetric(type: metricType, name) {
+    const fullName = this.fullName(type, name);
     return this.registry.getSingleMetric(fullName);
   }
 
@@ -58,7 +69,7 @@ export default class Prometheus {
     if (!this.gateway) {
       return Promise.reject(new Error('Pushgateway not configured'));
     }
-    const params = { jobName: this.prefix };
+    const params = { jobName: this.appName };
     return new Promise((resolve, reject) => {
       this.gateway.push(params, (err, resp, body) => {
         if (err) {
