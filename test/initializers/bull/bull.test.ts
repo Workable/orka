@@ -1,6 +1,7 @@
 import should = require('should');
 const mock = require('mock-require');
 import * as sinon from 'sinon';
+import Prometheus from '../../../src/initializers/prometheus/prometheus';
 
 const sandbox = sinon.createSandbox();
 
@@ -99,7 +100,7 @@ describe('bull class', () => {
         register.onCall(1).returns({ set: failed });
         const prometheus = {
           registerGauge: register
-        };
+        } as Prometheus;
         const Bull = (await import('../../../src/initializers/bull/bull')).default;
         bull = new Bull(prefix, queues, defaultOptions, redisOptions, prometheus);
       });

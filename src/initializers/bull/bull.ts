@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
+import Prometheus from '../prometheus/prometheus';
 
 const Queue = requireInjected('bull');
 export default class Bull {
@@ -12,9 +13,9 @@ export default class Bull {
   private queueNames: string[];
   private instances = {};
   private metrics;
-  private prometheus;
+  private prometheus: Prometheus;
 
-  constructor(prefix, queueOpts, defaultOptions, redisOpts, prometheus?) {
+  constructor(prefix, queueOpts, defaultOptions, redisOpts, prometheus?: Prometheus) {
     this.prefix = prefix;
     this.defaultOptions = defaultOptions;
     this.queueOpts = _.keyBy(queueOpts, 'name');
@@ -52,8 +53,8 @@ export default class Bull {
     }
     try {
       this.metrics = {
-        depth: this.prometheus.registerGauge('bull_queue_depth', 'Bull Jobs in Queue', ['queue']),
-        failed: this.prometheus.registerGauge('bull_queue_failed', 'Bull Jobs Failed', ['queue'])
+        depth: this.prometheus.registerGauge('external', 'bull_queue_depth', 'Bull Jobs in Queue', ['queue']),
+        failed: this.prometheus.registerGauge('external', 'bull_queue_failed', 'Bull Jobs Failed', ['queue'])
       };
     } catch (err) {
       this.logger.error(err);

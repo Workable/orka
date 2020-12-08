@@ -10,10 +10,10 @@ export default async (config, appName: string) => {
   if (!config.prometheus?.enabled) {
     return;
   }
-  const prefix = snakeCase(`custom_${appName}`);
+  const app = snakeCase(appName);
   const Prometheus = (await import('./prometheus')).default;
-  instance = new Prometheus(prefix, config.prometheus.gatewayUrl);
-  logger.info(`Prometheus initialized with prefix: ${prefix}`);
+  instance = new Prometheus(app, config.prometheus.gatewayUrl);
+  logger.info(`Prometheus initialized with application name: ${app}`);
 };
 
 export const getPrometheus = (): Prometheus => {
