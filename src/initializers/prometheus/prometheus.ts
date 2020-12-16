@@ -3,15 +3,17 @@ import {
   Registry as RegistryType,
   Pushgateway as PushgatewayType,
   Gauge as GaugeType,
-  Counter as CounterType
+  Counter as CounterType,
+  Histogram as HistogramType,
+  Summary as SummaryType
 } from '../../typings/prometheus';
-const { Registry, Counter, Gauge, Pushgateway } = requireInjected('prom-client');
+const { Registry, Counter, Gauge, Pushgateway, Histogram, Summary } = requireInjected('prom-client');
 import { snakeCase } from 'lodash';
 
 type metricType = 'custom' | 'external';
 
 export default class Prometheus {
-  private registry: RegistryType;
+  registry: RegistryType;
   private appName: string;
   private gatewayUrl: string;
   private gateway: PushgatewayType;
@@ -25,11 +27,11 @@ export default class Prometheus {
     }
   }
 
-  private fullName(type: metricType, name: string) {
+  public fullName(type: metricType, name: string) {
     return snakeCase(`${type}_${this.appName}_${name}`);
   }
 
-  private baseConfig(type: metricType, name: string, help: string, labelNames?: string[]) {
+  public baseConfig(type: metricType, name: string, help: string, labelNames?: string[]) {
     const fullName = this.fullName(type, name);
     if (this.registry.getSingleMetric(fullName)) {
       throw new Error(`Metric ${name} is already registered`);
@@ -50,6 +52,16 @@ export default class Prometheus {
   public registerGauge(type: metricType, name: string, help: string, labelNames?: string[]): GaugeType<string> {
     const config = this.baseConfig(type, name, help, labelNames);
     return new Gauge(config);
+  }
+
+  public registerHistogram(type: metricType, name: string, help: string, labelNames: string[]): HistogramType<string> {
+    const config = this.baseConfig(type, name, help, labelNames);
+    return new Histogram(config);
+  }
+
+  public registerSummary(type: metricType, name: string, help: string, labelNames?: string[]): SummaryType<string> {
+    const config = this.baseConfig(type, name, help, labelNames);
+    return new Summary(config);
   }
 
   public getMetric(type: metricType, name) {
