@@ -3,6 +3,7 @@ import should = require('should');
 import * as sinon from 'sinon';
 import * as nock from 'nock';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
+import assert = require('assert');
 
 const sandbox = sinon.createSandbox();
 
@@ -85,6 +86,49 @@ describe('prometheus class', () => {
       );
     });
   });
+
+  describe('#registerHistogram', () => {
+    it('should return a Histogram metric', () => {
+      const name = 'my-histogram';
+      const histogram = instance.registerHistogram('custom', name, 'my gauge help', ['foo', 'bar']);
+      should(histogram).not.be.undefined();
+      should(histogram['name']).be.equal('custom_my_app_my_histogram');
+      should(histogram.observe).be.Function();
+      should(histogram['labelNames']).be.eql(['foo', 'bar']);
+      instance.getMetric('custom', name).should.be.equal(histogram);
+    });
+
+    it('should throw error if already registered', () => {
+      const name = 'my_metric';
+      instance.registerHistogram('custom', name, name, ['foo', 'bar']);
+      assert.throws(() => instance.registerHistogram('custom', name, name, ['foo', 'bar']), {
+        name: 'Error',
+        message: 'Metric my_metric is already registered'
+      });
+    });
+  });
+
+  describe('#registerSummary', () => {
+    it('should return a Summary metric', () => {
+      const name = 'my-summary';
+      const summary = instance.registerSummary('custom', name, 'my gauge help', ['foo', 'bar']);
+      should(summary).not.be.undefined();
+      should(summary['name']).be.equal('custom_my_app_my_summary');
+      should(summary.observe).be.Function();
+      should(summary['labelNames']).be.eql(['foo', 'bar']);
+      instance.getMetric('custom', name).should.be.equal(summary);
+    });
+
+    it('should throw error if already registered', () => {
+      const name = 'my_metric';
+      instance.registerSummary('custom', name, name, ['foo', 'bar']);
+      assert.throws(() => instance.registerSummary('custom', name, name, ['foo', 'bar']), {
+        name: 'Error',
+        message: 'Metric my_metric is already registered'
+      });
+    });
+  });
+
   describe('#push', () => {
     describe('when no gateway url is provided', () => {
       it('should be rejected with an error', () => {
