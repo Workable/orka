@@ -1,4 +1,4 @@
-const regex = /^v(\d+)\.(\d+)\.(\d+)$/g;
+const regex = /^v(\d+)\.(\d+)\.(\d+)$/;
 
 export const alsSupported = () =>
   nodeVersionGreaterThanEqual('v12.17.0') ||
@@ -6,8 +6,12 @@ export const alsSupported = () =>
   nodeVersionGreaterThanEqual('v14.0.0');
 
 export const nodeVersionGreaterThanEqual = (requestedVersion: string, version = process.version) => {
-  const [major, minor, patch] = [...version.matchAll(regex)][0].slice(1).map((n: string) => parseInt(n, 10));
-  const [requestedMajor, requestedMinor, requestedPatch] = [...requestedVersion.matchAll(regex)][0]
+  const [major, minor, patch] = version
+    .match(regex)
+    .slice(1)
+    .map((n: string) => parseInt(n, 10));
+  const [requestedMajor, requestedMinor, requestedPatch] = requestedVersion
+    .match(regex)
     .slice(1)
     .map((n: string) => parseInt(n, 10));
 
