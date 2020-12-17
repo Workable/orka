@@ -2,8 +2,8 @@ import * as sinon from 'sinon';
 import { Context } from 'koa';
 import 'should';
 import metrics from '../../src/middlewares/metrics';
-import * as prometheus from '../../src/index';
-import * as bull from '../../src/index';
+import * as prometheus from '../../src/initializers/prometheus';
+import * as bull from '../../src/initializers/bull';
 import OrkaBuilder from '../../src/orka-builder';
 
 describe('Metrics middleware', function() {
