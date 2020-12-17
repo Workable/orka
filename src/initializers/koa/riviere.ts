@@ -16,8 +16,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       https: true,
       level: 'info',
       maxBodyValueChars: config.riviere.maxBodyValueChars,
-      blacklistedPaths: ['/v0.4/traces'],
-      ...config.riviere.outbound
+      blacklistedPathRegex: config.riviere.outbound && config.riviere.outbound.blacklistedPathRegex
     },
     inbound: {
       level: 'info',
