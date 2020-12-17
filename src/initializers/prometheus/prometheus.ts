@@ -1,12 +1,14 @@
 import requireInjected from '../../require-injected';
-import {
+// prettier-ignore
+import type {
   Registry as RegistryType,
   Pushgateway as PushgatewayType,
   Gauge as GaugeType,
   Counter as CounterType,
   Histogram as HistogramType,
   Summary as SummaryType
-} from '../../typings/prometheus';
+} from 'prom-client';
+
 const { Registry, Counter, Gauge, Pushgateway, Histogram, Summary } = requireInjected('prom-client');
 import { snakeCase } from 'lodash';
 
