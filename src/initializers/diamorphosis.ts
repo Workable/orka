@@ -41,6 +41,9 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
         enabled: false
       }
     },
+    outbound: {
+      blacklistedPathRegex: new RegExp('^/v0.4/traces$', 'i')
+    },
     color: true,
     styles: [],
     headersRegex: '^X-.*',

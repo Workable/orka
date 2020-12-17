@@ -15,7 +15,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       enabled: config.riviere.enabled,
       https: true,
       level: 'info',
-      maxBodyValueChars: config.riviere.maxBodyValueChars
+      maxBodyValueChars: config.riviere.maxBodyValueChars,
+      blacklistedPathRegex: config.riviere.outbound && config.riviere.outbound.blacklistedPathRegex
     },
     inbound: {
       level: 'info',
@@ -23,7 +24,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       request: {
         enabled: config.riviere.inbound.request.enabled
       },
-      maxBodyValueChars: config.riviere.maxBodyValueChars
+      maxBodyValueChars: config.riviere.maxBodyValueChars,
+      ...config.riviere.inbound
     } as any,
     errors: {
       enabled: config.riviere.enabled
