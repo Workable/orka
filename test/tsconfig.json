@@ -12,5 +12,5 @@
     "lib": ["es2019", "es2020.string"]
   },
   "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
