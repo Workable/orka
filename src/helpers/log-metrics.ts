@@ -17,7 +17,7 @@ const logMetrics = {
     return process.hrtime.bigint();
   },
 
-  end(start, flow, flowType, id) {
+  end(start: bigint, flow: string, flowType: string, id: string) {
     const ns = process.hrtime.bigint() - start;
     const s = Number(ns) / 1e9;
     if (prometheusTimeEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
@@ -25,7 +25,7 @@ const logMetrics = {
     logger.info(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
   },
 
-  recordMetric(eventType: string, event: string, value: number) {
+  recordMetric(event: string, eventType: string, value: number) {
     logger.debug(`[${eventType}][${event}]: ${value}`);
 
     if (newRelicEnabled()) getNewRelic().recordMetric('Custom/' + eventType + '/' + event, value);
