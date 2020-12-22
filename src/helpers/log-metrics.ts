@@ -20,7 +20,7 @@ const logMetrics = {
   end(start, flow, flowType, id) {
     const ns = process.hrtime.bigint() - start;
     const s = Number(ns) / 1e9;
-    if (prometheusEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
+    if (prometheusTimeEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
     if (newRelicEnabled()) getNewRelic().recordMetric(`Custom/${flowType}/${flow}`, s);
     logger.info(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
   },
@@ -29,14 +29,20 @@ const logMetrics = {
     logger.debug(`[${eventType}][${event}]: ${value}`);
 
     if (newRelicEnabled()) getNewRelic().recordMetric('Custom/' + eventType + '/' + event, value);
-    if (prometheusEnabled()) logMetrics.prometheusRecordMetricsClient().observe({ event, eventType }, value);
+    if (prometheusEventEnabled()) logMetrics.prometheusRecordMetricsClient().observe({ event, eventType }, value);
   }
 };
 
-function prometheusEnabled() {
+function prometheusTimeEnabled() {
   const OrkaBuilder: typeof OrkaBuilderType = require('../orka-builder').default;
   const config = OrkaBuilder.INSTANCE?.config;
-  return config?.prometheus?.enabled;
+  return config?.prometheus?.enabled && config?.prometheus?.timeSummary?.enabled;
+}
+
+function prometheusEventEnabled() {
+  const OrkaBuilder: typeof OrkaBuilderType = require('../orka-builder').default;
+  const config = OrkaBuilder.INSTANCE?.config;
+  return config?.prometheus?.enabled && config?.prometheus?.eventSummary?.enabled;
 }
 
 function newRelicEnabled() {
