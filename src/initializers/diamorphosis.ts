@@ -22,6 +22,31 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     blacklistedPaths: ['/health'],
     ...config.datadog
   };
+  config.prometheus = {
+    enabled: false,
+    gatewayUrl: '',
+    ...config.prometheus,
+    timeSummary: {
+      enabled: true,
+      labels: ['flow', 'flowType'],
+      type: 'external',
+      name: 'flow_duration_seconds',
+      help: 'Flow duration in seconds',
+      ageBuckets: 10,
+      maxAgeSeconds: 60,
+      ...config.prometheus?.timeSummary
+    },
+    eventSummary: {
+      enabled: true,
+      labels: ['event', 'eventType'],
+      type: 'external',
+      name: 'events',
+      help: 'Custom events, eg: event occurences, event lengths',
+      ageBuckets: 10,
+      maxAgeSeconds: 60,
+      ...config.prometheus?.eventSummary
+    }
+  };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
     pattern: '%[[%d] [%p] %c%] %x{logTracer} %m',

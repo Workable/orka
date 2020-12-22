@@ -6,26 +6,73 @@ import type {
   Gauge as GaugeType,
   Counter as CounterType,
   Histogram as HistogramType,
-  Summary as SummaryType
+  Summary as SummaryType,
+  SummaryConfiguration,
+  HistogramConfiguration
 } from 'prom-client';
 
-const { Registry, Counter, Gauge, Pushgateway, Histogram, Summary } = requireInjected('prom-client');
-import { snakeCase } from 'lodash';
+const {
+  Registry,
+  Counter,
+  Gauge,
+  Pushgateway,
+  Histogram,
+  Summary
+}: {
+  Summary: typeof SummaryType;
+  Histogram: typeof HistogramType;
+  Pushgateway: typeof PushgatewayType;
+  Registry: typeof RegistryType;
+  Counter: typeof CounterType;
+  Gauge: typeof GaugeType;
+} = requireInjected('prom-client');
+import { pickBy, snakeCase } from 'lodash';
 
 type metricType = 'custom' | 'external';
 
+type metricOptionsType = {
+  enabled: boolean;
+  labels: string[];
+  type: metricType;
+  name: string;
+  help: string;
+  ageBuckets: number;
+  maxAgeSeconds: number;
+};
+
+type optionsType = {
+  gatewayUrl: string;
+  timeSummary?: metricOptionsType;
+  eventSummary?: metricOptionsType;
+};
 export default class Prometheus {
   registry: RegistryType;
   private appName: string;
   private gatewayUrl: string;
   private gateway: PushgatewayType;
+  public timeSummary: SummaryType<string>;
+  public eventSummary: SummaryType<string>;
 
-  constructor(appName: string, gatewayUrl?: string) {
+  constructor(appName: string, options?: optionsType) {
     this.registry = new Registry();
     this.appName = appName;
-    this.gatewayUrl = gatewayUrl;
+    this.gatewayUrl = options?.gatewayUrl;
     if (this.gatewayUrl) {
       this.gateway = new Pushgateway(this.gatewayUrl, {}, this.registry);
+    }
+    let metric = options?.timeSummary;
+    if (metric?.enabled) {
+      this.timeSummary = this.registerSummary(metric.type, metric.name, metric.help, metric.labels, {
+        ageBuckets: metric.ageBuckets,
+        maxAgeSeconds: metric.maxAgeSeconds
+      });
+    }
+    metric = options?.eventSummary;
+    if (metric?.enabled) {
+      this.eventSummary = this.registerSummary(metric.type, metric.name, metric.help, metric.labels, {
+        ageBuckets: metric.ageBuckets,
+        maxAgeSeconds: metric.maxAgeSeconds
+      });
     }
   }
 
@@ -56,14 +103,27 @@ export default class Prometheus {
     return new Gauge(config);
   }
 
-  public registerHistogram(type: metricType, name: string, help: string, labelNames: string[]): HistogramType<string> {
+  public registerHistogram(
+    type: metricType,
+    name: string,
+    help: string,
+    labelNames: string[],
+    buckets?
+  ): HistogramType<string> {
     const config = this.baseConfig(type, name, help, labelNames);
-    return new Histogram(config);
+    const options = pickBy<HistogramConfiguration<string>>({ ...config, buckets }) as HistogramConfiguration<string>;
+    return new Histogram(options);
   }
 
-  public registerSummary(type: metricType, name: string, help: string, labelNames?: string[]): SummaryType<string> {
+  public registerSummary(
+    type: metricType,
+    name: string,
+    help: string,
+    labelNames?: string[],
+    options?: Partial<SummaryConfiguration<string>>
+  ): SummaryType<string> {
     const config = this.baseConfig(type, name, help, labelNames);
-    return new Summary(config);
+    return new Summary({ ...config, ...options });
   }
 
   public getMetric(type: metricType, name) {
