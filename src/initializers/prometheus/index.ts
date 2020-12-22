@@ -12,7 +12,7 @@ export default async (config, appName: string) => {
   }
   const app = snakeCase(appName);
   const Prometheus = (await import('./prometheus')).default;
-  instance = new Prometheus(app, config.prometheus.gatewayUrl);
+  instance = new Prometheus(app, config.prometheus);
   logger.info(`Prometheus initialized with application name: ${app}`);
 };
 

@@ -170,5 +170,5 @@ describe('prometheus class', () => {
 });
 
 async function makeInstance(prefix, gatewayUrl = null) {
-  return new Prometheus(prefix, gatewayUrl);
+  return new Prometheus(prefix, { gatewayUrl });
 }
