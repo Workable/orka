@@ -1,5 +1,6 @@
 import Orka from './orka';
 import * as middlewares from './middlewares';
+import * as helpers from './helpers';
 
 export { default as builder, getRequestContext } from './builder';
 export { getLogger } from './initializers/log4js';
@@ -12,4 +13,4 @@ export { getRabbit } from './initializers/rabbitmq';
 export { getRedis, createRedisConnection } from './initializers/redis';
 export { getBull } from './initializers/bull';
 export { getPrometheus } from './initializers/prometheus';
-export { middlewares };
+export { middlewares, helpers };
