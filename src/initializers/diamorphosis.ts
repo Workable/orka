@@ -23,7 +23,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.datadog
   };
   config.prometheus = {
-    enabled: true,
+    enabled: false,
     gatewayUrl: '',
     ...config.prometheus,
     timeSummary: {
