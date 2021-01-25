@@ -12,7 +12,8 @@
     "prepublishOnly": "npm run build && npm test",
     "pretest": "tslint --project ./src/ && tslint  ./test/**/*.ts && npm run build",
     "test": "nyc mocha",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "kafka:start": "HOST_IP=$(ifconfig | grep -E \"([0-9]{1,3}\\.){3}[0-9]{1,3}\" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1) docker-compose -f kafka-docker-compose.yml up"
   },
   "husky": {
     "hooks": {
@@ -94,7 +95,6 @@
     "prettier": "^2.2.1",
     "prom-client": "*",
     "should": "^13.2.3",
-    "sinek": "*",
     "sinon": "^7.5.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.5.2",
@@ -105,7 +105,6 @@
     "bull": "*",
     "dd-trace": "*",
     "newrelic": "*",
-    "prom-client": "*",
-    "sinek": "*"
+    "prom-client": "*"
   }
 }
