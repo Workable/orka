@@ -25,7 +25,8 @@ export default class OrkaKafka {
       brokers: producer.brokers,
       clientId,
       logCreator: (level: number) => entry => {
-        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](entry.log);
+        const { message, ...extra } = entry.log;
+        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](message, extra);
       },
       ...getAuthOptions(producer)
     });
@@ -43,7 +44,8 @@ export default class OrkaKafka {
       brokers,
       clientId,
       logCreator: (level: number) => entry => {
-        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](entry.log);
+        const { message, ...extra } = entry.log;
+        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](message, extra);
       },
       ...getAuthOptions(this.options)
     });
