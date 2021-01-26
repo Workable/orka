@@ -75,23 +75,9 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     maxBodyValueChars: undefined,
     ...config.riviere
   };
-  if (config.kafka) {
-    config.kafka.producer = {
-      brokers: [...(config.kafka.producer?.brokers || [])],
-      certificates: {
-        key: '',
-        cert: '',
-        ca: '',
-        ...config.kafka.producer?.certificates
-      },
-      sasl: {
-        username: '',
-        password: '',
-        ...config.kafka.producer?.sasl
-      },
-      ...config.kafka.producer
-    };
-  }
+
+  addKafkaConfig(config);
+
   config.requestContext = {
     enabled: alsSupported(),
     logKeys: ['requestId', 'visitor'],
@@ -106,7 +92,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       ...config.kafka.producer,
       brokers: config.kafka.brokers,
       certificates: config.kafka.certificates,
-      sasl: config.kafka.sasl
+      sasl: config.kafka.sasl,
+      ssl: config.kafka.ssl
     };
   }
 
@@ -120,3 +107,48 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     config.riviere.styles = ['json'];
   }
 };
+
+function addKafkaConfig(config) {
+  config.kafka = {
+    brokers: [],
+    groupId: '',
+    clientId: '',
+    ssl: true,
+    ...config.kafka,
+    log: {
+      level: 'info',
+      ...config.kafka?.log
+    },
+    certificates: {
+      key: '',
+      cert: '',
+      ca: [],
+      rejectUnauthorized: false,
+      ...config.kafka?.certificates
+    },
+    sasl: {
+      mechanism: '',
+      username: '',
+      password: '',
+      ...config.kafka?.sasl
+    },
+    producer: {
+      brokers: [],
+      ssl: true,
+      ...config.kafka.producer,
+      certificates: {
+        key: '',
+        cert: '',
+        ca: [],
+        rejectUnauthorized: false,
+        ...config.kafka?.producer?.certificates
+      },
+      sasl: {
+        mechanism: '',
+        username: '',
+        password: '',
+        ...config.kafka?.producer?.sasl
+      }
+    }
+  };
+}

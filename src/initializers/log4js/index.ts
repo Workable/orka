@@ -65,11 +65,11 @@ export default async config => {
         appenders: appendersList,
         level: config.log.level
       },
-      'orka.kafka.consumer.internal': {
+      'orka.kafka.consumer': {
         appenders: appendersList,
         level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
       },
-      'orka.kafka.producer.internal': {
+      'orka.kafka.producer': {
         appenders: appendersList,
         level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
       }
