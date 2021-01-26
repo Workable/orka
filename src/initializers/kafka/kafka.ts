@@ -19,14 +19,13 @@ export default class OrkaKafka {
   }
 
   public async connect() {
-    const { brokers, producer, clientId } = this.options;
-
+    const { producer, clientId } = this.options;
     this.produceClient = new Kafka({
       brokers: producer.brokers,
       clientId,
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
-        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](message, extra);
+        getLogger('orka.kafka.producer')[entry.label.toLowerCase()](message, extra);
       },
       ...getAuthOptions(producer)
     });
@@ -34,7 +33,7 @@ export default class OrkaKafka {
     this.producer = this.produceClient.producer();
     await this.producer.connect();
 
-    logger.info(`Kafka connected ${producer?.brokers?.join(', ') || brokers.join(', ')}`);
+    logger.info(`Kafka connected ${producer?.brokers?.join(', ')}`);
   }
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
@@ -53,6 +52,49 @@ export default class OrkaKafka {
     await consumer.connect();
     logger.info(`Kafka consumer(${groupId}) connected ${brokers.join(', ')}`);
     return consumer;
+  }
+
+  public async connectAdmin() {
+    const { brokers, clientId } = this.options;
+    const kafka = new Kafka({
+      brokers,
+      clientId,
+      logCreator: (level: number) => entry => {
+        const { message, ...extra } = entry.log;
+        if (extra.error === 'Topic with this name already exists') return;
+        getLogger('orka.kafka.admin')[entry.label.toLowerCase()](message, extra);
+      },
+      ...getAuthOptions(this.options)
+    });
+    const admin = kafka.admin();
+    await admin.connect();
+    logger.info(`Kafka admin connected ${brokers.join(', ')}`);
+    return admin;
+  }
+
+  public async metadata() {
+    const admin = await this.connectAdmin();
+    const metadata = await admin.fetchTopicMetadata();
+    admin.disconnect();
+    return metadata;
+  }
+
+  public async createTopics(topics: KafkajsType.ITopicConfig[]) {
+    const admin = await this.connectAdmin();
+    const responses = await Promise.all(
+      topics.map(topic =>
+        admin
+          .createTopics({ topics: [topic] })
+          .catch(e => {
+            logger.error(e);
+            return e;
+          })
+          .then(response => ({ [topic.topic]: response }))
+      )
+    );
+    await admin.disconnect();
+    logger.info(`Created topics: ${JSON.stringify(responses)}`);
+    return responses;
   }
 
   /**
