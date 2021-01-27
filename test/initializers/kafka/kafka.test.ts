@@ -44,23 +44,13 @@ describe('kafka class', () => {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          certificates: {
-            key: 'key',
-            cert: 'cert',
-            ca: 'ca',
-            rejectUnauthorized: false
-          },
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            certificates: {
-              key: 'key',
-              cert: 'cert',
-              ca: 'ca',
-              rejectUnauthorized: false
-            }
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           }
         });
         await kafka.connect();
@@ -72,30 +62,12 @@ describe('kafka class', () => {
             {
               brokers: ['broker-producer'],
               clientId: 'clientId',
-              ssl: {
-                ca: ['ca'],
-                cert: 'cert',
-                key: 'key',
-                rejectUnauthorized: false
-              }
+              ssl: { ca: ['ca'], cert: 'cert', key: 'key', rejectUnauthorized: false }
             }
           ]
         ]);
         producerStub.send.args.should.containDeep([
-          [
-            {
-              messages: [
-                {
-                  headers: {
-                    header1: 'header',
-                    header2: 'header'
-                  },
-                  value: 'msg'
-                }
-              ],
-              topic: 'topic'
-            }
-          ]
+          [{ messages: [{ headers: { header1: 'header', header2: 'header' }, value: 'msg' }], topic: 'topic' }]
         ]);
       });
     });
@@ -103,21 +75,13 @@ describe('kafka class', () => {
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          sasl: {
-            mechanism: 'scram-sha-256',
-            password: 'foo',
-            username: 'bar'
-          },
+          sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            sasl: {
-              mechanism: 'scram-sha-256',
-              password: 'foo-producer',
-              username: 'bar'
-            },
+            sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' },
             ssl: true
           }
         });
@@ -131,29 +95,12 @@ describe('kafka class', () => {
               brokers: ['broker-producer'],
               clientId: 'clientId',
               ssl: true,
-              sasl: {
-                mechanism: 'scram-sha-256',
-                password: 'foo-producer',
-                username: 'bar'
-              }
+              sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
             }
           ]
         ]);
         producerStub.send.args.should.containDeep([
-          [
-            {
-              messages: [
-                {
-                  headers: {
-                    header1: 'header',
-                    header2: 'header'
-                  },
-                  value: 'msg'
-                }
-              ],
-              topic: 'topic'
-            }
-          ]
+          [{ messages: [{ headers: { header1: 'header', header2: 'header' }, value: 'msg' }], topic: 'topic' }]
         ]);
       });
     });
@@ -163,23 +110,13 @@ describe('kafka class', () => {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          certificates: {
-            key: 'key',
-            cert: 'cert',
-            ca: 'ca',
-            rejectUnauthorized: false
-          },
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            certificates: {
-              key: 'key',
-              cert: 'cert',
-              ca: 'ca',
-              rejectUnauthorized: false
-            }
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           }
         });
         await kafka.createConsumer();
@@ -189,12 +126,7 @@ describe('kafka class', () => {
             {
               brokers: ['broker-consumer'],
               clientId: 'clientId',
-              ssl: {
-                ca: ['ca'],
-                cert: 'cert',
-                key: 'key',
-                rejectUnauthorized: false
-              }
+              ssl: { ca: ['ca'], cert: 'cert', key: 'key', rejectUnauthorized: false }
             }
           ]
         ]);
@@ -204,21 +136,13 @@ describe('kafka class', () => {
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          sasl: {
-            mechanism: 'scram-sha-256',
-            password: 'foo',
-            username: 'bar'
-          },
+          sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            sasl: {
-              mechanism: 'scram-sha-256',
-              password: 'foo-producer',
-              username: 'bar'
-            }
+            sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
           ssl: true
         });
@@ -231,11 +155,7 @@ describe('kafka class', () => {
               brokers: ['broker-consumer'],
               clientId: 'clientId',
               ssl: true,
-              sasl: {
-                mechanism: 'scram-sha-256',
-                password: 'foo',
-                username: 'bar'
-              }
+              sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' }
             }
           ]
         ]);
@@ -247,23 +167,13 @@ describe('kafka class', () => {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          certificates: {
-            key: 'key',
-            cert: 'cert',
-            ca: 'ca',
-            rejectUnauthorized: false
-          },
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            certificates: {
-              key: 'key',
-              cert: 'cert',
-              ca: 'ca',
-              rejectUnauthorized: false
-            }
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           }
         });
         await kafka.connectAdmin();
@@ -273,12 +183,7 @@ describe('kafka class', () => {
             {
               brokers: ['broker-consumer'],
               clientId: 'clientId',
-              ssl: {
-                ca: ['ca'],
-                cert: 'cert',
-                key: 'key',
-                rejectUnauthorized: false
-              }
+              ssl: { ca: ['ca'], cert: 'cert', key: 'key', rejectUnauthorized: false }
             }
           ]
         ]);
@@ -288,21 +193,13 @@ describe('kafka class', () => {
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
-          sasl: {
-            mechanism: 'scram-sha-256',
-            password: 'foo',
-            username: 'bar'
-          },
+          sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
           brokers: ['broker-consumer'],
           producer: {
             brokers: ['broker-producer'],
-            sasl: {
-              mechanism: 'scram-sha-256',
-              password: 'foo-producer',
-              username: 'bar'
-            }
+            sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
           ssl: true
         });
@@ -315,11 +212,7 @@ describe('kafka class', () => {
               brokers: ['broker-consumer'],
               clientId: 'clientId',
               ssl: true,
-              sasl: {
-                mechanism: 'scram-sha-256',
-                password: 'foo',
-                username: 'bar'
-              }
+              sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' }
             }
           ]
         ]);
@@ -330,21 +223,13 @@ describe('kafka class', () => {
   describe('metadata', function () {
     it('returns metadata', async function () {
       const kafka = new Kafka({
-        sasl: {
-          mechanism: 'scram-sha-256',
-          password: 'foo',
-          username: 'bar'
-        },
+        sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',
         brokers: ['broker-consumer'],
         producer: {
           brokers: ['broker-producer'],
-          sasl: {
-            mechanism: 'scram-sha-256',
-            password: 'foo-producer',
-            username: 'bar'
-          }
+          sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
         },
         ssl: true
       });
@@ -358,21 +243,13 @@ describe('kafka class', () => {
   describe('createTopics', function () {
     it('creates topics', async function () {
       const kafka = new Kafka({
-        sasl: {
-          mechanism: 'scram-sha-256',
-          password: 'foo',
-          username: 'bar'
-        },
+        sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',
         brokers: ['broker-consumer'],
         producer: {
           brokers: ['broker-producer'],
-          sasl: {
-            mechanism: 'scram-sha-256',
-            password: 'foo-producer',
-            username: 'bar'
-          }
+          sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
         },
         ssl: true
       });
@@ -387,11 +264,7 @@ describe('kafka class', () => {
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }],
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'test' }] }]
       ]);
-      response.should.eql([
-         { foo: true },
-        { bar: false },
-        { test: false }
-      ]);
+      response.should.eql([{ foo: true }, { bar: false }, { test: false }]);
     });
   });
 });
