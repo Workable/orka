@@ -114,7 +114,6 @@ export default class OrkaKafka {
       messages: [{ key, value: message, headers, partition }]
     });
 
-    console.log(JSON.stringify(recordMetadata));
     logger.info(
       `partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${key}) produced for topic ${topic}`
     );
@@ -127,9 +126,9 @@ function getAuthOptions(options: {
   ssl?: KafkaConfig['ssl'];
   sasl?: KafkaConfig['sasl'];
 }) {
-  const { key, cert, ca } = options.certificates;
+  const { key, cert, ca } = options.certificates || {};
   if (key && cert && ca) return { ssl: { ...options.certificates, ca: flatten([ca]) } };
 
-  const { username, password } = options.sasl;
+  const { username, password } = options.sasl || {};
   if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }

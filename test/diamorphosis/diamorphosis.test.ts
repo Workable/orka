@@ -66,8 +66,21 @@ describe('Diamorphosis Test', () => {
       const config = require(options.diamorphosis.configPath);
       delete config.kafka;
       diamorphosis(config, options);
-
-      assert(config.kafka === undefined);
+      config.kafka.should.eql({
+        brokers: [],
+        groupId: '',
+        clientId: '',
+        ssl: true,
+        log: { level: 'info' },
+        certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
+        sasl: { mechanism: '', username: '', password: '' },
+        producer: {
+          brokers: ['confluent1', 'confluent2'],
+          ssl: true,
+          certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
+          sasl: { mechanism: '', username: '', password: '' }
+        }
+      });
     });
 
     it('kafka.producer options should set if exist in process.env', () => {
@@ -82,14 +95,17 @@ describe('Diamorphosis Test', () => {
       config.kafka.producer.should.eql({
         brokers: ['confluent1', 'confluent2'],
         certificates: {
-          ca: '',
+          ca: [],
           cert: '',
-          key: ''
+          key: '',
+          rejectUnauthorized: false
         },
         sasl: {
+          mechanism: '',
           username: 'producer username',
           password: 'producer password'
         },
+        ssl: true,
         topics: {
           topic1: 'topic1'
         }

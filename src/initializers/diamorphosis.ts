@@ -135,7 +135,7 @@ function addKafkaConfig(config) {
     producer: {
       brokers: [],
       ssl: true,
-      ...config.kafka.producer,
+      ...config.kafka?.producer,
       certificates: {
         key: '',
         cert: '',

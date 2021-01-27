@@ -10,7 +10,7 @@ export interface KafkaConfig {
     username: string;
     password: string;
   };
-  ssl: boolean;
+  ssl?: boolean;
   groupId: string;
   clientId: string;
   brokers: string[];
@@ -22,14 +22,14 @@ export interface KafkaConfig {
       cert: string;
       ca: string;
     };
-    ssl: boolean;
+    ssl?: boolean;
     sasl?: {
       mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
       username: string;
       password: string;
     };
   };
-  log: {
+  log?: {
     level: 'info' | 'debug' | 'error' | 'warn' | 'nothing';
   };
 }
