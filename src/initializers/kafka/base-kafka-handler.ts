@@ -7,7 +7,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
   consumer: KafkajsType.Consumer;
   topic: string | string[];
   logger: Logger;
-  fromBeggining: boolean;
+  fromBeginning: boolean;
   partitionsConsumedConcurrently: number;
   runOptions: KafkajsType.ConsumerRunConfig;
   jsonParseValue: boolean;
@@ -17,20 +17,20 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     kafka: Kafka,
     options: {
       topic: string | string[];
-      logger: Logger;
-      fromBeggining?: boolean;
+      logger?: Logger;
+      fromBeginning?: boolean;
       autoOffsetReset?: 'earliest' | 'latest';
-      consumerOptions: KafkajsType.ConsumerConfig;
-      runOptions: KafkajsType.ConsumerRunConfig;
-      jsonParseValue: boolean;
-      stringifyHeaders: boolean;
+      consumerOptions?: KafkajsType.ConsumerConfig;
+      runOptions?: KafkajsType.ConsumerRunConfig;
+      jsonParseValue?: boolean;
+      stringifyHeaders?: boolean;
     }
   ) {
-    const { topic, logger, autoOffsetReset, fromBeggining } = options;
+    const { topic, logger, autoOffsetReset, fromBeginning } = options;
     if (autoOffsetReset) {
-      this.fromBeggining = autoOffsetReset === 'earliest';
+      this.fromBeginning = autoOffsetReset === 'earliest';
     } else {
-      this.fromBeggining = fromBeggining;
+      this.fromBeginning = fromBeginning;
     }
 
     this.topic = topic;
@@ -50,7 +50,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
   async consume() {
     this.logger.info(`[${this.topic}] Consuming...`);
     await Promise.all(
-      flatten([this.topic]).map(topic => this.consumer.subscribe({ topic, fromBeginning: this.fromBeggining }))
+      flatten([this.topic]).map(topic => this.consumer.subscribe({ topic, fromBeginning: this.fromBeginning }))
     );
     await this.consumer.run({
       ...this.runOptions,
@@ -71,7 +71,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
       }) => {
         message.topic = topic;
         message.partition = partition;
-        if (this.jsonParseValue) {
+        if (this.jsonParseValue && message.value) {
           try {
             message.rawValue = message.value;
             message.value = JSON.parse(message.value.toString());
@@ -79,7 +79,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
             this.logger.error(e);
           }
         }
-        if (this.stringifyHeaders) {
+        if (this.stringifyHeaders && message.headers) {
           message.rawHeaders = message.headers;
           message.headers = Object.keys(message.headers).reduce(
             (m, k) => ({ ...m, [k]: message.headers[k].toString() }),

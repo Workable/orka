@@ -1,5 +1,5 @@
 import * as sinon from 'sinon';
-import 'should';
+import * as should from 'should';
 import Kafka from '../../../src/initializers/kafka/kafka';
 import BaseKafkaHandler from '../../../src/initializers/kafka/base-kafka-handler';
 
@@ -11,32 +11,31 @@ const logger = {
 } as any;
 
 describe('base kafka handler class', async () => {
-  let cbStub, handleStub, producerStub, consumeStub;
+  let handleStub, consumeStub, runStub, subscribeStub;
 
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
-    public async handle(...args) {
+    public async handle(args) {
       handleStub(args);
     }
   }
 
-  function assertConsume() {
-    consumeStub.connect.calledOnce.should.be.true();
-    consumeStub.consume.calledOnce.should.be.true();
-    consumeStub.commit.calledOnce.should.be.true();
-    handleStub.calledOnce.should.be.true();
-    cbStub.calledOnce.should.be.true();
-    handleStub.calledWith('msg');
-    consumeStub.commit.calledWith(false);
-  }
-
   beforeEach(() => {
-    cbStub = sinon.stub();
-    handleStub = sinon.stub();
-    producerStub = { connect: sandbox.stub(), on: sandbox.stub(), send: sandbox.stub().returns({}) };
+    handleStub = sandbox.stub();
+    runStub = sandbox.stub();
+    subscribeStub = sandbox.stub();
     consumeStub = {
-      connect: sinon.stub().returns(Promise.resolve()),
-      commit: sinon.stub(),
-      consume: sinon.stub().callsFake(async fn => await fn({ value: 'msg' }, cbStub))
+      subscribe: subscribeStub,
+      run: runStub.callsFake(
+        async ({ eachMessage: fn }) =>
+          await fn({
+            message: {
+              value: Buffer.from('{"msg":"msg"}'),
+              headers: { key: Buffer.from('key') }
+            },
+            topic: 'topic',
+            partition: '1'
+          }).catch(e => console.log(e))
+      )
     };
   });
 
@@ -45,41 +44,97 @@ describe('base kafka handler class', async () => {
   });
 
   it('should call consumer with multiple topics', async () => {
-    sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
-    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
+    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
     const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
-    const handler = new TestKafkaHandler(kafka, { topic: ['topic1', 'topic2'], logger, batchSize: 2 });
+    const consumerOptions = { groupId: 'newGroup' };
+    const runOptions = { partitionsConsumedConcurrently: 5 };
+    const handler = new TestKafkaHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
     await new Promise(resolve => setTimeout(resolve, 10));
-    sandbox.assert.calledOnce(createConsumer);
-    sandbox.assert.calledWith(createConsumer, ['topic1', 'topic2']);
-    assertConsume();
+    createConsumer.calledOnce.should.be.true();
+    createConsumer.args.should.eql([[consumerOptions]]);
+    subscribeStub.args.should.eql([
+      [{ topic: 'topic1', fromBeginning: undefined }],
+      [{ topic: 'topic2', fromBeginning: undefined }]
+    ]);
+    should.equal(undefined, handler.fromBeginning);
+    consumeStub.run.args.should.containDeep([[runOptions]]);
+    handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
   });
 
-  describe('with default autoOffsetReset', () => {
-    it('should call correct methods with correct args', async () => {
-      sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
+  context('with autoOffsetReset latest', function () {
+    it('should call consumer fromBeginning false', async () => {
+      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
-      const handler = new TestKafkaHandler(kafka, { topic: 'topic', logger, batchSize: 2 });
+      const consumerOptions = { groupId: 'newGroup' };
+      const runOptions = { partitionsConsumedConcurrently: 5 };
+      const handler = new TestKafkaHandler(kafka, {
+        topic: ['topic1', 'topic2'],
+        consumerOptions,
+        runOptions,
+        autoOffsetReset: 'latest'
+      });
       await new Promise(resolve => setTimeout(resolve, 10));
-      sandbox.assert.calledOnce(createConsumer);
-      sandbox.assert.calledWith(createConsumer, 'topic');
-      handler.autoOffsetReset.should.be.equal('earliest');
-      assertConsume();
+      createConsumer.calledOnce.should.be.true();
+      createConsumer.args.should.eql([[consumerOptions]]);
+      subscribeStub.args.should.eql([
+        [{ topic: 'topic1', fromBeginning: false }],
+        [{ topic: 'topic2', fromBeginning: false }]
+      ]);
+      handler.fromBeginning.should.equal(false);
+      consumeStub.run.args.should.containDeep([[runOptions]]);
+      handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
     });
   });
 
-  describe('with autoOffsetReset latest', () => {
-    it('should call correct methods with correct args', async () => {
-      sandbox.stub(Kafka.prototype, 'createProducer').returns(producerStub);
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').returns(consumeStub);
+  context('with fromBeginning false', function () {
+    it('should call consumer fromBeginning false', async () => {
+      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
-      const handler = new TestKafkaHandler(kafka, { topic: 'topic', logger, batchSize: 2, autoOffsetReset: 'latest' });
+      const consumerOptions = { groupId: 'newGroup' };
+      const runOptions = { partitionsConsumedConcurrently: 5 };
+      const handler = new TestKafkaHandler(kafka, {
+        topic: ['topic1', 'topic2'],
+        consumerOptions,
+        runOptions,
+        fromBeginning: false
+      });
       await new Promise(resolve => setTimeout(resolve, 10));
-      sandbox.assert.calledOnce(createConsumer);
-      sandbox.assert.calledWith(createConsumer, 'topic', 'latest');
-      handler.autoOffsetReset.should.be.equal('latest');
-      assertConsume();
+      createConsumer.calledOnce.should.be.true();
+      createConsumer.args.should.eql([[consumerOptions]]);
+      subscribeStub.args.should.eql([
+        [{ topic: 'topic1', fromBeginning: false }],
+        [{ topic: 'topic2', fromBeginning: false }]
+      ]);
+      handler.fromBeginning.should.equal(false);
+      consumeStub.run.args.should.containDeep([[runOptions]]);
+      handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+    });
+  });
+
+  context('with jsonParseValue false, stringifyHeaders false', function () {
+    it('should call handler with buffer data', async () => {
+      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      const consumerOptions = { groupId: 'newGroup' };
+      const runOptions = { partitionsConsumedConcurrently: 5 };
+      const handler = new TestKafkaHandler(kafka, {
+        topic: ['topic1', 'topic2'],
+        consumerOptions,
+        runOptions,
+        jsonParseValue: false,
+        stringifyHeaders: false
+      });
+      await new Promise(resolve => setTimeout(resolve, 10));
+      createConsumer.calledOnce.should.be.true();
+      createConsumer.args.should.eql([[consumerOptions]]);
+      subscribeStub.args.should.eql([
+        [{ topic: 'topic1', fromBeginning: undefined }],
+        [{ topic: 'topic2', fromBeginning: undefined }]
+      ]);
+      consumeStub.run.args.should.containDeep([[runOptions]]);
+      handleStub.args.should.containDeep([
+        [{ value: Buffer.from('{"msg":"msg"}'), headers: { key: Buffer.from('key') }, topic: 'topic', partition: '1' }]
+      ]);
     });
   });
 });
