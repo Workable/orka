@@ -11,6 +11,7 @@ describe('kafka class', () => {
   let kafkaStub;
   let fetchTopicMetadataStub;
   let createTopicsStub;
+  let kafkaStubReturn;
   let Kafka: typeof KafkaType;
 
   beforeEach(async function () {
@@ -29,7 +30,8 @@ describe('kafka class', () => {
       fetchTopicMetadata: fetchTopicMetadataStub,
       createTopics: createTopicsStub
     });
-    kafkaStub = sinon.stub().returns({ producer: () => producerStub, consumer: consumerStub, admin: adminStub });
+    kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
+    kafkaStub = sinon.stub().returns(kafkaStubReturn);
     delete require.cache[require.resolve('../../../src/initializers/kafka/kafka')];
     mock('kafkajs', { Kafka: kafkaStub });
     ({ default: Kafka } = await import('../../../src/initializers/kafka/kafka'));
@@ -85,10 +87,13 @@ describe('kafka class', () => {
             ssl: true
           }
         });
-        await kafka.connect();
+        const producerConfig = { maxInFlightRequests: 10 };
+        const producerSpy = sandbox.spy(kafkaStubReturn, 'producer');
+        await kafka.connect(producerConfig);
         producerStub.connect.calledOnce.should.eql(true);
 
         await kafka.send('topic', 'msg', null, null, [{ header1: 'header' }, { header2: 'header' }]);
+        producerSpy.args.should.eql([[producerConfig]]);
         kafkaStub.args.should.containDeep([
           [
             {

@@ -18,7 +18,7 @@ export default class OrkaKafka {
     this.options = options;
   }
 
-  public async connect() {
+  public async connect(options?: KafkajsType.ProducerConfig) {
     const { producer, clientId } = this.options;
     this.produceClient = new Kafka({
       brokers: producer.brokers,
@@ -30,7 +30,7 @@ export default class OrkaKafka {
       ...getAuthOptions(producer)
     });
 
-    this.producer = this.produceClient.producer();
+    this.producer = this.produceClient.producer(options);
     await this.producer.connect();
 
     logger.info(`Kafka connected ${producer?.brokers?.join(', ')}`);

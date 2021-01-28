@@ -3,6 +3,7 @@ import * as Koa from 'koa';
 import OrkaBuilder from './orka-builder';
 import { Middleware } from 'koa';
 import { omit } from 'lodash';
+import type * as KafkajsType from 'kafkajs';
 
 export default {
   appName: '',
@@ -27,16 +28,7 @@ export default {
     config: any
   ): Middleware<any> | Middleware<any>[] | Promise<Middleware<any>> | Promise<Middleware<any>[]> => [],
   beforeStart: [] as ((config: any) => void)[] | ((config: any) => void),
-  kafka: {
-    certificates: {
-      key: '',
-      cert: '',
-      ca: ''
-    },
-    groupId: '',
-    clientId: '',
-    brokers: []
-  },
+  kafkaProducer: {} as KafkajsType.ProducerConfig,
   builder: null as OrkaBuilder,
   rabbitOnConnected: () => undefined,
   mongoOnConnected: () => undefined,
