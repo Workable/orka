@@ -84,7 +84,7 @@
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
     "bull": "*",
-    "dd-trace": "^0.30.5",
+    "dd-trace": "*",
     "husky": "^3.0.9",
     "kafkajs": "*",
     "lint-staged": "^9.4.3",
