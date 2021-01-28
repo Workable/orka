@@ -45,7 +45,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     });
   }
 
-  abstract handle(msg: KafkajsType.KafkaMessage & { value: Input }): Promise<Output>;
+  abstract handle(msg: KafkajsType.KafkaMessage & { value: Input; topic: string; partition: number }): Promise<Output>;
 
   async consume() {
     this.logger.info(`[${this.topic}] Consuming...`);
