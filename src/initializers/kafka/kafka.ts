@@ -108,7 +108,7 @@ export default class OrkaKafka {
     inputHeaders?: { [key: string]: string }[]
   ) {
     if (!key) key = uuid.v4();
-    const headers = inputHeaders.reduce((m, h) => ({ ...m, ...h }), {});
+    const headers = inputHeaders?.reduce((m, h) => ({ ...m, ...h }), {});
     const [recordMetadata] = await this.producer.send({
       topic,
       messages: [{ key, value: message, headers, partition }]

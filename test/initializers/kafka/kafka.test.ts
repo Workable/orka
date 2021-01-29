@@ -74,6 +74,35 @@ describe('kafka class', () => {
       });
     });
 
+    context('without headers', function () {
+      it('should call correct methods with correct args', async () => {
+        const kafka = new Kafka({
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
+          groupId: 'groupId',
+          clientId: 'clientId',
+          brokers: ['broker-consumer'],
+          producer: {
+            brokers: ['broker-producer'],
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
+          }
+        });
+        await kafka.connect();
+        producerStub.connect.calledOnce.should.eql(true);
+
+        await kafka.send('topic', 'msg', null, null);
+        kafkaStub.args.should.containDeep([
+          [
+            {
+              brokers: ['broker-producer'],
+              clientId: 'clientId',
+              ssl: { ca: ['ca'], cert: 'cert', key: 'key', rejectUnauthorized: false }
+            }
+          ]
+        ]);
+        producerStub.send.args.should.containDeep([[{ messages: [{ value: 'msg' }], topic: 'topic' }]]);
+      });
+    });
+
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
