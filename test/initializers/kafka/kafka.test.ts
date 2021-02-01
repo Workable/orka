@@ -12,6 +12,8 @@ describe('kafka class', () => {
   let fetchTopicMetadataStub;
   let createTopicsStub;
   let kafkaStubReturn;
+  let fetchOffsetsStub;
+  let setOffsetsStub;
   let Kafka: typeof KafkaType;
 
   beforeEach(async function () {
@@ -24,11 +26,15 @@ describe('kafka class', () => {
     consumerStub = sandbox.stub().returns({ connect: sandbox.stub() });
     fetchTopicMetadataStub = sandbox.stub().resolves('metadata');
     createTopicsStub = sandbox.stub().onFirstCall().resolves(true).resolves(false);
+    fetchOffsetsStub = sandbox.stub();
+    setOffsetsStub = sandbox.stub();
     adminStub = sandbox.stub().returns({
       connect: sandbox.stub(),
       disconnect: sandbox.stub(),
       fetchTopicMetadata: fetchTopicMetadataStub,
-      createTopics: createTopicsStub
+      createTopics: createTopicsStub,
+      fetchOffsets: fetchOffsetsStub,
+      setOffsets: setOffsetsStub
     });
     kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
     kafkaStub = sinon.stub().returns(kafkaStubReturn);
@@ -299,6 +305,44 @@ describe('kafka class', () => {
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'test' }] }]
       ]);
       response.should.eql([{ foo: true }, { bar: false }, { test: false }]);
+    });
+  });
+
+  describe('renameGroupId', function () {
+    it('copies offsets from old groupId-topic combination', async function () {
+      const kafka = new Kafka({
+        sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
+        groupId: 'groupId',
+        clientId: 'clientId',
+        brokers: ['broker-consumer'],
+        producer: {
+          brokers: ['broker-producer'],
+          sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
+        },
+        ssl: true
+      });
+      fetchOffsetsStub.onFirstCall().returns([{ parition: 0, offset: '-1' }]);
+      fetchOffsetsStub.onSecondCall().returns([{ parition: 0, offset: '5' }]);
+      fetchOffsetsStub.onThirdCall().returns([{ parition: 0, offset: '3' }]);
+      fetchOffsetsStub.returns([{ parition: 0, offset: '6' }]);
+      const response = await kafka.renameGroupId([
+        { groupId: 'newGroupId', topic: 'topic', oldGroupId: 'oldGroupId' },
+        { groupId: 'newGroupId2', topic: 'topic2', oldGroupId: 'oldGroupId2' }
+      ]);
+
+      adminStub.args.should.eql([[]]);
+      fetchOffsetsStub.args.should.eql([
+        [{ groupId: 'newGroupId', topic: 'topic', resolveOffsets: false }],
+        [{ groupId: 'newGroupId2', topic: 'topic2', resolveOffsets: false }],
+        [{ groupId: 'oldGroupId', topic: 'topic', resolveOffsets: false }]
+      ]);
+      setOffsetsStub.args.should.eql([
+        [{ groupId: 'newGroupId', partitions: [{ offset: '3', parition: 0 }], topic: 'topic' }]
+      ]);
+      response.should.eql([
+        { groupId: 'newGroupId', oldOffsets: [{ offset: '3', parition: 0 }], renamedFrom: 'oldGroupId' },
+        { alreadyDeclared: true, groupId: 'newGroupId2', renamedFrom: 'oldGroupId2' }
+      ]);
     });
   });
 });

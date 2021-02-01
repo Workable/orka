@@ -7,7 +7,8 @@ module.exports = {
     json: true
   },
   kafka: {
-    groupId: 'orka.example.consumer',
+    groupId: 'orka.example.pigasos',
+    oldGroupId: 'orka.example.consumer',
     clientId: 'orka.example.producer',
     brokers: ['localhost:9092'],
     certificates: {
@@ -25,7 +26,7 @@ module.exports = {
     consumer: {
       topics: {
         name: 'orka.example.test',
-        batchSize: 10
+        groupId: 'orka.example.consumer'
       }
     },
     producer: {

@@ -72,6 +72,33 @@ export default class OrkaKafka {
     return admin;
   }
 
+  public async renameGroupId(groupIds: { groupId: string; topic: string; oldGroupId: string }[]) {
+    const admin = await this.connectAdmin();
+    const renamings = await Promise.all(
+      groupIds
+        .map(async ({ groupId, topic, oldGroupId }) => {
+          const offsets = await admin.fetchOffsets({ groupId, topic, resolveOffsets: false });
+          if (offsets.every(({ offset }) => offset === '-1')) {
+            // groupId is not configured
+            const oldOffsets = await admin.fetchOffsets({ groupId: oldGroupId, topic, resolveOffsets: false });
+            await admin.setOffsets({ groupId, topic, partitions: oldOffsets });
+            return { groupId, renamedFrom: oldGroupId, oldOffsets };
+          } else {
+            return { groupId, renamedFrom: oldGroupId, alreadyDeclared: true };
+          }
+        })
+        .map(promise =>
+          promise.catch(e => {
+            logger.error(e);
+            return e;
+          })
+        )
+    );
+    await admin.disconnect();
+    logger.info(`Added groupIds with offsets: ${JSON.stringify(renamings)}`);
+    return renamings;
+  }
+
   public async metadata() {
     const admin = await this.connectAdmin();
     const metadata = await admin.fetchTopicMetadata();
