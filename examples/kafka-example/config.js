@@ -19,7 +19,9 @@ module.exports = {
       username: '',
       password: ''
     },
-    debug: true,
+    log: {
+      level: 'debug'
+    },
     consumer: {
       topics: {
         name: 'orka.example.test',
