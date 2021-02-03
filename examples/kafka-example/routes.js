@@ -8,8 +8,8 @@ module.exports = {
       const config = require('./config');
       const kafka = getKafka();
       const topic = config.kafka.consumer.topics.name;
-      const batchSize = config.kafka.consumer.topics.batchSize;
-      new KafkaHandler(kafka, { topic, logger: getLogger('test'), batchSize });
+      const groupId = config.kafka.consumer.topics.groupId;
+      new KafkaHandler(kafka, { topic, logger: getLogger('test'), fromBeginning: true, consumerOptions: { groupId } });
     },
     '/write': async (ctx, next) => {
       const config = require('./config');
