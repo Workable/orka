@@ -5,7 +5,7 @@ module.exports = {
   },
   queue: {
     prefetch: 100,
-    url: process.env.CLOUDAMQP_URL || 'amqp://localhost',
+    url: 'amqp://localhost',
     frameMax: 0x1000,
     maxRetries: 0,
     retryDelay: 1000,

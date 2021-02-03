@@ -6,9 +6,9 @@ const logger = getLogger('orka.visitor');
 
 export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURIComponent(cookie))) || {};
 
-export default function(config): Middleware {
+export default function (config): Middleware {
   return async function addVisitorId(ctx: Context, next: () => void) {
-    if (ctx.path === '/health' || !config.visitor || !config.visitor.cookie) {
+    if (ctx.path === '/health' || !config?.visitor?.cookie || config?.visitor?.enabled === false) {
       return await next();
     }
     const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie);

@@ -43,8 +43,8 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   config = config.default && Object.keys(config).length === 1 ? config.default : config;
   diamorphosis(config, options);
 
-  options.appName = options.appName || (config.app && config.app.name);
-
+  options.appName ??= config?.app?.name;
+  options.honeyBadger.developmentEnvironments ??= config?.honeybadger.developmentEnvironments;
   if (require.cache[require.resolve('koa')]) logger.warn('Koa was initialized before orka');
   if (require.cache[require.resolve('mongoose')]) logger.warn('Mongoose was initialized before orka');
   if (require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized before orka');

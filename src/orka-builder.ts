@@ -84,9 +84,7 @@ export default class OrkaBuilder {
         }
     );
     this.useCors();
-    if (this.config.visitor && this.config.visitor.orka) {
-      this.use(() => addVisitorId(this.config));
-    }
+    if (this.config?.visitor?.cookie) this.use(() => addVisitorId(this.config));
     return this;
   }
 

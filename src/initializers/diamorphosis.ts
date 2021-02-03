@@ -12,6 +12,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.clouddebugger = false;
   config.honeybadger = {
     apiKey: '',
+    developmentEnvironments: ['development', 'test'],
     ...config.honeybadger
   };
   config.newRelic = {
@@ -77,6 +78,9 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   };
 
   addKafkaConfig(config);
+  addRabbitMqConfig(config);
+  addMongoDBConfig(config);
+  addRedisConfig(config);
 
   config.requestContext = {
     enabled: alsSupported(),
@@ -148,6 +152,49 @@ function addKafkaConfig(config) {
         username: '',
         password: '',
         ...config.kafka?.producer?.sasl
+      }
+    }
+  };
+}
+
+function addRabbitMqConfig(config) {
+  config.queue = {
+    url: '',
+    prefetch: 1,
+    connectDelay: 5000,
+    ...config.queue,
+    options: {
+      scheduledPublish: true,
+      ...config?.queue?.options
+    }
+  };
+}
+
+function addMongoDBConfig(config) {
+  config.mongodb = {
+    url: '',
+    ...config.mongodb,
+    options: {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: false,
+      ...config?.mongodb?.options
+    }
+  };
+}
+
+function addRedisConfig(config) {
+  config.redis = {
+    url: '',
+    ...config.redis,
+    options: {
+      ...config?.redis?.options,
+      tls: {
+        ca: '',
+        cert: '',
+        key: '',
+        ...config?.redis?.options?.tls
       }
     }
   };
