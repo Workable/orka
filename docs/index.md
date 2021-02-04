@@ -29,4 +29,5 @@ A modern Node.js framework based on koa@2 that comes powered with RabbitMQ, Kafk
 
 [Integrations](https://workable.github.io/orka/integrations/index)
 
+[Console](https://workable.github.io/orka/integrations/console)
 

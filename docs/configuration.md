@@ -17,7 +17,7 @@ nav_order: 2
 
 Orka uses [diamorphosis](https://www.npmjs.com/package/diamorphosis) to load configuration from files and environment variables.
 
-An example of a config/config.js file is the below:
+An example of how configuration is actually loaded:
 
 ### config/config.js
 
@@ -73,7 +73,7 @@ orka({
 
 The names in .env and in your actual env should be uppercase snake case
 
-```
+```sh
 //.env
 QUEUE_PREFETCH=30
 ```
@@ -88,10 +88,11 @@ There are 4 different levels where you can add configuration:
 - actual env variable
 
 Every value you have in config/config.js will be overwritten by values in config/env/{NODE_ENV}.js.
-If you are in development (by default) .env is also loaded into memory and overwrites any value.
+If you are in development .env is also loaded into memory and overwrites any value.
 The most important precedence have actual environment variables.
 
-EG:
+
+Priority with examples:
 
 `NODE_ENV=PRODUCTION QUEUE_PREFETCH=1 node app.js`
 
@@ -106,6 +107,13 @@ config.queue.prefetch value will be 20 from env/production.json.
 config.queue.prefetch value will be 30 from .env
 
 ## Default config values
+
+By default orka loads your config file with some default values and some empty keys.
+Those keys are needed in order for you to be able to overwrite them with env variables.
+However if not overwritten they are not used. Eg. if QUEUE_URL is not set rabbitMQ will 
+never be initialized.
+
+You can find the default values below:
 
 ```json
 {
@@ -239,16 +247,16 @@ config.queue.prefetch value will be 30 from .env
 }
 ```
 
-By default orka adds certain defaults in your config.js file.
-The integration ones eg kafka, prometheus, honeybadger etc won't be used unless you also give the relevant key, url etc.
+You can overwrite those values with various ways:
+- setting them in your config.js file
+- setting the corresponding env variable
+- setting the corresponding env variable in .env for development
+- setting them in env/{NODE_ENV}.(js \| json) for the corresponding environment
 
-- in config.js
-- through env variable
-
-EG:
+eg:
 
 ` HONEYBADGER_API_KEY={key} node app.js`
 
-Will connect to honeybadger for error logging without any further configuration needed.
+will connect to honeybadger for error logging without any further configuration needed.
 
 Refer to [Integrations](https://workable.github.io/orka/integrations/index) for the relevant documentation.

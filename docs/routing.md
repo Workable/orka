@@ -61,7 +61,7 @@ Used to add a generic authentication/authorization middleware to a route regardl
 
 ## Prefix
 
-Used to add in multiple routes some middleware in their beggining. It differs from policies because prefix will not match a route if a matching get,post,put,patch or delete route exists.
+Used to add in multiple routes some middleware in their beggining. It differs from policies because prefix will not match a route if a matching get,post,put,patch or delete route does not exist.
 
 
 ## Star Symbol

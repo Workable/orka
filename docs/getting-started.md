@@ -6,6 +6,7 @@ nav_order: 1
 
 # Orka
 {: .no_toc }
+
 ## Table of contents
 {: .no_toc .text-delta }
 
@@ -13,10 +14,6 @@ nav_order: 1
 {:toc}
 
 ---
-
-## Installation
-
-`npm install @workablehr/orka`
 
 ## Philosophy
 
@@ -26,7 +23,33 @@ It integrates with many databases, brokers and services with little configuratio
 
 It has some sensible defaults, but tries to be as unopinionated as possible. You can structure your project any way you want.
 
+## Installation
+
+To install orka and start using it:
+
+`npm install @workablehr/orka`
+
 ## Usage
+
+Bootstraping a server with orka is pretty simple. A simple server without many dependencies can be started with 2 lines of code!
+eg:
+
+```js
+// app.js
+const { orka } = require('@workablehr/orka');
+
+orka({}).start()
+```
+
+Orka expects to find three files by default:
+
+- config/config.js a configuration file
+- config/routes.js a file where all http routes are declared
+- config/logo.txt (optional) a path where the project's Ascii logo is found.
+
+
+There are various options you can change to customize your project differently.
+The default options used are:
 
 ```js
 const { orka } = require('@workablehr/orka');
@@ -34,13 +57,14 @@ const { orka } = require('@workablehr/orka');
 // these options are the defaults
 orka({
   typescript: false,
-  routesPath: path.resolve('./config/routes'),
+  routesPath: path.resolve('./config/routes'), // path to your routes file
   diamorphosis: {
-    configFolder: path.resolve('config'),
-    configPath: path.resolve('config/config.js'),
-    envFolder: path.resolve('config/env')
-    loadDotEnv: ['development']
+    configFolder: path.resolve('config'), // path to your config's folder
+    configPath: path.resolve('config/config.js'), // path to your config's file
+    envFolder: path.resolve('config/env'), // path to your env folder
+    loadDotEnv: ['development'] // in which NODE_ENV's to load .env file
   },
+  logoPath: path.resolve('./config/logo.txt'), // Where to find the logo file
   beforeMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
   afterMiddleware: async (app, config) => [], // return array of Middlewares or one Middleware
   beforeStart: [] // function/functions to run before starting the server,
@@ -50,7 +74,6 @@ orka({
   omitErrorKeys:[], // query or body keys to omit from logging
   riviereContext: (ctx)=>{} // return context to log in every http log
 }).start();
-
 ```
 
 Below we are explaining these options in more detail:
@@ -60,9 +83,9 @@ Below we are explaining these options in more detail:
 Orka supports typescript. Actually Orka is written in typescript.
 To simplify your development with typescript Orka will
 
-- initialise [tsconfig-pats/register](https://www.npmjs.com/package/tsconfig-paths).
+- initialize [tsconfig-pats/register](https://www.npmjs.com/package/tsconfig-paths).
   This will read the paths from tsconfig.json and convert node's module loading calls into to physcial file paths that node can load.
-- initialise [source-map-support/register](https://www.npmjs.com/package/source-map-support).
+- initialize [source-map-support/register](https://www.npmjs.com/package/source-map-support).
   This module provides source map support for stack traces in node via the V8 stack trace API. So your stack traces will resolve to your .ts files.
 
 An example of a tsconfig.json file that works greatly with orka:
@@ -193,7 +216,12 @@ orka({
 
 ### beforeStart
 
-Before the server is actually started and after all tasks have run (integrations initialised).
+You can add some logic before the server is actually started and after all tasks have run (integrations initialized). Some common tasks there include:
+
+- Initialize kafka consumers
+- Register prometheus metrics
+- Initialize anything needed before the server is up
+
 
 eg:
 
@@ -211,7 +239,7 @@ orka({
 
 ### rabbitOnConnected
 
-Create/Subscribe to some queues after rabbitMQ is initialised. This is critical to happen here and not in beforeStart because
+Create/Subscribe to some queues after rabbitMQ is initialized. This is critical to happen here and not in beforeStart because
 rabbitOnConnected will be called again if rabbitMQ is reconnected after a connection loss.
 
 eg:
@@ -243,9 +271,10 @@ An array of keys (strings) from ctx.request.query, ctx.request.body that should 
 
 ### riviereContext
 
-Context to add in each http log.
+Orka is using riviere to log http traffic - both inbound and outbound.
+You can add some context to be added in each http log.
 
-Eg:
+eg:
 
 ```js
 orka({
