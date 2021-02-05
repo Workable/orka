@@ -49,14 +49,20 @@ module.exports = {
 };
 ```
 
-## Get, Post, Put, Delete, Patch
+Of course adding middleware logic inside routes file is not suggested. They are added here to highlight that they are simple koa2 middleware.
+Instead group your routes in controllers under `app/controlelrs` and import them in routes to use them.
+
+## Get, Post, Put, Delete, Patch (method middleware)
 
 Each key can contain one or multiple koa compatible middlewares. The order they are called is preserved.
-In every http request one route is matched and only it's middlewares are used.
+In every http request one route is matched and only it's middlewares are used. 
+Policies are matched and run before any method middleware however.
 
 ## Policy
 
 Used to add a generic authentication/authorization middleware to a route regardless of method.
+You need to call next in order for method middleware to run.
+There could be no method middleware matching 
 
 
 ## Prefix

@@ -55,7 +55,7 @@ module.exports = {
 
 ## Prometheus metrics
 
-It can either be used in conjunction with the `metrics` middleware (pull mode) or if you wish to use it in a non web context, using the _PushGateway_ via the provided `#push()` method.
+It can either be used in conjunction with the `metrics` [middleware](https://workable.github.io/orka/middleware.html#metrics-middleware) (pull mode) or if you wish to use it in a non web context, using the _PushGateway_ via the provided `#push()` method.
 
 The `#push()` method will fail with an error, unless you configure the push gateway url:
 
@@ -72,7 +72,7 @@ Bull is configured to export bull queue depth/failed metrics, so if you use Bull
 you should also enable Prometheus, otherwise you will receive some complaints in the
 logs.
 
-## Build in summaries
+## Built in summaries
 
 For convenience orka comes with 2 summaries a timeSummary and and eventSummary.
 You can change the labels, names by overwriting the config.
