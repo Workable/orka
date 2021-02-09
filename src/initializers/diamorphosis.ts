@@ -20,7 +20,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     ...config.newRelic
   };
   config.datadog = {
-    blacklistedPaths: ['/health'],
+    blacklistedPaths: ['/health', '/metrics'],
     ...config.datadog
   };
   config.prometheus = {
