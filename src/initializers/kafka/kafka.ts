@@ -83,9 +83,9 @@ export default class OrkaKafka {
             const oldOffsets = await admin.fetchOffsets({ groupId: oldGroupId, topic, resolveOffsets: false });
             const knownOffsets = oldOffsets?.filter(o => o.offset !== '-1');
             if (!isEmpty(knownOffsets)) await admin.setOffsets({ groupId, topic, partitions: knownOffsets });
-            return { groupId, renamedFrom: oldGroupId, oldOffsets: knownOffsets };
+            return { groupId, renamedFrom: oldGroupId, topic, oldOffsets: knownOffsets };
           } else {
-            return { groupId, renamedFrom: oldGroupId, alreadyDeclared: true };
+            return { groupId, renamedFrom: oldGroupId, topic, alreadyDeclared: true };
           }
         })
         .map(promise =>

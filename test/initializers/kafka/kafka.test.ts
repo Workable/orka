@@ -347,9 +347,14 @@ describe('kafka class', () => {
         [{ groupId: 'newGroupId', partitions: [{ offset: '3', partition: 0 }], topic: 'topic' }]
       ]);
       response.should.eql([
-        { groupId: 'newGroupId', oldOffsets: [{ offset: '3', partition: 0 }], renamedFrom: 'oldGroupId' },
-        { alreadyDeclared: true, groupId: 'newGroupId2', renamedFrom: 'oldGroupId2' },
-        { groupId: 'newGroupId3', oldOffsets: [], renamedFrom: 'oldGroupId3' }
+        {
+          groupId: 'newGroupId',
+          oldOffsets: [{ offset: '3', partition: 0 }],
+          topic: 'topic',
+          renamedFrom: 'oldGroupId'
+        },
+        { alreadyDeclared: true, groupId: 'newGroupId2', topic: 'topic2', renamedFrom: 'oldGroupId2' },
+        { groupId: 'newGroupId3', oldOffsets: [], topic: 'topic3', renamedFrom: 'oldGroupId3' }
       ]);
     });
   });
