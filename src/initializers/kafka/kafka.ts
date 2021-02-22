@@ -2,7 +2,7 @@ import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 import { KafkaConfig } from '../../typings/kafka';
 import type * as KafkajsType from 'kafkajs';
-import { flatten } from 'lodash';
+import { flatten, isEmpty } from 'lodash';
 import * as uuid from 'uuid';
 
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
@@ -81,10 +81,11 @@ export default class OrkaKafka {
           if (offsets.every(({ offset }) => offset === '-1')) {
             // groupId is not configured
             const oldOffsets = await admin.fetchOffsets({ groupId: oldGroupId, topic, resolveOffsets: false });
-            await admin.setOffsets({ groupId, topic, partitions: oldOffsets });
-            return { groupId, renamedFrom: oldGroupId, oldOffsets };
+            const knownOffsets = oldOffsets?.filter(o => o.offset !== '-1');
+            if (!isEmpty(knownOffsets)) await admin.setOffsets({ groupId, topic, partitions: knownOffsets });
+            return { groupId, renamedFrom: oldGroupId, topic, oldOffsets: knownOffsets };
           } else {
-            return { groupId, renamedFrom: oldGroupId, alreadyDeclared: true };
+            return { groupId, renamedFrom: oldGroupId, topic, alreadyDeclared: true };
           }
         })
         .map(promise =>
