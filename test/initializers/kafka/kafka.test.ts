@@ -321,27 +321,35 @@ describe('kafka class', () => {
         },
         ssl: true
       });
-      fetchOffsetsStub.onFirstCall().returns([{ parition: 0, offset: '-1' }]);
-      fetchOffsetsStub.onSecondCall().returns([{ parition: 0, offset: '5' }]);
-      fetchOffsetsStub.onThirdCall().returns([{ parition: 0, offset: '3' }]);
-      fetchOffsetsStub.returns([{ parition: 0, offset: '6' }]);
+      fetchOffsetsStub.onFirstCall().returns([{ partition: 0, offset: '-1' }]);
+      fetchOffsetsStub.onSecondCall().returns([{ partition: 0, offset: '5' }]);
+      fetchOffsetsStub.onThirdCall().returns([{ partition: 0, offset: '-1' }]);
+      fetchOffsetsStub.onCall(3).returns([
+        { partition: 0, offset: '3' },
+        { partition: 1, offset: '-1' }
+      ]);
+      fetchOffsetsStub.returns([{ partition: 0, offset: '-1' }]);
       const response = await kafka.renameGroupId([
         { groupId: 'newGroupId', topic: 'topic', oldGroupId: 'oldGroupId' },
-        { groupId: 'newGroupId2', topic: 'topic2', oldGroupId: 'oldGroupId2' }
+        { groupId: 'newGroupId2', topic: 'topic2', oldGroupId: 'oldGroupId2' },
+        { groupId: 'newGroupId3', topic: 'topic3', oldGroupId: 'oldGroupId3' }
       ]);
 
       adminStub.args.should.eql([[]]);
       fetchOffsetsStub.args.should.eql([
         [{ groupId: 'newGroupId', topic: 'topic', resolveOffsets: false }],
         [{ groupId: 'newGroupId2', topic: 'topic2', resolveOffsets: false }],
-        [{ groupId: 'oldGroupId', topic: 'topic', resolveOffsets: false }]
+        [{ groupId: 'newGroupId3', topic: 'topic3', resolveOffsets: false }],
+        [{ groupId: 'oldGroupId', topic: 'topic', resolveOffsets: false }],
+        [{ groupId: 'oldGroupId3', topic: 'topic3', resolveOffsets: false }]
       ]);
       setOffsetsStub.args.should.eql([
-        [{ groupId: 'newGroupId', partitions: [{ offset: '3', parition: 0 }], topic: 'topic' }]
+        [{ groupId: 'newGroupId', partitions: [{ offset: '3', partition: 0 }], topic: 'topic' }]
       ]);
       response.should.eql([
-        { groupId: 'newGroupId', oldOffsets: [{ offset: '3', parition: 0 }], renamedFrom: 'oldGroupId' },
-        { alreadyDeclared: true, groupId: 'newGroupId2', renamedFrom: 'oldGroupId2' }
+        { groupId: 'newGroupId', oldOffsets: [{ offset: '3', partition: 0 }], renamedFrom: 'oldGroupId' },
+        { alreadyDeclared: true, groupId: 'newGroupId2', renamedFrom: 'oldGroupId2' },
+        { groupId: 'newGroupId3', oldOffsets: [], renamedFrom: 'oldGroupId3' }
       ]);
     });
   });
