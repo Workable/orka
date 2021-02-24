@@ -5,6 +5,7 @@ description: Orka is a modern Node.js framework based on koa@2 that comes powere
 # Supports true (default) or false
 search_enabled: true
 
+logo: /assets/images/orka-horizontal.svg
 search:
   # Split pages into sections that can be searched individually
   # Supports 1 - 6, default: 2
@@ -33,7 +34,7 @@ aux_links:
   "Orka on GitHub":
     - "//github.com/Workable/orka"
     
-# color_scheme: dark
+color_scheme: workable
 heading_anchors: true
 back_to_top: true
 back_to_top_text: "Back to top"
