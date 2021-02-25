@@ -40,18 +40,20 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     this.logger = logger || getLogger(`kafka.consumer.${this.topic}`);
     kafka.createConsumer(options.consumerOptions).then(c => {
       this.consumer = c;
-      this.logger.info(`Kafka consumer connected to topic: ${this.topic}`);
-      this.consume().catch(err => this.logger.error(err));
+
+      this.consume()
+        .then(() => this.logger.info(`Kafka consumer connected to topic: ${this.topic}`))
+        .catch(err => this.logger.error(err));
     });
   }
 
   abstract handle(msg: KafkajsType.KafkaMessage & { value: Input; topic: string; partition: number }): Promise<Output>;
 
   async consume() {
-    this.logger.info(`[${this.topic}] Consuming...`);
     await Promise.all(
       flatten([this.topic]).map(topic => this.consumer.subscribe({ topic, fromBeginning: this.fromBeginning }))
     );
+    this.logger.info(`[${this.topic}] Consuming...`);
     await this.consumer.run({
       ...this.runOptions,
       eachMessage: (async ({
