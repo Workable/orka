@@ -22,7 +22,7 @@ const logMetrics = {
     const s = Number(ns) / 1e9;
     if (prometheusTimeEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
     if (newRelicEnabled()) getNewRelic().recordMetric(`Custom/${flowType}/${flow}`, s);
-    logger.info(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
+    logger.debug(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
   },
 
   recordMetric(event: string, eventType: string, value: number) {

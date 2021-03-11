@@ -20,7 +20,7 @@ describe('Test log-metrics helper', function () {
     let recordMetricSpy;
     let loggerStub;
     beforeEach(function () {
-      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'info');
+      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
 
       observeSpy = sandbox.stub();
       sandbox.stub(logMetrics, 'prometheusEndClient').returns({
