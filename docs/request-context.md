@@ -51,7 +51,7 @@ e.g.
 import { getRequestContext } from '@workablehr/orka';
 ```
 
-### Examples
+#### Usage
 
 Using the request context on another file:
 
@@ -114,5 +114,39 @@ import {getRequestContext} from '@workablehr/orka'
 
 export const method = async () => {
   console.log(getRequestContext().get('var')); // prints test
+};
+```
+
+### runWithContext
+
+This method can be used to execute a callback within a context.
+
+e.g.
+
+```js
+import { runWithContext } from '@workablehr/orka';
+```
+
+#### Usage
+
+Using the request context on another file:
+
+```js
+
+// src/handler.js
+import {runWithContext} from '@workablehr/orka'
+
+module.exports = {
+  test: () => {
+    const store = Map([['requestId', 'trace-id']])
+    return runWithContext(store, service.method, 'arg1', 'arg2');
+  }
+};
+
+// src/services/a-service.js called after a HTTP call
+import {getRequestContext} from '@workablehr/orka'
+
+export const method = async (arg1, arg2) => {
+  console.log(getRequestContext().get('requestId')); // trace-id
 };
 ```

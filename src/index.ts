@@ -2,7 +2,7 @@ import Orka from './orka';
 import * as middlewares from './middlewares';
 import * as helpers from './helpers';
 
-export { default as builder, getRequestContext } from './builder';
+export { default as builder, getRequestContext, runWithContext } from './builder';
 export { getLogger } from './initializers/log4js';
 export * from './initializers/kafka';
 export const orka = Orka;

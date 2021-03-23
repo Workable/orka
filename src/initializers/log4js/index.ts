@@ -9,11 +9,11 @@ let tmp = name => {
   return logger;
 };
 
-export let getLogger = name => {
-  if (loggers[name]) return loggers[name];
+export let getLogger = (name: string) => {
+  if (loggers[name]) return loggers[name] as Log4js.Logger;
 
   loggers[name] = tmp(name);
-  return loggers[name];
+  return loggers[name] as Log4js.Logger;
 };
 const loggers = {};
 
