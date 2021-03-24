@@ -84,7 +84,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
 
   config.requestContext = {
     enabled: alsSupported(),
-    logKeys: ['requestId', 'visitor'],
+    logKeys: ['requestId', 'visitor', 'correlationId'],
     ...config.requestContext
   };
   diamorphosis(orkaOptions.diamorphosis);

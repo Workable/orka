@@ -2,6 +2,8 @@ import Kafka from './kafka';
 import { getLogger, Logger } from 'log4js';
 import { flatten } from 'lodash';
 import type * as KafkajsType from 'kafkajs';
+import { runWithContext } from '../../builder';
+import { alsSupported } from '../../utils';
 
 export default abstract class BaseKafkaHandler<Input, Output> {
   consumer: KafkajsType.Consumer;
@@ -88,7 +90,14 @@ export default abstract class BaseKafkaHandler<Input, Output> {
             {}
           );
         }
-        await this.handle(message);
+        if (alsSupported()) {
+          return runWithContext(
+            new Map([['correlationId', message.key.toString()]]),
+            () => this.handle(message)
+          );
+        } else {
+          return this.handle(message);
+        }
       }) as any
     });
   }

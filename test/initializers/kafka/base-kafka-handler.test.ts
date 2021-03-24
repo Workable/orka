@@ -4,13 +4,8 @@ import Kafka from '../../../src/initializers/kafka/kafka';
 import BaseKafkaHandler from '../../../src/initializers/kafka/base-kafka-handler';
 
 const sandbox = sinon.createSandbox();
-const logger = {
-  trace: () => null,
-  debug: () => null,
-  info: () => null
-} as any;
 
-describe('base kafka handler class', async () => {
+describe.only('base kafka handler class', async () => {
   let handleStub, consumeStub, runStub, subscribeStub;
 
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
@@ -29,6 +24,7 @@ describe('base kafka handler class', async () => {
         async ({ eachMessage: fn }) =>
           await fn({
             message: {
+              key: Buffer.from('key'),
               value: Buffer.from('{"msg":"msg"}'),
               headers: { key: Buffer.from('key') }
             },
@@ -45,6 +41,7 @@ describe('base kafka handler class', async () => {
 
   it('should call consumer with multiple topics', async () => {
     const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+    const logSpy = sandbox.stub(console, 'log');
     const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
     const consumerOptions = { groupId: 'newGroup' };
     const runOptions = { partitionsConsumedConcurrently: 5 };
@@ -59,6 +56,7 @@ describe('base kafka handler class', async () => {
     should.equal(undefined, handler.fromBeginning);
     consumeStub.run.args.should.containDeep([[runOptions]]);
     handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+    logSpy.args.should.containDeep([['tes']]);
   });
 
   context('with autoOffsetReset latest', function () {
