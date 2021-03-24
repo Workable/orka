@@ -8,12 +8,19 @@ import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
 import datadog from './initializers/datadog';
 
-let als;
+let als: AsyncLocalStorage<Map<string, any>> | undefined;
 if (alsSupported()) {
   als = new AsyncLocalStorage<Map<string, any>>();
 }
 
 export const getRequestContext = () => als?.getStore();
+
+export const runWithContext = (store: Map<string, any>, callback: (args: any[]) => void, ...args: any[]) => {
+  if (!als) {
+    throw new Error('AsyncLocalStorage is not supported');
+  }
+  return als.run(store, callback, args);
+};
 
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
@@ -34,7 +41,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
     logger.error(
       new Error(
         `Config in path ${options.diamorphosis.configPath} was already required. ` +
-          `Your config might be used before being initialized by orka (diamorphosis).`
+        `Your config might be used before being initialized by orka (diamorphosis).`
       )
     );
   }
