@@ -63,7 +63,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.15",
     "log4js": "^4.2.0",
-    "mongoose": "^5.10.2",
+    "mongoose": "^5.12.2",
     "node-cron": "^2.0.3",
     "rabbit-queue": "*",
     "redis": "^2.8.0",
