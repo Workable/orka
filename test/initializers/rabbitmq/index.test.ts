@@ -4,7 +4,7 @@ import 'should';
 
 const sandbox = sinon.createSandbox();
 
-describe('Test rabbitmq connection', function() {
+describe('Test rabbitmq connection', function () {
   let config;
   const orkaOptions = {
     appName: 'test'
@@ -13,7 +13,7 @@ describe('Test rabbitmq connection', function() {
   let onStub: sinon.SinonSpy;
   let getRabbit;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     config = {
       queue: {
         prefetch: 100,
@@ -28,12 +28,15 @@ describe('Test rabbitmq connection', function() {
     stub = sandbox.stub().returns({
       on: onStub
     });
-    mock('rabbit-queue', { Rabbit: stub });
+    mock('rabbit-queue', {
+      Rabbit: stub,
+      BaseQueueHandler: { prototype: { tryHandle: { call: sandbox.stub() } } }
+    });
     delete require.cache[require.resolve('../../../src/initializers/rabbitmq')];
     ({ default: getRabbit } = await import('../../../src/initializers/rabbitmq'));
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
     mock.stopAll();
   });
