@@ -3,6 +3,7 @@ import { OrkaOptions } from 'orka/typings/orka';
 import { alsSupported } from '../utils';
 import * as Koa from 'koa';
 import { getRequestContext } from '../builder';
+import { getLogger } from './log4js';
 const http = require('http');
 
 let middleware;
@@ -60,7 +61,7 @@ const init = (config, orkaOptions) => {
             requestArgs.headers[traceHeaderName] = traceId;
           }
         } catch (e) {
-          console.error(e);
+          getLogger('orka.riviere').error(e);
         }
         return target.apply(thisArg, argumentsList);
       }
@@ -71,7 +72,7 @@ const init = (config, orkaOptions) => {
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   if (!middleware) {
-    console.log('Initializing riviere...');
+    getLogger('initializing.orka').info('Initializing riviere...');
     init(config, orkaOptions);
   }
   return middleware;
