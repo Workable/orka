@@ -2,7 +2,10 @@ import * as Url from 'url';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 import * as RabbitType from 'rabbit-queue';
+import type * as amqp from 'amqplib';
 import * as lodash from 'lodash';
+import { runWithContext } from '../../builder';
+import { alsSupported } from '../../utils';
 
 const logger = getLogger('orka.rabbit');
 
@@ -11,7 +14,7 @@ let shouldReconnect: Boolean = true;
 let healthy: Boolean = true;
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
-  const { Rabbit }: typeof RabbitType = require('rabbit-queue');
+  const { Rabbit, BaseQueueHandler }: typeof RabbitType = require('rabbit-queue');
   if (!config.queue || !config.queue.url) {
     return;
   }
@@ -49,6 +52,19 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     }
   });
   connection.on('log', (component, level, ...args) => getLogger(component)[level](...args));
+
+  const originalTryHandle = BaseQueueHandler.prototype.tryHandle;
+  BaseQueueHandler.prototype.tryHandle =
+    async function tryHandle(retries, msg: amqp.Message, ack: (error, reply) => any) {
+      if (alsSupported()) {
+        return runWithContext(
+          new Map([['correlationId', BaseQueueHandler.prototype.getCorrelationId.call(this, msg)]]),
+          () => originalTryHandle.call(this, retries, msg, ack)
+        );
+      } else {
+        return originalTryHandle.call(this, retries, msg, ack);
+      }
+    };
 };
 
 export const getRabbit = () => {

@@ -29,6 +29,7 @@ describe('base kafka handler class', async () => {
         async ({ eachMessage: fn }) =>
           await fn({
             message: {
+              key: Buffer.from('key'),
               value: Buffer.from('{"msg":"msg"}'),
               headers: { key: Buffer.from('key') }
             },
