@@ -1,7 +1,7 @@
 module.exports = {
   nodeEnv: 'demo',
   log: {
-    json: false
+    json: true
   },
   app: {
     name: 'foo'

@@ -55,9 +55,9 @@ const init = (config, orkaOptions) => {
         try {
           const [requestArgs = {}] = argumentsList || [];
           requestArgs.headers = requestArgs.headers || {};
-          if (!requestArgs.headers[traceHeaderName]) {
-            requestArgs.headers[traceHeaderName] = getRequestContext()?.get('requestId') ||
-              getRequestContext()?.get('correlationId');
+          const traceId = getRequestContext()?.get('requestId') || getRequestContext()?.get('correlationId');
+          if (!requestArgs.headers[traceHeaderName] && traceId) {
+            requestArgs.headers[traceHeaderName] = traceId;
           }
         } catch (e) {
           console.error(e);

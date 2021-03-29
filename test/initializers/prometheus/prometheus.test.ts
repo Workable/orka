@@ -38,7 +38,7 @@ describe('prometheus class', () => {
       const expected = `# HELP custom_my_app_counter counter help
       # TYPE custom_my_app_counter counter
       custom_my_app_counter 11
-      
+
       # HELP external_my_app_gauge gauge help
       # TYPE external_my_app_gauge gauge
       external_my_app_gauge{label="one"} 100
