@@ -1,9 +1,14 @@
 import { riviere } from '@workablehr/riviere';
 import { OrkaOptions } from 'orka/typings/orka';
+import { alsSupported } from '../utils';
 import * as Koa from 'koa';
+import { getRequestContext } from '../builder';
+const http = require('http');
 
-export default (config, orkaOptions: Partial<OrkaOptions>) =>
-  riviere({
+let middleware;
+
+const init = (config, orkaOptions) => {
+  middleware = riviere({
     forceIds: true,
     health: [
       {
@@ -43,3 +48,31 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       };
     }
   });
+  if (alsSupported()) {
+    const handler = {
+      apply: (target, thisArg, argumentsList) => {
+        const traceHeaderName = config.traceHeaderName && config.traceHeaderName.toLowerCase();
+        try {
+          const [requestArgs = {}] = argumentsList || [];
+          requestArgs.headers = requestArgs.headers || {};
+          if (!requestArgs.headers[traceHeaderName]) {
+            requestArgs.headers[traceHeaderName] = getRequestContext()?.get('requestId') ||
+              getRequestContext()?.get('correlationId');
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        return target.apply(thisArg, argumentsList);
+      }
+    };
+    http.request = new Proxy(http.request, handler);
+  }
+};
+
+export default (config, orkaOptions: Partial<OrkaOptions>) => {
+  if (!middleware) {
+    console.log('Initializing riviere...');
+    init(config, orkaOptions);
+  }
+  return middleware;
+};

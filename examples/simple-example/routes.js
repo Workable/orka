@@ -1,8 +1,12 @@
 const { getLogger } = require('../../build');
+const axios = require('axios');
 
 module.exports = {
   get: {
-    '/test': async (ctx, next) => (ctx.body = 'ok'),
+    '/test': async (ctx, next) => {
+      await axios.get('http://localhost:7172/health');
+      ctx.body = 'ok'
+    },
     '/testPolicy': async (ctx, next) => (ctx.body = 'ok'),
     '/log': async (ctx, next) => {
       getLogger('log').info('%s world', 'hello', { context: 'foo' });

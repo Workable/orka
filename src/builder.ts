@@ -7,6 +7,7 @@ import orkaType from './orka-builder';
 import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
 import datadog from './initializers/datadog';
+import riviere from './initializers/riviere';
 
 let als: AsyncLocalStorage<Map<string, any>> | undefined;
 if (alsSupported()) {
@@ -63,6 +64,9 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   const log4js = require('./initializers/log4js').default;
   // Always use logger
   log4js(config);
+
+  // initialize riviere
+  riviere(config, options);
 
   // errorHandler needs to be called after log4js initialization for logger to work as expected.
   const errorHandler = require('./initializers/koa/error-handler').default;
