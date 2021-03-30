@@ -110,7 +110,7 @@ config.queue.prefetch value will be 30 from .env
 
 By default orka loads your config file with some default values and some empty keys.
 Those keys are needed in order for you to be able to overwrite them with env variables.
-However if not overwritten they are not used. Eg. if QUEUE_URL is not set rabbitMQ will 
+However if not overwritten they are not used. Eg. if QUEUE_URL is not set rabbitMQ will
 never be initialized.
 
 You can find the default values below:
@@ -163,7 +163,7 @@ You can find the default values below:
   },
   "port": 3000,
   "allowedOrigins": ["localhost", "lvh.me"],
-  "traceHeaderName": "X-Request-Id",
+  "traceHeaderName": "X-Orka-Request-Id",
   "blacklistedErrorCodes": [404],
   "riviere": {
     "enabled": true,

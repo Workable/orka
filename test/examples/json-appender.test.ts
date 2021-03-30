@@ -38,7 +38,7 @@ describe('json-appender', function() {
     const logSpy = sandbox.stub(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/log?')
-      .set('x-request-id', 'test-id')
+      .set('x-orka-request-id', 'test-id')
       .expect(200);
     text.should.eql('logged');
     logSpy.args.should.eql([
@@ -61,7 +61,7 @@ describe('json-appender', function() {
     const logSpy = sandbox.stub(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/logError')
-      .set('x-request-id', 'test-id')
+      .set('x-orka-request-id', 'test-id')
       .expect(505);
     text.should.eql('default body');
     const cleanStack = msg => {

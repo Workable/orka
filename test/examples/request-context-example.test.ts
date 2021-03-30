@@ -57,7 +57,7 @@ describe('request-context', function() {
     const logSpy = sandbox.stub(console, 'log');
     const response = await request
       .get('/log')
-      .set('x-request-id', 'test-id')
+      .set('x-orka-request-id', 'test-id')
       .expect(200);
     response.text.should.eql('ok');
     logSpy.args.should.eql([
@@ -71,7 +71,7 @@ describe('request-context', function() {
     const logSpy = sandbox.stub(console, 'log');
     const response = await request
       .get('/logWithAppendedRequestContextVar?q=testme')
-      .set('x-request-id', 'test-id')
+      .set('x-orka-request-id', 'test-id')
       .expect(200);
     response.text.should.eql('ok');
     logSpy.args.should.eql([

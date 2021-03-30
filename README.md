@@ -59,7 +59,7 @@ config = {
     publicPrefixes: ['/publicEndpoints/foo/bar'] // ctx.path prefixes that will return access-control-allow-origin: *
     …
   },
-  traceHeaderName: 'X-Request-Id', // for logging in http requests
+  traceHeaderName: 'X-Orka-Request-Id', // for logging in http requests
   visitor: { orka: true, cookie : 'wmc' }, // for adding visitor id in ctx.state
   headersRegex: '^X-.*', // for logging headers in http requests
   blacklistedErrorCodes: [404] // will not send to honeybadger requests with this status

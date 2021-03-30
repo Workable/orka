@@ -37,7 +37,7 @@ describe('error-handler', function() {
     const loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'error');
     const { body } = await (supertest('localhost:3000') as any)
       .get('/')
-      .set('X-Request-Id', '1')
+      .set('X-Orka-Request-Id', '1')
       .expect(500);
     body.should.eql({
       action: '/',
