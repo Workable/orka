@@ -11,7 +11,7 @@ import mongodb from './initializers/mongodb';
 import clouddebugger from './initializers/clouddebugger';
 import { createRedisConnection } from './initializers/redis';
 import { getLogger } from './initializers/log4js';
-import riviere from './initializers/koa/riviere';
+import riviere from './initializers/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import addVisitorId from './initializers/koa/add-visitor-id';
 import addRequestContext from './initializers/koa/add-request-context';
