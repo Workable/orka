@@ -24,7 +24,7 @@ const init = (config, orkaOptions) => {
       maxBodyValueChars: config.riviere.maxBodyValueChars,
       blacklistedPathRegex: config.riviere.outbound && config.riviere.outbound.blacklistedPathRegex,
       request: {
-        enabled: config.riviere.outbound.request.enabled
+        enabled: config.riviere.outbound && config.riviere.outbound.request.enabled
       },
       ...config.riviere.outbound
     },
