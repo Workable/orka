@@ -73,3 +73,8 @@ export function getRedis() {
   if (!firstClient) throw new Error('Redis is not initialized');
   return firstClient;
 }
+
+export const isHealthy = () => {
+  if (!firstClient) return false;
+  return firstClient.connected;
+};

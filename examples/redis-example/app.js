@@ -1,6 +1,6 @@
 const { orka } = require('../../build');
 
-orka({
+const w = orka({
   diamorphosis: { configFolder: './examples/redis-example' },
   routesPath: './examples/redis-example/routes.js',
   logoPath: './examples/redis-example/logo.txt',
@@ -8,4 +8,10 @@ orka({
     const config = require('./config');
     console.log(`Going to start env: ${config.nodeEnv}`);
   }
-}).start();
+});
+
+if (!module.parent) {
+  w.start();
+}
+
+module.exports = w;

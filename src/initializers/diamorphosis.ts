@@ -79,6 +79,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     maxBodyValueChars: undefined,
     ...config.riviere
   };
+  config.healthCheck = {
+    kafka: false,
+    redis: false
+  };
 
   addKafkaConfig(config);
   addRabbitMqConfig(config);

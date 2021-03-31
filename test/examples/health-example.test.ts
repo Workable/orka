@@ -2,6 +2,7 @@ import 'should';
 import * as supertest from 'supertest';
 import * as mongoose from 'mongoose';
 import { getRabbit, close, isHealthy } from '../../build/initializers/rabbitmq/index';
+import { getRedis } from '../../build/initializers/redis';
 
 describe('Health examples', () => {
   describe('MongoDb example', () => {
@@ -12,6 +13,7 @@ describe('Health examples', () => {
       delete require.cache[require.resolve('../../build/initializers/mongodb')];
       delete require.cache[require.resolve('../../build/middlewares/health')];
       delete require.cache[require.resolve('../../build/middlewares/index')];
+      delete require.cache[require.resolve('../../build/orka-builder.js')];
       delete require.cache[require.resolve('../../build')];
     });
 
@@ -45,6 +47,7 @@ describe('Health examples', () => {
       delete require.cache[require.resolve('../../build/initializers/rabbitmq')];
       delete require.cache[require.resolve('../../build/middlewares/health')];
       delete require.cache[require.resolve('../../build/middlewares/index')];
+      delete require.cache[require.resolve('../../build/orka-builder.js')];
       delete require.cache[require.resolve('../../build')];
     });
 
@@ -65,6 +68,39 @@ describe('Health examples', () => {
     it('/health returns not ok', async () => {
       await close();
       await supertest('localhost:3000')
+        .get('/health')
+        .expect(503);
+    });
+  });
+
+  describe('Redis example', () => {
+    let server;
+    after(async () => {
+      if (server) await server.stop();
+      delete require.cache[require.resolve('../../build/initializers/redis')];
+      delete require.cache[require.resolve('../../build/middlewares/health')];
+      delete require.cache[require.resolve('../../build/middlewares/index')];
+      delete require.cache[require.resolve('../../build/orka-builder.js')];
+      delete require.cache[require.resolve('../../build')];
+    });
+
+    before(async () => {
+      const serverPath = '../../examples/redis-example/app';
+      delete require.cache[require.resolve(serverPath)];
+      process.env.HEALTH_CHECK_REDIS = 'true';
+      server = require(serverPath);
+      await server.start();
+    });
+
+    it('/health returns ok', async () => {
+      await supertest('localhost:3210')
+        .get('/health')
+        .expect(200);
+    });
+
+    it('/health returns not ok', async () => {
+      getRedis().end(true);
+      await supertest('localhost:3210')
         .get('/health')
         .expect(503);
     });
