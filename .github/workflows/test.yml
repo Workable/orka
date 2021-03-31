@@ -24,6 +24,7 @@ jobs:
         node-version: [12.x, 14.x]
         mongodb-version: [4.0]
         rabbit-version: [3.8.4]
+        redis-version: [6.0]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -44,6 +45,11 @@ jobs:
         uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: ${{ matrix.rabbit-version }}
+      
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.2.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
