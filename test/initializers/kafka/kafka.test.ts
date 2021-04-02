@@ -23,7 +23,13 @@ describe('kafka class', () => {
       sendBatch: sandbox.stub().returns({}),
       disconnect: sandbox.stub().returns({})
     };
-    consumerStub = sandbox.stub().returns({ connect: sandbox.stub() });
+    consumerStub = sandbox.stub().returns({
+      connect: sandbox.stub(),
+      on: sandbox.stub(),
+      events: {
+        HEARTBEAT: 'consumer.heartbeat'
+      }
+    });
     fetchTopicMetadataStub = sandbox.stub().resolves('metadata');
     createTopicsStub = sandbox.stub().onFirstCall().resolves(true).resolves(false);
     fetchOffsetsStub = sandbox.stub();
