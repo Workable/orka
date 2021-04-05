@@ -99,6 +99,7 @@ describe('Health examples', () => {
   describe('Kafka example', function () {
     let server;
     after(async () => {
+      if (process.env.SKIP_SEMAPHORE) return;
       if (server) await server.stop();
       delete require.cache[require.resolve('../../build/initializers/kafka')];
       delete require.cache[require.resolve('../../build/middlewares/health')];
@@ -110,6 +111,7 @@ describe('Health examples', () => {
     });
 
     before(async () => {
+      if (process.env.SKIP_SEMAPHORE) return;
       const serverPath = '../../examples/kafka-example/app';
       delete require.cache[require.resolve(serverPath)];
       process.env.HEALTH_CHECK_KAFKA = 'true';
