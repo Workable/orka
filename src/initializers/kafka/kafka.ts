@@ -7,10 +7,8 @@ import * as uuid from 'uuid';
 
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
-const kafkaDefaultSessionTimeout = 30000;
 
-let heartBeatConsumer: KafkajsType.Consumer;
-let lastHeartbeat;
+let healthy: Boolean = true;
 export default class OrkaKafka {
   private options: KafkaConfig;
   public consumeClient: KafkajsType.Kafka;
@@ -23,6 +21,8 @@ export default class OrkaKafka {
 
   public async connect(options?: KafkajsType.ProducerConfig) {
     const { producer, clientId } = this.options;
+    healthy = false;
+
     this.produceClient = new Kafka({
       brokers: producer.brokers,
       clientId,
@@ -34,9 +34,27 @@ export default class OrkaKafka {
     });
 
     this.producer = this.produceClient.producer(options);
+
+    const { CONNECT, DISCONNECT } = this.producer.events;
+    this.producer.on(CONNECT, () => {
+      logger.debug(`Producer connected`);
+      healthy = true;
+    });
+    this.producer.on(DISCONNECT, () => {
+      logger.debug(`Producer disconnected`);
+      healthy = false;
+    });
+
     await this.producer.connect();
 
     logger.info(`Kafka connected ${producer?.brokers?.join(', ')}`);
+  }
+
+  public async disconnect() {
+    if (this.producer) {
+      await this.producer.disconnect();
+      healthy = false;
+    }
   }
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
@@ -54,13 +72,6 @@ export default class OrkaKafka {
     const consumer = this.consumeClient.consumer({ groupId, ...rest });
     await consumer.connect();
     logger.info(`Kafka consumer(${groupId}) connected ${brokers.join(', ')}`);
-
-    if (!heartBeatConsumer) {
-      heartBeatConsumer = consumer;
-      const { HEARTBEAT } = consumer.events;
-      heartBeatConsumer.on(HEARTBEAT, ({ timestamp }) => (lastHeartbeat = timestamp));
-    }
-
     return consumer;
   }
 
@@ -171,14 +182,6 @@ function getAuthOptions(options: {
   if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }
 
-export const isHealthy = async () => {
-  if (!heartBeatConsumer) return false;
-  if (Date.now() - lastHeartbeat < kafkaDefaultSessionTimeout) return true;
-
-  try {
-    const temp = await heartBeatConsumer.describeGroup();
-    return ['CompletingRebalance', 'PreparingRebalance'].includes(temp.state);
-  } catch (e) {
-    return false;
-  }
+export const isHealthy = () => {
+  return healthy;
 };

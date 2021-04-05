@@ -21,3 +21,8 @@ export const getKafka = () => {
   }
   return kafka;
 };
+
+export const disconnectProducer = async () => {
+  if (!kafka) return;
+  await kafka.disconnect();
+};

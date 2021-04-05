@@ -81,6 +81,8 @@ describe('Diamorphosis Test', () => {
           sasl: { mechanism: '', username: '', password: '' }
         }
       });
+
+      delete process.env.KAFKA_PRODUCER_BROKERS;
     });
 
     it('kafka.producer options should set if exist in process.env', () => {
@@ -110,6 +112,10 @@ describe('Diamorphosis Test', () => {
           topic1: 'topic1'
         }
       });
+
+      delete process.env.KAFKA_PRODUCER_BROKERS;
+      delete process.env.KAFKA_PRODUCER_SASL_USERNAME;
+      delete process.env.KAFKA_PRODUCER_SASL_PASSWORD;
     });
   });
 
