@@ -52,7 +52,12 @@ jobs:
           redis-version: ${{ matrix.redis-version }}
 
       - name: Start kafka
-        run: npm run kafka:start
+        run: npm run kafka:start:ci
+
+      - name: Sleep for 15 seconds
+        uses: whatnick/wait-action@master
+        with:
+          time: '15s'
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
