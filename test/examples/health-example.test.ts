@@ -120,10 +120,12 @@ describe('Health examples', () => {
     });
 
     it('/health returns ok', async () => {
+      if (process.env.SKIP_SEMAPHORE) return;
       await supertest('localhost:3000').get('/health').expect(200);
     });
 
     it('/health returns not ok', async () => {
+      if (process.env.SKIP_SEMAPHORE) return;
       await disconnectProducer();
       await supertest('localhost:3000').get('/health').expect(503);
     });
