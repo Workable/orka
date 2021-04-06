@@ -60,62 +60,64 @@ describe('Diamorphosis Test', () => {
       config.app.env.should.equal(process.env.NODE_ENV);
     });
 
-    it('noop if kafka not exist in config', () => {
-      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+    context('for kafka', function () {
+      afterEach(() => {
+        delete process.env.KAFKA_PRODUCER_BROKERS;
+        delete process.env.KAFKA_PRODUCER_SASL_USERNAME;
+        delete process.env.KAFKA_PRODUCER_SASL_PASSWORD;
+      });
 
-      const config = require(options.diamorphosis.configPath);
-      delete config.kafka;
-      diamorphosis(config, options);
-      config.kafka.should.eql({
-        brokers: [],
-        groupId: '',
-        clientId: '',
-        ssl: true,
-        log: { level: 'info' },
-        certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
-        sasl: { mechanism: '', username: '', password: '' },
-        producer: {
-          brokers: ['confluent1', 'confluent2'],
+      it('noop if kafka not exist in config', () => {
+        process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+
+        const config = require(options.diamorphosis.configPath);
+        delete config.kafka;
+        diamorphosis(config, options);
+        config.kafka.should.eql({
+          brokers: [],
+          groupId: '',
+          clientId: '',
           ssl: true,
+          log: { level: 'info' },
           certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
-          sasl: { mechanism: '', username: '', password: '' }
-        }
+          sasl: { mechanism: '', username: '', password: '' },
+          producer: {
+            brokers: ['confluent1', 'confluent2'],
+            ssl: true,
+            certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
+            sasl: { mechanism: '', username: '', password: '' }
+          }
+        });
       });
 
-      delete process.env.KAFKA_PRODUCER_BROKERS;
-    });
+      it('kafka.producer options should set if exist in process.env', () => {
+        process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
+        process.env.KAFKA_PRODUCER_SASL_USERNAME = 'producer username';
+        process.env.KAFKA_PRODUCER_SASL_PASSWORD = 'producer password';
 
-    it('kafka.producer options should set if exist in process.env', () => {
-      process.env.KAFKA_PRODUCER_BROKERS = 'confluent1,confluent2';
-      process.env.KAFKA_PRODUCER_SASL_USERNAME = 'producer username';
-      process.env.KAFKA_PRODUCER_SASL_PASSWORD = 'producer password';
+        const config = require(options.diamorphosis.configPath);
 
-      const config = require(options.diamorphosis.configPath);
+        diamorphosis(config, options);
 
-      diamorphosis(config, options);
-
-      config.kafka.producer.should.eql({
-        brokers: ['confluent1', 'confluent2'],
-        certificates: {
-          ca: [],
-          cert: '',
-          key: '',
-          rejectUnauthorized: false
-        },
-        sasl: {
-          mechanism: '',
-          username: 'producer username',
-          password: 'producer password'
-        },
-        ssl: true,
-        topics: {
-          topic1: 'topic1'
-        }
+        config.kafka.producer.should.eql({
+          brokers: ['confluent1', 'confluent2'],
+          certificates: {
+            ca: [],
+            cert: '',
+            key: '',
+            rejectUnauthorized: false
+          },
+          sasl: {
+            mechanism: '',
+            username: 'producer username',
+            password: 'producer password'
+          },
+          ssl: true,
+          topics: {
+            topic1: 'topic1'
+          }
+        });
       });
-
-      delete process.env.KAFKA_PRODUCER_BROKERS;
-      delete process.env.KAFKA_PRODUCER_SASL_USERNAME;
-      delete process.env.KAFKA_PRODUCER_SASL_PASSWORD;
     });
   });
 
