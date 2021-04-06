@@ -51,10 +51,7 @@ export default class OrkaKafka {
   }
 
   public async disconnect() {
-    if (this.producer) {
-      await this.producer.disconnect();
-      healthy = false;
-    }
+    if (this.producer) await this.producer.disconnect();
   }
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
