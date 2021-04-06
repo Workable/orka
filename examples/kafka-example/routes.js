@@ -1,9 +1,13 @@
 const { getKafka, getLogger } = require('../../build');
 const KafkaHandler = require('./handler');
 const input = require('./input');
+const {
+  middlewares: { health }
+} = require('../../build');
 
 module.exports = {
   get: {
+    health: health,
     '/init': async (ctx, next) => {
       const config = require('./config');
       const kafka = getKafka();

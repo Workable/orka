@@ -21,9 +21,17 @@ describe('kafka class', () => {
       connect: sandbox.stub(),
       send: sandbox.stub().returns([{}]),
       sendBatch: sandbox.stub().returns({}),
-      disconnect: sandbox.stub().returns({})
+      disconnect: sandbox.stub().returns({}),
+      on: sandbox.stub(),
+      events: {
+        CONNECT: 'producer.connect',
+        DISCONNECT: 'producer.disconnect',
+      }
     };
-    consumerStub = sandbox.stub().returns({ connect: sandbox.stub() });
+    consumerStub = sandbox.stub().returns({
+      connect: sandbox.stub(),
+      on: sandbox.stub()
+    });
     fetchTopicMetadataStub = sandbox.stub().resolves('metadata');
     createTopicsStub = sandbox.stub().onFirstCall().resolves(true).resolves(false);
     fetchOffsetsStub = sandbox.stub();

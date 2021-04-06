@@ -1,6 +1,7 @@
 import { Context } from 'koa';
 import { isHealthy } from '../initializers/rabbitmq';
 import { isHealthy as checkRedisHealth } from '../initializers/redis';
+import { isHealthy as checkKafkaHealth } from '../initializers/kafka/kafka';
 
 export enum ConnectionStates {
   disconnected = 0,
@@ -20,10 +21,12 @@ export default async function (ctx: Context, next: () => Promise<null>) {
   // tslint:disable-next-line: no-empty
   const isRabbitHealthy = isHealthy();
   const isRedisHealthy = !OrkaBuilder.INSTANCE.config.healthCheck.redis || checkRedisHealth();
+  const isKafkaHealthy = !OrkaBuilder.INSTANCE.config.healthCheck.kafka || (await checkKafkaHealth());
   if (
     (!mongoConnection || mongoConnection.readyState === ConnectionStates.connected) &&
     isRabbitHealthy &&
-    isRedisHealthy
+    isRedisHealthy &&
+    isKafkaHealthy
   ) {
     ctx.status = 200;
     ctx.body = {

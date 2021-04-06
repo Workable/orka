@@ -8,6 +8,7 @@ import * as uuid from 'uuid';
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
 
+let healthy: Boolean = true;
 export default class OrkaKafka {
   private options: KafkaConfig;
   public consumeClient: KafkajsType.Kafka;
@@ -20,6 +21,8 @@ export default class OrkaKafka {
 
   public async connect(options?: KafkajsType.ProducerConfig) {
     const { producer, clientId } = this.options;
+    healthy = false;
+
     this.produceClient = new Kafka({
       brokers: producer.brokers,
       clientId,
@@ -31,9 +34,24 @@ export default class OrkaKafka {
     });
 
     this.producer = this.produceClient.producer(options);
+
+    const { CONNECT, DISCONNECT } = this.producer.events;
+    this.producer.on(CONNECT, () => {
+      logger.debug(`Producer connected`);
+      healthy = true;
+    });
+    this.producer.on(DISCONNECT, () => {
+      logger.debug(`Producer disconnected`);
+      healthy = false;
+    });
+
     await this.producer.connect();
 
     logger.info(`Kafka connected ${producer?.brokers?.join(', ')}`);
+  }
+
+  public async disconnect() {
+    if (this.producer) await this.producer.disconnect();
   }
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
@@ -160,3 +178,7 @@ function getAuthOptions(options: {
   const { username, password } = options.sasl || {};
   if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }
+
+export const isHealthy = () => {
+  return healthy;
+};
