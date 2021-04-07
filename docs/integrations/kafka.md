@@ -147,6 +147,8 @@ await getKafka().renameGroupId([
 ]);
 ```
 
+This will create the groupIds specified and will set the offsets that the oldGroupIds had.
+If the new groupIds are found with offsets it does nothing.
 This does not delete old group ids however.
 
 ## Local Kafka Server
@@ -191,3 +193,5 @@ orka({
 Note that the old group ids won't be deleted automatically.
 You also need to specify the new group ids in your consumers while previously you didn't have too.
 Once the new group ids are created you can remove the code that copies their offsets from old group ids. This is causing no issues thought as it doesn't do anything if the new group ids are found with offsets set.
+
+If you are using the renameGroupIds (before creating your consumers) your consumers will continue reading messages from the offset specified from the old groupId regardless if you set the fromBeginning configuration. FromBeginning configuration will be used if the groupId, topic is not found in kafka.
