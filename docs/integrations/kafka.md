@@ -147,7 +147,7 @@ await getKafka().renameGroupId([
 ]);
 ```
 
-This will create the groupIds specified and will set them the offsets that the oldGroupId's had.
+This will create the groupIds specified and will set the offsets that the oldGroupIds had.
 If the new groupIds are found with offsets it does nothing.
 This does not delete old group ids however.
 
