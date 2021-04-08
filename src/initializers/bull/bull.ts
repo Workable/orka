@@ -9,7 +9,7 @@ export default class Bull {
   private prefix: string;
   private defaultOptions: any;
   private redisOpts: any;
-  private queueOpts: { [x: string]: { options: any } };
+  private queueOpts: { [x: string]: { options: any, limiter: any } };
   private queueNames: string[];
   private instances = {};
   private metrics;
@@ -28,9 +28,11 @@ export default class Bull {
   private createQueue(name: string) {
     const fullName = `${this.prefix}:${name}`;
     const options = this.queueOpts[name].options;
-    this.logger.info(`Creating Queue: ${fullName}`);
+    const limiter = this.queueOpts[name].limiter;
     const defaultJobOptions = _.defaultsDeep({}, options, this.defaultOptions);
-    const queue = new Queue(fullName, { redis: this.redisOpts, defaultJobOptions });
+    const queueOptions = { redis: this.redisOpts, defaultJobOptions, ...limiter && { limiter } };
+    this.logger.info(`Creating Queue: ${fullName}`);
+    const queue = new Queue(fullName, queueOptions);
     queue
       .on('drained', () => {
         getLogger(fullName).info(`Queue drained`);

@@ -7,7 +7,10 @@ const sandbox = sinon.createSandbox();
 
 describe('bull class', () => {
   const prefix = 'test';
-  const queues = [{ name: 'test_one', options: { delay: 1000 } }];
+  const queues = [
+    { name: 'test_one', options: { delay: 1000 } },
+    { name: 'rate_limited', limiter: { max:  10, duration: 1000 } }
+  ];
   const defaultOptions = { removeOnComplete: true };
   const redisOptions = { url: 'redis://localhost:6379/' };
   let bull;
@@ -58,6 +61,16 @@ describe('bull class', () => {
         q.opts.should.be.eql({ redis: redisOptions, defaultJobOptions: { delay: 1000, removeOnComplete: true } });
         q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
       });
+      describe('when limiter options are configured', () => {
+        it('should create a rate limited queue', () => {
+          const name = 'rate_limited';
+          const q = bull.getQueue(name);
+          q.should.not.be.undefined();
+          q.name.should.be.equal(`${prefix}:${name}`);
+          q.opts.should.be.eql({ redis: redisOptions, defaultJobOptions: { removeOnComplete: true }, limiter: { max: 10, duration: 1000 }});
+          q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
+        });
+      });
     });
     describe('when queue already initialized', () => {
       it('should return the same queue instance', () => {
@@ -73,7 +86,10 @@ describe('bull class', () => {
   describe('getStats', () => {
     it('should retrieve the stats from each queue configured', async () => {
       const stats = await bull.getStats();
-      stats.should.be.eql([{ queue: 'test_one', count: 10, failed: 3 }]);
+      stats.should.be.eql([
+        { queue: 'test_one', count: 10, failed: 3 },
+        { queue: 'rate_limited', count: 10, failed: 3 }
+      ]);
     });
   });
 
@@ -105,14 +121,17 @@ describe('bull class', () => {
         bull = new Bull(prefix, queues, defaultOptions, redisOptions, prometheus);
       });
       it('should add queue metrics to prometheus', async () => {
-        const queue = 'test_one';
         const getStatsSpy = sandbox.spy(bull, 'getStats');
         await bull.updateMetrics();
         sandbox.assert.calledOnce(getStatsSpy);
-        sandbox.assert.calledOnce(depth);
-        sandbox.assert.calledWith(depth, { queue }, 10);
-        sandbox.assert.calledOnce(failed);
-        sandbox.assert.calledWith(failed, { queue }, 3);
+        sandbox.assert.callCount(depth, queues.length);
+        sandbox.assert.callCount(failed, queues.length);
+        queues.forEach(q => {
+          const queue = q.name;
+          sandbox.assert.calledWith(depth, { queue }, 10);
+          sandbox.assert.calledWith(failed, { queue }, 3);
+        });
+        
       });
     });
     describe('deprecated methods', () => {
