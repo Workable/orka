@@ -99,7 +99,7 @@ describe('Health examples', () => {
   describe('Kafka example', function () {
     let server;
     after(async () => {
-      if (process.env.SKIP_SEMAPHORE) return;
+      if (!process.env.TEST_KAFKA) return;
       if (server) await server.stop();
       delete require.cache[require.resolve('../../build/initializers/kafka')];
       delete require.cache[require.resolve('../../build/middlewares/health')];
@@ -111,7 +111,7 @@ describe('Health examples', () => {
     });
 
     before(async () => {
-      if (process.env.SKIP_SEMAPHORE) return;
+      if (!process.env.TEST_KAFKA) return;
       const serverPath = '../../examples/kafka-example/app';
       delete require.cache[require.resolve(serverPath)];
       process.env.HEALTH_CHECK_KAFKA = 'true';
@@ -122,12 +122,12 @@ describe('Health examples', () => {
     });
 
     it('/health returns ok', async () => {
-      if (process.env.SKIP_SEMAPHORE) return;
+      if (!process.env.TEST_KAFKA) return;
       await supertest('localhost:3000').get('/health').expect(200);
     });
 
     it('/health returns not ok', async () => {
-      if (process.env.SKIP_SEMAPHORE) return;
+      if (!process.env.TEST_KAFKA) return;
       await disconnectProducer();
       await supertest('localhost:3000').get('/health').expect(503);
     });

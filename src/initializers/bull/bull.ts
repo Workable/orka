@@ -9,7 +9,7 @@ export default class Bull {
   private prefix: string;
   private defaultOptions: any;
   private redisOpts: any;
-  private queueOpts: { [x: string]: { options: any, limiter: any } };
+  private queueOpts: { [x: string]: { options: any; limiter: any } };
   private queueNames: string[];
   private instances = {};
   private metrics;
@@ -30,7 +30,7 @@ export default class Bull {
     const options = this.queueOpts[name].options;
     const limiter = this.queueOpts[name].limiter;
     const defaultJobOptions = _.defaultsDeep({}, options, this.defaultOptions);
-    const queueOptions = { redis: this.redisOpts, defaultJobOptions, ...limiter && { limiter } };
+    const queueOptions = { redis: this.redisOpts, defaultJobOptions, ...(limiter && { limiter }) };
     this.logger.info(`Creating Queue: ${fullName}`);
     const queue = new Queue(fullName, queueOptions);
     queue
@@ -102,18 +102,6 @@ export default class Bull {
   public getStats() {
     const stats = this.queueNames.map(this.fetchStats, this);
     return Promise.all(stats);
-  }
-
-  public startMetrics(cronExpression, queueNameCase?: string) {
-    this.logger.warn(
-      '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***'
-    );
-  }
-
-  public stopMetrics() {
-    this.logger.warn(
-      '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***'
-    );
   }
 }
 

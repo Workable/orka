@@ -9,7 +9,7 @@ describe('bull class', () => {
   const prefix = 'test';
   const queues = [
     { name: 'test_one', options: { delay: 1000 } },
-    { name: 'rate_limited', limiter: { max:  10, duration: 1000 } }
+    { name: 'rate_limited', limiter: { max: 10, duration: 1000 } }
   ];
   const defaultOptions = { removeOnComplete: true };
   const redisOptions = { url: 'redis://localhost:6379/' };
@@ -67,7 +67,11 @@ describe('bull class', () => {
           const q = bull.getQueue(name);
           q.should.not.be.undefined();
           q.name.should.be.equal(`${prefix}:${name}`);
-          q.opts.should.be.eql({ redis: redisOptions, defaultJobOptions: { removeOnComplete: true }, limiter: { max: 10, duration: 1000 }});
+          q.opts.should.be.eql({
+            redis: redisOptions,
+            defaultJobOptions: { removeOnComplete: true },
+            limiter: { max: 10, duration: 1000 }
+          });
           q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
         });
       });
@@ -130,27 +134,6 @@ describe('bull class', () => {
           const queue = q.name;
           sandbox.assert.calledWith(depth, { queue }, 10);
           sandbox.assert.calledWith(failed, { queue }, 3);
-        });
-        
-      });
-    });
-    describe('deprecated methods', () => {
-      const expected =
-        '***\nDEPRECATED: See https://github.com/Workable/orka/blob/master/README.md how to configure the Metrics middleware\n***';
-      let warnLogSpy;
-      beforeEach(() => {
-        warnLogSpy = sandbox.spy(bull.logger, 'warn');
-      });
-      describe('startMetrics', () => {
-        it('should log deprecation warning', () => {
-          bull.startMetrics();
-          sandbox.assert.calledWith(warnLogSpy, expected);
-        });
-      });
-      describe('stopMetrics', () => {
-        it('should log deprecation warning', () => {
-          bull.stopMetrics();
-          sandbox.assert.calledWith(warnLogSpy, expected);
         });
       });
     });

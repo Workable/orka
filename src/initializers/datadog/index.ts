@@ -7,6 +7,7 @@ export default config => {
     tracer = requireInjected('dd-trace').init();
     tracer.use('koa', {
       blacklist: config?.datadog?.blacklistedPaths,
+      blocklist: config?.datadog?.blacklistedPaths,
       ...config.datadog
     });
   }

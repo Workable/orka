@@ -1,9 +1,9 @@
-export default async (config, options?) => {
+export default async (config) => {
   if (config.honeybadger.apiKey) {
     const honeybadger = await import('honeybadger');
     honeybadger.configure({
       environment: config.app.env,
-      developmentEnvironments: options?.developmentEnvironments || config.honeybadger.developmentEnvironments
+      developmentEnvironments: config.honeybadger.developmentEnvironments
     });
   }
 };
