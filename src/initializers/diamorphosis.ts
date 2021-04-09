@@ -84,6 +84,10 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     redis: false
   };
 
+  config.visitor = {
+    cookie: ''
+  };
+
   addKafkaConfig(config);
   addRabbitMqConfig(config);
   addMongoDBConfig(config);
