@@ -31,3 +31,22 @@ A modern Node.js framework based on koa@2 that comes powered with RabbitMQ, Kafk
 
 [Console](https://workable.github.io/orka/integrations/console)
 
+
+## Changelog
+
+### Migrating from orka  1.x.x to 2.xx
+
+- Kakfa implementation has changed to kafka.js see [integrations/kafka](https://workable.github.io/orka/integrations/kafka.html#migrating-from-orka--2xx) for more
+- Honeybadger builder example has changed. Instead of calling 
+  ```js
+  .withHoneyBadger({ developmentEnvironments: ['development', 'test'] })
+  ```
+  config is now holding the development environments:
+  ```json
+  "honeybadger": {
+    "apiKey": "",
+    "developmentEnvironments": ["development", "test"]
+  }
+  ```
+- Visitor cookie won't be used if `config.visitor.enabled` is false even if `config.visitor.cookie` exists
+- Deprecated builder method `withNewrelic` is removed. Use config instead to enable newrelic see [integrations/newrelic](https://workable.github.io/orka/integrations/newrelic.html)
