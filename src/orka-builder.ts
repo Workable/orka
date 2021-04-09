@@ -127,17 +127,8 @@ export default class OrkaBuilder {
     return this;
   }
 
-  withHoneyBadger(o: any = this.options.honeyBadger) {
-    this.queue.push(() => honeybadger(this.config, o));
-    return this;
-  }
-
-  withNewrelic() {
-    const logger = getLogger('orka');
-    logger.warn(
-      `withNewrelic is deprecated and will be removed. ` +
-        `Newrelic will be initialized by default if NEW_RELIC_LICENCE_KEY is found in env`
-    );
+  withHoneyBadger() {
+    this.queue.push(() => honeybadger(this.config));
     return this;
   }
 
