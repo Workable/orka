@@ -113,6 +113,9 @@ module.exports = class KafkaHandler extends BaseKafkaHandler {
 // [123] Consuming message
 // [123] Var: orka
 ```
+
+Note: In the above example only `correlationId` is logged by default. If you want to have the `test-variable` automatically logged on each log entry, you need to include it on your configuration `requestContext.logKeys`. For more, see the [Log Tracer](https://workable.github.io/orka/request-context.html#log-tracer) docs.
+
 #### app.js
 ```js
 //app.js

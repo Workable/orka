@@ -23,7 +23,7 @@ By default it appends `requestId` and `visitor` (if you have the option `config.
 
 ### Log Tracer
 
-If the Request Context is enabled, orka by default appends `requestId` and `visitor` to all the application logs automatically.
+If the Request Context is enabled, orka by default appends `requestId`, `correlationId` and `visitor` to all the application logs automatically.
 
 ### Configuration
 
@@ -33,7 +33,7 @@ If you don't specify anything in your `config.requestContext` it defaults to:
 {
   "requestContext": {
     "enabled": true
-    "logKeys": ["requestId", "visitor"]  // These are the keys that will be appended automatically to your logs
+    "logKeys": ["requestId", "visitor", "correlationId"]  // These are the keys that will be appended automatically to your logs
   }
 }
 ```
