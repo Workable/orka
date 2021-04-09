@@ -37,6 +37,8 @@ describe('Diamorphosis Test', () => {
 
       config.app.env.should.equal(config.nodeEnv);
       config.app.env.should.equal('diamorphosis_env');
+      config.visitor.cookie.should.equal('cookie');
+      config.healthCheck.kafka.should.be.true();
     });
 
     it('app.env and nodeEnv shoud equal nodeEnv with nodeEnv set in env file', () => {
