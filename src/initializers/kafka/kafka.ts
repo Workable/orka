@@ -159,7 +159,7 @@ export default class OrkaKafka {
       topic,
       messages: [{ key, value: message, headers, partition }]
     });
-
+    logger.debug('Deprecated method. Use getKafka().producer.send instead');
     logger.info(
       `partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${key}) produced for topic ${topic}`
     );
