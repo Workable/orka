@@ -74,7 +74,6 @@ module.exports = {
 
 ### Consuming messages
 
-
 #### app/services/kafka/handler.js
 ```js
 // app/services/kafka/handler.js
@@ -89,6 +88,31 @@ module.exports = class KafkaHandler extends BaseKafkaHandler {
 };
 ```
 
+#### RequestContext
+When you use `BaseKafkaHandler`, orka by default runs the message handling inside `runWithContext` function and appends the `key` of the message in the context with name `correlationId`.
+
+That means that every log of your consumer will contain the `key` of the message and that you can also add any variable you want in the context.
+
+Example:
+```js
+const { BaseKafkaHandler, getRequestContext } = require('@workablehr/orka');
+
+async function handler(val) {
+  logger.info('Var: ', getRequestContext().get('test-variable'))
+}
+
+module.exports = class KafkaHandler extends BaseKafkaHandler {
+  async handle(message) {
+    getRequestContext().set('test-variable', 'orka');
+    logger.info('Consuming message');
+    await handler(message.value);
+  }
+};
+
+// In the above example if we receive a message with key=123, it will log:
+// [123] Consuming message
+// [123] Var: orka
+```
 #### app.js
 ```js
 //app.js
