@@ -92,7 +92,6 @@
     "mock-require": "^3.0.3",
     "newrelic": "*",
     "nock": "^13.0.5",
-    "node-rdkafka": "^2.8.1",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "prom-client": "*",
