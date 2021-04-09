@@ -79,13 +79,16 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     maxBodyValueChars: undefined,
     ...config.riviere
   };
+
   config.healthCheck = {
     kafka: false,
-    redis: false
+    redis: false,
+    ...config.healthCheck
   };
 
   config.visitor = {
-    cookie: ''
+    cookie: '',
+    ...config.visitor
   };
 
   addKafkaConfig(config);

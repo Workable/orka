@@ -12,5 +12,12 @@ module.exports = {
         topic1: 'topic1'
       }
     }
+  },
+  healthCheck: {
+    kafka: true,
+    redis: true
+  },
+  visitor: {
+    cookie: 'cookie'
   }
 };
