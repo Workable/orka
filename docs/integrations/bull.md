@@ -50,6 +50,10 @@ To configure your application queues, use the following configuration:
         {
           name: 'queue_two',
           options: { delay: 15000 } // This is applied to queue_two
+        },
+         {
+          name: 'rate_limited',
+          limiter: { max:  10, duration: 1000 } // rate limited queue
         }
       ]
     }
@@ -59,3 +63,4 @@ To configure your application queues, use the following configuration:
 
 The `options` in both cases can be any of [JobOptions](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b4330da8ebd802197809ca6f349961a506679d3d/types/bull/index.d.ts#L369).
 
+The `limiter` can be configured according to [RateLimiter](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/4ca04a72c942754a0368a343a7a7e64a9215da93/types/bull/index.d.ts#L42).
