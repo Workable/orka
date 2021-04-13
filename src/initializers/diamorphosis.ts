@@ -70,7 +70,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     outbound: {
       blacklistedPathRegex: new RegExp('^/v0.4/traces$', 'i'),
       request: {
-        enabled: true
+        enabled: false
       }
     },
     color: true,
