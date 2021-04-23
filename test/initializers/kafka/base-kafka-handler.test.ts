@@ -138,4 +138,23 @@ describe('base kafka handler class', async () => {
       ]);
     });
   });
+
+  context('with onConsumerCreated defined', function () {
+    it('should call method', async () => {
+      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+      const onConsumerCreated = sandbox.spy();
+      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      const consumerOptions = { groupId: 'newGroup' };
+      const runOptions = { partitionsConsumedConcurrently: 5 };
+      new TestKafkaHandler(kafka, {
+        topic: ['topic1', 'topic2'],
+        consumerOptions,
+        runOptions,
+        fromBeginning: false,
+        onConsumerCreated 
+      });
+      await new Promise(resolve => setTimeout(resolve, 10));
+      onConsumerCreated.calledOnce.should.be.true();
+    });
+  });
 });

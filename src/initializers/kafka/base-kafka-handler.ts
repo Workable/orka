@@ -26,9 +26,10 @@ export default abstract class BaseKafkaHandler<Input, Output> {
       runOptions?: KafkajsType.ConsumerRunConfig;
       jsonParseValue?: boolean;
       stringifyHeaders?: boolean;
+      onConsumerCreated?: (consumer: KafkajsType.Consumer) => any
     }
   ) {
-    const { topic, logger, autoOffsetReset, fromBeginning } = options;
+    const { topic, logger, autoOffsetReset, fromBeginning, onConsumerCreated } = options;
     if (autoOffsetReset) {
       this.fromBeginning = autoOffsetReset === 'earliest';
     } else {
@@ -42,7 +43,9 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     this.logger = logger || getLogger(`kafka.consumer.${this.topic}`);
     kafka.createConsumer(options.consumerOptions).then(c => {
       this.consumer = c;
-
+      if (onConsumerCreated) {
+        onConsumerCreated(c);
+      }
       this.consume()
         .then(() => this.logger.info(`Kafka consumer connected to topic: ${this.topic}`))
         .catch(err => this.logger.error(err));
