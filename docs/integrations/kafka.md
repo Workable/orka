@@ -130,7 +130,8 @@ orka({
       consumerOptions: { groupId: 'newGroupID' }, // anything kafkajs  .consumer() accepts
       runOptions: {}, // anything consumer.run() accepts
       jsonParseValue: true, // value is Buffer otherwise
-      stringifyHeaders: true // headers are Buffer's otherwise
+      stringifyHeaders: true // headers are Buffer's otherwise,
+      onConsumerCreated: (c: Consumer) => any // it is called when the consumer is created
     });
   }
 }).start();
