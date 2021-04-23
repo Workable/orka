@@ -29,7 +29,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
       onConsumerCreated?: (consumer: KafkajsType.Consumer) => any
     }
   ) {
-    const { topic, logger, autoOffsetReset, fromBeginning, onConsumerCreated} = options;
+    const { topic, logger, autoOffsetReset, fromBeginning, onConsumerCreated } = options;
     if (autoOffsetReset) {
       this.fromBeginning = autoOffsetReset === 'earliest';
     } else {
