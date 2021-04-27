@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { identity, isEmpty } from 'lodash';
 import { KafkaConfig } from '../../typings/kafka';
 import Kafka from './kafka';
 import type * as KafkajsType from 'kafkajs';
@@ -7,7 +7,7 @@ export { default as BaseKafkaHandler } from './base-kafka-handler';
 
 let kafka: Kafka;
 export default async (kafkaConfig: KafkaConfig, kafkaProducer?: KafkajsType.ProducerConfig) => {
-  if (!isEmpty(kafkaConfig && kafkaConfig.brokers)) {
+  if (!isEmpty(kafkaConfig && kafkaConfig.brokers && kafkaConfig.brokers.filter(identity))) {
     const Kafka = (await import('./kafka')).default;
 
     kafka = new Kafka(kafkaConfig);
