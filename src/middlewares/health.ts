@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import { isHealthy } from '../initializers/rabbitmq';
 import { isHealthy as checkRedisHealth } from '../initializers/redis';
-import { isHealthy as checkKafkaHealth } from '../initializers/kafka/kafka';
+import { isHealthy as checkKafkaHealth } from '../initializers/kafka';
 
 export enum ConnectionStates {
   disconnected = 0,

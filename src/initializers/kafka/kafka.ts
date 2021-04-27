@@ -8,9 +8,10 @@ import * as uuid from 'uuid';
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
 
-let healthy: Boolean = true;
+
 export default class OrkaKafka {
   private options: KafkaConfig;
+  private healthy: boolean = true;
   public consumeClient: KafkajsType.Kafka;
   public produceClient: KafkajsType.Kafka;
   public producer: KafkajsType.Producer;
@@ -21,7 +22,7 @@ export default class OrkaKafka {
 
   public async connect(options?: KafkajsType.ProducerConfig) {
     const { producer, clientId } = this.options;
-    healthy = false;
+    this.healthy = false;
 
     this.produceClient = new Kafka({
       brokers: producer.brokers,
@@ -38,11 +39,11 @@ export default class OrkaKafka {
     const { CONNECT, DISCONNECT } = this.producer.events;
     this.producer.on(CONNECT, () => {
       logger.debug(`Producer connected`);
-      healthy = true;
+      this.healthy = true;
     });
     this.producer.on(DISCONNECT, () => {
       logger.debug(`Producer disconnected`);
-      healthy = false;
+      this.healthy = false;
     });
 
     await this.producer.connect();
@@ -53,6 +54,10 @@ export default class OrkaKafka {
   public async disconnect() {
     if (this.producer) await this.producer.disconnect();
   }
+
+  public isHealthy = () => {
+    return this.healthy;
+  };
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
     groupId ??= this.options.groupId;
@@ -178,7 +183,3 @@ function getAuthOptions(options: {
   const { username, password } = options.sasl || {};
   if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }
-
-export const isHealthy = () => {
-  return healthy;
-};
