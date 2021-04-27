@@ -5,7 +5,7 @@ import health from '../../src/middlewares/health';
 import * as mongodb from '../../src/initializers/mongodb';
 import * as rabbitmq from '../../src/initializers/rabbitmq';
 import * as redis from '../../src/initializers/redis';
-import * as kafka from '../../src/initializers/kafka/kafka';
+import * as kafka from '../../src/initializers/kafka';
 import OrkaBuilder from '../../src/orka-builder';
 
 const sandbox = sinon.createSandbox();
