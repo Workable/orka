@@ -26,3 +26,8 @@ export const disconnectProducer = async () => {
   if (!kafka) return;
   await kafka.disconnect();
 };
+
+export const isHealthy = () => {
+  if (!kafka) return;
+  return kafka.isHealthy();
+};
