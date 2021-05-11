@@ -125,8 +125,8 @@ describe('Test rabbitmq connection', function () {
     });
 
     it('getTime as a bigint from logMetrics', function () {
-      sandbox.stub(logMetrics, 'start').returns(1n);
-      queueHandler.getTime().should.eql(1n);
+      sandbox.stub(logMetrics, 'start').returns(1 as any);
+      queueHandler.getTime().should.eql(1);
     });
 
     it('logTime from logMetrics', function () {
