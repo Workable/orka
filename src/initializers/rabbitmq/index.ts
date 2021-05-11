@@ -6,6 +6,7 @@ import type * as amqp from 'amqplib';
 import * as lodash from 'lodash';
 import { runWithContext } from '../../builder';
 import { alsSupported } from '../../utils';
+import logMetrics from '../../helpers/log-metrics';
 
 const logger = getLogger('orka.rabbit');
 
@@ -54,17 +55,36 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   connection.on('log', (component, level, ...args) => getLogger(component)[level](...args));
 
   const originalTryHandle = BaseQueueHandler.prototype.tryHandle;
-  BaseQueueHandler.prototype.tryHandle =
-    async function tryHandle(retries, msg: amqp.Message, ack: (error, reply) => any) {
-      if (alsSupported()) {
-        return runWithContext(
-          new Map([['correlationId', BaseQueueHandler.prototype.getCorrelationId.call(this, msg)]]),
-          () => originalTryHandle.call(this, retries, msg, ack)
-        );
-      } else {
-        return originalTryHandle.call(this, retries, msg, ack);
-      }
-    };
+  BaseQueueHandler.prototype.tryHandle = async function tryHandle(
+    retries,
+    msg: amqp.Message,
+    ack: (error, reply) => any
+  ) {
+    if (alsSupported()) {
+      return runWithContext(new Map([['correlationId', this.getCorrelationId(msg)]]), () =>
+        originalTryHandle.call(this, retries, msg, ack)
+      );
+    } else {
+      return originalTryHandle.call(this, retries, msg, ack);
+    }
+  };
+
+  BaseQueueHandler.prototype.getTime = function getTime() {
+    return logMetrics.start() as any;
+  };
+
+  BaseQueueHandler.prototype.logTime = function logTime(startTime: any, correlationId: string) {
+    logMetrics.end(startTime, this.queueName, 'queue', correlationId);
+  };
+
+  const originalHandleError = BaseQueueHandler.prototype.handleError;
+  BaseQueueHandler.prototype.handleError = function handleError(err: any, msg: any) {
+    err.action = this.queueName;
+    err.component = err.component || 'rabbit-queue';
+    err.context = err.context || {};
+    err.context.correlationId = this.getCorrelationId(msg);
+    originalHandleError.call(this, err, msg);
+  };
 };
 
 export const getRabbit = () => {
