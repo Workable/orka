@@ -21,6 +21,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withRedis()
     .withPrometheus()
     .withBull()
+    .withPostgres()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };

@@ -27,6 +27,7 @@ describe('Orka', function() {
     builderStub.withBull.returns(builderStub);
     builderStub.withPrometheus.returns(builderStub);
     builderStub.withRedis.returns(builderStub);
+    builderStub.withPostgres.returns(builderStub);
     builderStub.with.returns(builderStub);
     builderStub.routes.returns(builderStub);
 
@@ -51,6 +52,7 @@ describe('Orka', function() {
     builderStub.withKafka.args.should.eql([[]]);
     builderStub.withMongoDB.args.should.eql([[stub]]);
     builderStub.withRedis.args.should.eql([[]]);
+    builderStub.withPostgres.returns([[]]);
     builderStub.with.args.should.eql([[[]]]);
     builderStub.routes.args.should.eql([['routes']]);
   });
