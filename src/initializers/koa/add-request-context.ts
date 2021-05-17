@@ -8,9 +8,7 @@ export default function(als: AsyncLocalStorage<Map<string, any>>): Middleware {
       if (ctx.state.requestId) {
         store.set('requestId', ctx.state.requestId);
       }
-      // @ts-ignore
       if (ctx.req?._datadog?.span) {
-        // @ts-ignore
         store.set('ddSpan', ctx.req._datadog.span);
       }
       return next();
