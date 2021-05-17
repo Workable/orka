@@ -27,6 +27,20 @@ module.exports = {
 }
 ```
 
+If you need to support ssl
+```js
+//config/config.js
+
+module.exports = {
+  postgres: {
+    url: 'postgres://localhost:5432/orka_development',
+    sslConfig: {rejectUnauthorized: false}
+  }
+}
+```
+
+For more information about ssl support look at [node-postgres docs](https://node-postgres.com/features/ssl).
+
 ### getPostgresPool
 
 You can call `getPostgresPool` to acquire a new client to communicate with the database.
