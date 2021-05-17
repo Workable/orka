@@ -19,7 +19,7 @@ Orka by default exposes a Request Context to the app.
 
 It can be used for setting/getting variables that can be accessible in every code file (within the request's life). It uses nodeJS `async_hooks` to store this information.
 
-By default it appends `requestId` and `visitor` (if you have the option `config.visitor.cookie`) in the request context. The `requestId` is retrieved using the option `config.traceHeaderName`
+By default it appends `requestId`, `visitor` (if you have the option `config.visitor.cookie`) in the request context and `ddSpan`(if you have DataDog enabled). The `requestId` is retrieved using the option `config.traceHeaderName`
 
 ### Log Tracer
 
