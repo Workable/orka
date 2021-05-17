@@ -202,7 +202,7 @@ function addMongoDBConfig(config) {
 function addPostgresConfig(config) {
   config.postgres = {
     url: '',
-    max: 50,
+    poolSize: 50,
     ...config.postgres
   };
 }

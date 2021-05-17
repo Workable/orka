@@ -5,7 +5,7 @@ const {
   withPostgresTransaction
 } = require('../../build');
 
-const logger = getLogger('[postgres-example]');
+const logger = getLogger('postgres-example');
 
 module.exports = {
   get: {
