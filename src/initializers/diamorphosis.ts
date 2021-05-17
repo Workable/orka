@@ -95,6 +95,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addRabbitMqConfig(config);
   addMongoDBConfig(config);
   addRedisConfig(config);
+  addPostgresConfig(config);
 
   config.requestContext = {
     enabled: alsSupported(),
@@ -195,6 +196,14 @@ function addMongoDBConfig(config) {
       useUnifiedTopology: false,
       ...config?.mongodb?.options
     }
+  };
+}
+
+function addPostgresConfig(config) {
+  config.postgres = {
+    url: '',
+    poolSize: 50,
+    ...config.postgres
   };
 }
 

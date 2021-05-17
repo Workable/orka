@@ -13,4 +13,5 @@ export { getRabbit } from './initializers/rabbitmq';
 export { getRedis, createRedisConnection } from './initializers/redis';
 export { getBull } from './initializers/bull';
 export { getPrometheus } from './initializers/prometheus';
+export { getPostgresPool, withPostgresTransaction } from './initializers/postgres';
 export { middlewares, helpers };

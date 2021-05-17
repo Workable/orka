@@ -23,6 +23,7 @@ import logo from './initializers/logo';
 import kafka from './initializers/kafka';
 import prometheus from './initializers/prometheus';
 import bull from './initializers/bull';
+import postgres from './initializers/postgres';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
@@ -139,6 +140,11 @@ export default class OrkaBuilder {
 
   withMongoDB(mongoOnConnected = () => undefined) {
     this.queue.push(() => mongodb(this.config, mongoOnConnected));
+    return this;
+  }
+
+  withPostgres() {
+    this.queue.push(() => postgres(this.config));
     return this;
   }
 

@@ -81,6 +81,7 @@
     "@types/lodash": "^4.14.147",
     "@types/mocha": "^5.2.6",
     "@types/node": "^12.19.5",
+    "@types/pg": "^7.14.11",
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
     "bull": "*",
@@ -93,6 +94,7 @@
     "newrelic": "*",
     "nock": "^13.0.5",
     "nyc": "^15.1.0",
+    "pg": "*",
     "prettier": "^2.2.1",
     "prom-client": "*",
     "should": "^13.2.3",
@@ -107,6 +109,7 @@
     "dd-trace": "*",
     "newrelic": "*",
     "prom-client": "*",
+    "pg": "*",
     "kafkajs": "*"
   }
 }
