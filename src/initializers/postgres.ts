@@ -10,7 +10,7 @@ export default function postgres(config) {
   if (config.postgres?.url && !pool) {
     const { Pool }: typeof PgTypes = requireInjected('pg');
     const pgConfig = config.postgres;
-    
+
     if (isEmpty(pgConfig.sslConfig?.ca)) delete pgConfig.sslConfig?.ca;
     if (isEmpty(pgConfig.sslConfig?.cert)) delete pgConfig.sslConfig?.cert;
     if (isEmpty(pgConfig.sslConfig?.key)) delete pgConfig.sslConfig?.key;
