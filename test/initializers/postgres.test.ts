@@ -56,13 +56,16 @@ describe('Test postgres connection', function () {
     ]);
   });
 
-  it('should use ssl to connect to postgres', () => {
+  it('should not use ssl to connect to postgres', () => {
     postgres({
       postgres: {
         url: 'postgres://localhost',
         useSsl: false,
         sslConfig: {
-          rejectUnauthorized: false
+          rejectUnauthorized: false,
+          ca: '',
+          cert: '',
+          key: ''
         }
       }
     });
@@ -72,6 +75,35 @@ describe('Test postgres connection', function () {
           connectionString: 'postgres://localhost',
           max: undefined,
           ssl: undefined
+        }
+      ]
+    ]);
+  });
+
+  it('should use ssl and ca,cert, key to connect to postgres', () => {
+    postgres({
+      postgres: {
+        url: 'postgres://localhost',
+        useSsl: true,
+        sslConfig: {
+          rejectUnauthorized: true,
+          ca: 'ca',
+          cert: 'cert',
+          key: 'key'
+        }
+      }
+    });
+    poolStub.args.should.eql([
+      [
+        {
+          connectionString: 'postgres://localhost',
+          max: undefined,
+          ssl: {
+            rejectUnauthorized: true,
+            ca: 'ca',
+            cert: 'cert',
+            key: 'key'
+          }
         }
       ]
     ]);

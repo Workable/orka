@@ -155,7 +155,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -327,7 +330,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -499,7 +505,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -671,7 +680,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -843,7 +855,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -1020,7 +1035,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {
@@ -1199,7 +1217,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "poolSize": 50,
     "useSsl": true,
     "sslConfig": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "requestContext": {

@@ -207,6 +207,9 @@ function addPostgresConfig(config) {
     ...config.postgres,
     sslConfig: {
       rejectUnauthorized: false,
+      ca: '',
+      cert: '',
+      key: '',
       ...config.postgres?.sslConfig
     }
   };

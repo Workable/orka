@@ -1,6 +1,7 @@
 import requireInjected from '../require-injected';
 import { getLogger } from 'log4js';
 import type * as PgTypes from 'pg';
+import { isEmpty } from 'lodash';
 
 const logger = getLogger('orka.postgres');
 let pool: PgTypes.Pool;
@@ -9,6 +10,11 @@ export default function postgres(config) {
   if (config.postgres?.url && !pool) {
     const { Pool }: typeof PgTypes = requireInjected('pg');
     const pgConfig = config.postgres;
+    
+    if (isEmpty(pgConfig.sslConfig?.ca)) delete pgConfig.sslConfig?.ca;
+    if (isEmpty(pgConfig.sslConfig?.cert)) delete pgConfig.sslConfig?.cert;
+    if (isEmpty(pgConfig.sslConfig?.key)) delete pgConfig.sslConfig?.key;
+
     pool = new Pool({
       connectionString: pgConfig.url,
       max: pgConfig.poolSize,
