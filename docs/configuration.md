@@ -5,13 +5,15 @@ nav_order: 2
 ---
 
 # Configuration
+
 {: .no_toc }
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC
-{:toc}
+   {:toc}
 
 ## Diamorphosis
 
@@ -90,7 +92,6 @@ There are 4 different levels where you can add configuration:
 Every value you have in config/config.js will be overwritten by values in config/env/{NODE_ENV}.js.
 If you are in development .env is also loaded into memory and overwrites any value.
 The most important precedence have actual environment variables.
-
 
 Priority with examples:
 
@@ -230,6 +231,16 @@ You can find the default values below:
       "useUnifiedTopology": false
     }
   },
+  "postgres": {
+    "url":"",
+    "useSsl": true,
+    "sslConfig": {
+      "rejectUnauthorized": false,
+        "ca": "",
+        "cert": "",
+        "key": ""
+    }
+  },
   "redis": {
     "url": "",
     "options": {
@@ -248,6 +259,7 @@ You can find the default values below:
 ```
 
 You can overwrite those values with various ways:
+
 - setting them in your config.js file
 - setting the corresponding env variable
 - setting the corresponding env variable in .env for development

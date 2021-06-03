@@ -4,7 +4,7 @@ import 'should';
 
 const sandbox = sinon.createSandbox();
 
-describe('Test postgres connection', function() {
+describe('Test postgres connection', function () {
   const config = {
     postgres: {
       url: 'postgres://localhost'
@@ -13,14 +13,14 @@ describe('Test postgres connection', function() {
   let postgres;
   let poolStub: sinon.SinonSpy;
 
-  beforeEach(async function() {
-    poolStub = sandbox.stub().returns({on: sandbox.stub()});
+  beforeEach(async function () {
+    poolStub = sandbox.stub().returns({ on: sandbox.stub() });
     delete require.cache[require.resolve('../../src/initializers/postgres')];
     mock('pg', { Pool: poolStub });
     ({ default: postgres } = await import('../../src/initializers/postgres'));
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
     mock.stopAll();
   });
@@ -33,5 +33,79 @@ describe('Test postgres connection', function() {
   it('should not connect to postgres with no config', () => {
     postgres({});
     poolStub.called.should.be.false();
+  });
+
+  it('should use ssl to connect to postgres', () => {
+    postgres({
+      postgres: {
+        url: 'postgres://localhost',
+        useSsl: true,
+        sslConfig: {
+          rejectUnauthorized: false
+        }
+      }
+    });
+    poolStub.args.should.eql([
+      [
+        {
+          connectionString: 'postgres://localhost',
+          max: undefined,
+          ssl: { rejectUnauthorized: false }
+        }
+      ]
+    ]);
+  });
+
+  it('should not use ssl to connect to postgres', () => {
+    postgres({
+      postgres: {
+        url: 'postgres://localhost',
+        useSsl: false,
+        sslConfig: {
+          rejectUnauthorized: false,
+          ca: '',
+          cert: '',
+          key: ''
+        }
+      }
+    });
+    poolStub.args.should.eql([
+      [
+        {
+          connectionString: 'postgres://localhost',
+          max: undefined,
+          ssl: undefined
+        }
+      ]
+    ]);
+  });
+
+  it('should use ssl and ca,cert, key to connect to postgres', () => {
+    postgres({
+      postgres: {
+        url: 'postgres://localhost',
+        useSsl: true,
+        sslConfig: {
+          rejectUnauthorized: true,
+          ca: 'ca',
+          cert: 'cert',
+          key: 'key'
+        }
+      }
+    });
+    poolStub.args.should.eql([
+      [
+        {
+          connectionString: 'postgres://localhost',
+          max: undefined,
+          ssl: {
+            rejectUnauthorized: true,
+            ca: 'ca',
+            cert: 'cert',
+            key: 'key'
+          }
+        }
+      ]
+    ]);
   });
 });

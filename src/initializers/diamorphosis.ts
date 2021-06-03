@@ -203,7 +203,15 @@ function addPostgresConfig(config) {
   config.postgres = {
     url: '',
     poolSize: 50,
-    ...config.postgres
+    useSsl: true,
+    ...config.postgres,
+    sslConfig: {
+      rejectUnauthorized: false,
+      ca: '',
+      cert: '',
+      key: '',
+      ...config.postgres?.sslConfig
+    }
   };
 }
 

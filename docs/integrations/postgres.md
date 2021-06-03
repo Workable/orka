@@ -27,14 +27,14 @@ module.exports = {
 }
 ```
 
-If you need to support ssl
+If don't need to support ssl
 ```js
 //config/config.js
 
 module.exports = {
   postgres: {
     url: 'postgres://localhost:5432/orka_development',
-    sslConfig: {rejectUnauthorized: false}
+    useSsl: false
   }
 }
 ```

@@ -99,6 +99,7 @@
     "prom-client": "*",
     "should": "^13.2.3",
     "sinon": "^7.5.0",
+    "snap-shot-it": "^7.9.6",
     "supertest": "^4.0.2",
     "ts-node": "^9.1.1",
     "tslint": "^5.20.1",
