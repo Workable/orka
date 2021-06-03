@@ -8,12 +8,14 @@ let pool: PgTypes.Pool;
 export default function postgres(config) {
   if (config.postgres?.url && !pool) {
     const { Pool }: typeof PgTypes = requireInjected('pg');
+    const pgConfig = config.postgres;
     pool = new Pool({
-      connectionString: config.postgres.url,
-      max: config.postgres.poolSize,
-      ssl: config.postgres.sslConfig
+      connectionString: pgConfig.url,
+      max: pgConfig.poolSize,
+      ssl: pgConfig.useSsl ? pgConfig.sslConfig : undefined
     });
-    pool.on('error', (err) => {
+    logger.info(`Connected to Postgres! (${pgConfig.url.split('@')[1] || pgConfig.url})`);
+    pool.on('error', err => {
       logger.error('Unable to connect to database', err);
       throw err;
     });

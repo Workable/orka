@@ -1,7 +1,7 @@
 import diamorphosis from '../../src/initializers/diamorphosis';
 import { OrkaOptions } from '../../src/typings/orka';
 import * as path from 'path';
-import * as assert from 'assert';
+import * as snapshot from 'snap-shot-it';
 
 describe('Diamorphosis Test', () => {
   describe('should set environment variables', () => {
@@ -149,6 +149,7 @@ describe('Diamorphosis Test', () => {
         config.log.console.should.equal(true);
         config.log.json.should.equal(false);
         config.riviere.styles.length.should.equal(0);
+        snapshot(config);
       })
     );
 
@@ -166,6 +167,7 @@ describe('Diamorphosis Test', () => {
         config.log.json.should.equal(true);
         config.riviere.styles.length.should.equal(1);
         config.riviere.styles[0].should.equal('json');
+        snapshot(config);
       })
     );
 
@@ -184,6 +186,7 @@ describe('Diamorphosis Test', () => {
         config.log.json.should.equal(true);
         config.riviere.styles.length.should.equal(1);
         config.riviere.styles[0].should.equal('json');
+        snapshot(config);
       })
     );
 
@@ -202,6 +205,7 @@ describe('Diamorphosis Test', () => {
         config.log.json.should.equal(true);
         config.riviere.styles.length.should.equal(1);
         config.riviere.styles[0].should.equal('json');
+        snapshot(config);
       })
     );
 
@@ -222,6 +226,7 @@ describe('Diamorphosis Test', () => {
         config.log.json.should.equal(true);
         config.riviere.styles.length.should.equal(1);
         config.riviere.styles[0].should.equal('simple');
+        snapshot(config);
       })
     );
 
@@ -242,6 +247,7 @@ describe('Diamorphosis Test', () => {
         config.log.console.should.equal(true);
         config.log.json.should.equal(false);
         config.riviere.styles.length.should.equal(0);
+        snapshot(config);
       });
     });
 
@@ -263,6 +269,7 @@ describe('Diamorphosis Test', () => {
         config.log.console.should.equal(true);
         config.log.json.should.equal(true);
         config.riviere.styles.should.eql(['json']);
+        snapshot(config);
       });
     });
   });
