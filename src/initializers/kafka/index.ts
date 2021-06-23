@@ -3,7 +3,7 @@ import { KafkaConfig } from '../../typings/kafka';
 import Kafka from './kafka';
 import type * as KafkajsType from 'kafkajs';
 
-export { default as BaseKafkaHandler } from './base-kafka-handler';
+export { BaseKafkaHandler, BaseKafkaBatchHandler, BaseKafkaHandlerMessage, BaseKafkaHandlerOptions, BaseKafkaHandlerBatch } from './base-kafka-handler';
 
 let kafka: Kafka;
 export default async (kafkaConfig: KafkaConfig, kafkaProducer?: KafkajsType.ProducerConfig) => {

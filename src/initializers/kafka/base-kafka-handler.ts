@@ -5,7 +5,31 @@ import type * as KafkajsType from 'kafkajs';
 import { runWithContext } from '../../builder';
 import { alsSupported } from '../../utils';
 
-export default abstract class BaseKafkaHandler<Input, Output> {
+export type BaseKafkaHandlerOptions = {
+  topic: string | string[];
+  logger?: Logger;
+  fromBeginning?: boolean;
+  autoOffsetReset?: 'earliest' | 'latest';
+  consumerOptions?: KafkajsType.ConsumerConfig;
+  runOptions?: KafkajsType.ConsumerRunConfig;
+  jsonParseValue?: boolean;
+  stringifyHeaders?: boolean;
+  onConsumerCreated?: (consumer: KafkajsType.Consumer) => any
+};
+
+export type BaseKafkaHandlerMessage<Input> = KafkajsType.KafkaMessage & {
+  value: Input;
+  rawValue?: Buffer;
+  rawHeaders?: KafkajsType.IHeaders;
+  topic: string;
+  partition: number;
+};
+
+export type BaseKafkaHandlerBatch<Input> = KafkajsType.Batch & {
+  messages: BaseKafkaHandlerMessage<Input>[];
+};
+
+abstract class Base<Input, Output> {
   consumer: KafkajsType.Consumer;
   topic: string | string[];
   logger: Logger;
@@ -15,20 +39,7 @@ export default abstract class BaseKafkaHandler<Input, Output> {
   jsonParseValue: boolean;
   stringifyHeaders: boolean;
 
-  constructor(
-    kafka: Kafka,
-    options: {
-      topic: string | string[];
-      logger?: Logger;
-      fromBeginning?: boolean;
-      autoOffsetReset?: 'earliest' | 'latest';
-      consumerOptions?: KafkajsType.ConsumerConfig;
-      runOptions?: KafkajsType.ConsumerRunConfig;
-      jsonParseValue?: boolean;
-      stringifyHeaders?: boolean;
-      onConsumerCreated?: (consumer: KafkajsType.Consumer) => any
-    }
-  ) {
+  constructor(kafka: Kafka, options: BaseKafkaHandlerOptions) {
     const { topic, logger, autoOffsetReset, fromBeginning, onConsumerCreated } = options;
     if (autoOffsetReset) {
       this.fromBeginning = autoOffsetReset === 'earliest';
@@ -52,13 +63,52 @@ export default abstract class BaseKafkaHandler<Input, Output> {
     });
   }
 
-  abstract handle(msg: KafkajsType.KafkaMessage & { value: Input; topic: string; partition: number }): Promise<Output>;
+  parseValue(buffer: Buffer) {
+    try {
+      return JSON.parse(buffer.toString());
+    } catch (e) {
+      this.logger.error(e);
+    }
+    return buffer;
+  }
+
+  parseHeaders(headers: KafkajsType.IHeaders) {
+    return Object.keys(headers).reduce(
+      (m, k) => ({ ...m, [k]: headers[k].toString() }),
+      {}
+    );
+  }
+  transformToKafkaHandlerMessage(
+    message: KafkajsType.KafkaMessage,
+    topic: string,
+    partition: number
+  ): BaseKafkaHandlerMessage<Input> {
+    return {
+      ...message,
+      topic,
+      partition,
+      ...(this.jsonParseValue && message.value ? { rawValue: message.value, value: this.parseValue(message.value) } : {}),
+      ...(this.stringifyHeaders && message.headers ? { rawHeaders: message.headers, headers: this.parseHeaders(message.headers) } : {})
+    };
+  }
+
+  abstract run(): Promise<void>;
 
   async consume() {
     await Promise.all(
       flatten([this.topic]).map(topic => this.consumer.subscribe({ topic, fromBeginning: this.fromBeginning }))
     );
     this.logger.info(`[${this.topic}] Consuming...`);
+    await this.run();
+  }
+}
+
+export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output> {
+  constructor(kafka: Kafka, options: BaseKafkaHandlerOptions) {
+    super(kafka, options);
+  }
+
+  async run() {
     await this.consumer.run({
       ...this.runOptions,
       eachMessage: (async ({
@@ -66,42 +116,43 @@ export default abstract class BaseKafkaHandler<Input, Output> {
         partition,
         message
       }: {
-        message: KafkajsType.KafkaMessage & {
-          value: Input;
-          rawValue: Buffer;
-          rawHeaders: KafkajsType.IHeaders;
-          topic: string;
-          partition: number;
-        };
+        message: BaseKafkaHandlerMessage<Input>;
         partition: number;
         topic: string;
       }) => {
-        message.topic = topic;
-        message.partition = partition;
-        if (this.jsonParseValue && message.value) {
-          try {
-            message.rawValue = message.value;
-            message.value = JSON.parse(message.value.toString());
-          } catch (e) {
-            this.logger.error(e);
-          }
-        }
-        if (this.stringifyHeaders && message.headers) {
-          message.rawHeaders = message.headers;
-          message.headers = Object.keys(message.headers).reduce(
-            (m, k) => ({ ...m, [k]: message.headers[k].toString() }),
-            {}
-          );
-        }
         if (alsSupported()) {
           return runWithContext(
             new Map([['correlationId', message.key.toString()]]),
-            () => this.handle(message)
+            () => this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
           );
         } else {
-          return this.handle(message);
+          return this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
         }
       }) as any
     });
   }
+
+  abstract handle(message: BaseKafkaHandlerMessage<Input>): Promise<Output>;
+}
+
+export abstract class BaseKafkaBatchHandler<Input, Output> extends Base<Input, Output> {
+  constructor(kafka: Kafka, options: BaseKafkaHandlerOptions) {
+    super(kafka, options);
+  }
+
+  async run() {
+    await this.consumer.run({
+      ...this.runOptions,
+      eachBatch: async ({ batch, heartbeat }) => {
+        await heartbeat();
+        const transformed: BaseKafkaHandlerBatch<Input> = {
+          ...batch,
+          messages: batch?.messages?.map(m => this.transformToKafkaHandlerMessage(m, batch.topic, batch.partition)) || []
+        };
+        return this.handleBatch(transformed);
+      }
+    });
+  }
+
+  abstract handleBatch(messages: BaseKafkaHandlerBatch<Input>): Promise<void>;
 }
