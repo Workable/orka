@@ -1,7 +1,7 @@
 import * as sinon from 'sinon';
 import * as should from 'should';
 import Kafka from '../../../src/initializers/kafka/kafka';
-import BaseKafkaHandler from '../../../src/initializers/kafka/base-kafka-handler';
+import { BaseKafkaHandler, BaseKafkaBatchHandler } from '../../../src/initializers/kafka/base-kafka-handler';
 
 const sandbox = sinon.createSandbox();
 const logger = {
@@ -11,7 +11,7 @@ const logger = {
 } as any;
 
 describe('base kafka handler class', async () => {
-  let handleStub, consumeStub, runStub, subscribeStub;
+  let handleStub, consumeStub, runStub, subscribeStub, handleBatchStub, heartBeatStub;
 
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
     public async handle(args) {
@@ -19,15 +19,37 @@ describe('base kafka handler class', async () => {
     }
   }
 
+  class TestKafkaBatchHandler extends BaseKafkaBatchHandler<any, any> {
+    public async handleBatch(bulk) {
+      handleBatchStub(bulk.messages);
+    }
+  }
+
   beforeEach(() => {
     handleStub = sandbox.stub();
+    handleBatchStub = sandbox.stub();
+    heartBeatStub = sandbox.stub().resolves();
     runStub = sandbox.stub();
     subscribeStub = sandbox.stub();
     consumeStub = {
       subscribe: subscribeStub,
       run: runStub.callsFake(
-        async ({ eachMessage: fn }) =>
-          await fn({
+        async ({ eachMessage: fn, eachBatch: fnBatch }) => {
+          if (fnBatch) {
+            return fnBatch({
+              batch: {
+                messages: [{
+                  key: Buffer.from('key'),
+                  value: Buffer.from('{"msg":"msg"}'),
+                  headers: { key: Buffer.from('key') }
+                }],
+                topic: 'topic',
+                partition: '1'
+              },
+              heartbeat: heartBeatStub,
+            });
+          }
+          return fn({
             message: {
               key: Buffer.from('key'),
               value: Buffer.from('{"msg":"msg"}'),
@@ -35,7 +57,8 @@ describe('base kafka handler class', async () => {
             },
             topic: 'topic',
             partition: '1'
-          }).catch(e => console.log(e))
+          }).catch(e => console.log(e));
+        }
       )
     };
   });
@@ -60,6 +83,25 @@ describe('base kafka handler class', async () => {
     should.equal(undefined, handler.fromBeginning);
     consumeStub.run.args.should.containDeep([[runOptions]]);
     handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+  });
+
+  it('should call consumer with batch method and call heartbeat', async () => {
+    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+    const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+    const consumerOptions = { groupId: 'newGroup' };
+    const runOptions = { partitionsConsumedConcurrently: 5 };
+    const handler = new TestKafkaBatchHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
+    await new Promise(resolve => setTimeout(resolve, 10));
+    createConsumer.calledOnce.should.be.true();
+    createConsumer.args.should.eql([[consumerOptions]]);
+    subscribeStub.args.should.eql([
+      [{ topic: 'topic1', fromBeginning: undefined }],
+      [{ topic: 'topic2', fromBeginning: undefined }]
+    ]);
+    should.equal(undefined, handler.fromBeginning);
+    consumeStub.run.args.should.containDeep([[runOptions]]);
+    heartBeatStub.calledOnce.should.be.true();
+    handleBatchStub.args.should.containDeep([[[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]]);
   });
 
   context('with autoOffsetReset latest', function () {
@@ -146,12 +188,12 @@ describe('base kafka handler class', async () => {
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
-      new TestKafkaHandler(kafka, {
+      const handler = new TestKafkaHandler(kafka, {
         topic: ['topic1', 'topic2'],
         consumerOptions,
         runOptions,
         fromBeginning: false,
-        onConsumerCreated 
+        onConsumerCreated
       });
       await new Promise(resolve => setTimeout(resolve, 10));
       onConsumerCreated.calledOnce.should.be.true();
