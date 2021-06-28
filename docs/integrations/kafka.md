@@ -75,7 +75,7 @@ module.exports = {
 ### Consuming messages
 You can choose if you'll consume messages one by one (Kafka never consumes messages one by one, it is just a convenient way provided by KafkaJS) or in batches.
 
-Depending on what you need to do you should choose to used either `BaseKafkaHandler` or `BaseKafkaBatchHandler`. You can use the two following examples.
+Depending on what you need to do you should choose to use either `BaseKafkaHandler` or `BaseKafkaBatchHandler`. Have a look to the following examples:
 #### app/services/kafka/handler.js
 ```js
 // app/services/kafka/handler.js
@@ -92,7 +92,7 @@ module.exports = class KafkaHandler extends BaseKafkaHandler {
 
 #### app/services/kafka/batch-handler.js
 ```js
-// app/services/kafka/handler.js
+// app/services/kafka/batch-handler.js
 const { BaseKafkaBatchHandler, getKafka } = require('../../build');
 
 module.exports = class KafkaHandler extends BaseKafkaBatchHandler {
