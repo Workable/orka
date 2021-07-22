@@ -5,7 +5,7 @@ parent: Integrations
 nav_order: 10
 ---
 
-# Mongodb
+# PostgreSQL
 
 Orka uses [pg](https://node-postgres.com/).
 
