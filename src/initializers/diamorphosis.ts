@@ -136,6 +136,10 @@ function addKafkaConfig(config) {
     ...config.kafka,
     log: {
       level: 'info',
+      errorToWarn: [
+        'The group is rebalancing, re-joining',
+        'Response Heartbeat(key: 12, version: 3)'
+      ],
       ...config.kafka?.log
     },
     certificates: {

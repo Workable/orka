@@ -8,7 +8,6 @@ import * as uuid from 'uuid';
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
 
-
 export default class OrkaKafka {
   private options: KafkaConfig;
   private healthy: boolean = true;
@@ -29,7 +28,8 @@ export default class OrkaKafka {
       clientId,
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
-        getLogger('orka.kafka.producer')[entry.label.toLowerCase()](message, extra);
+        const level = this.decideLogLevel(message, entry.label.toLowerCase());
+        getLogger('orka.kafka.producer')[level](message, extra);
       },
       ...getAuthOptions(producer)
     });
@@ -67,7 +67,8 @@ export default class OrkaKafka {
       clientId,
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
-        getLogger('orka.kafka.consumer')[entry.label.toLowerCase()](message, extra);
+        const level = this.decideLogLevel(message, entry.label.toLowerCase());
+        getLogger('orka.kafka.consumer')[level](message, extra);
       },
       ...getAuthOptions(this.options)
     });
@@ -85,7 +86,8 @@ export default class OrkaKafka {
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
         if (extra.error === 'Topic with this name already exists') return;
-        getLogger('orka.kafka.admin')[entry.label.toLowerCase()](message, extra);
+        const level = this.decideLogLevel(message, entry.label.toLowerCase());
+        getLogger('orka.kafka.admin')[level](message, extra);
       },
       ...getAuthOptions(this.options)
     });
@@ -169,6 +171,13 @@ export default class OrkaKafka {
       `partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${key}) produced for topic ${topic}`
     );
     return recordMetadata;
+  }
+
+  private decideLogLevel = (message: string, level: string) => {
+    if (this.options.log.errorToWarn.includes(message) && level === 'error') {
+      return 'warn';
+    }
+    return level;
   }
 }
 

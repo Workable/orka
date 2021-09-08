@@ -31,5 +31,6 @@ export interface KafkaConfig {
   };
   log?: {
     level: 'info' | 'debug' | 'error' | 'warn' | 'nothing';
+    errorToWarn: string[];
   };
 }
