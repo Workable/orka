@@ -40,7 +40,11 @@ module.exports = {
     "clientId": "", // An name identifying the application
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": { // Should be given if the authentication is through certificates
       "key": "",

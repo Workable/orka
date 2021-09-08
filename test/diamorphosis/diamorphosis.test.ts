@@ -80,7 +80,13 @@ describe('Diamorphosis Test', () => {
           groupId: '',
           clientId: '',
           ssl: true,
-          log: { level: 'info' },
+          log: {
+            level: 'info',
+            errorToWarn: [
+              'The group is rebalancing, re-joining',
+              'Response Heartbeat(key: 12, version: 3)'
+            ]
+          },
           certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
           sasl: { mechanism: '', username: '', password: '' },
           producer: {

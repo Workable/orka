@@ -94,7 +94,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": {
       "key": "",
@@ -269,7 +273,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": {
       "key": "",
@@ -444,7 +452,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": {
       "key": "",
@@ -619,7 +631,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": {
       "key": "",
@@ -794,7 +810,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "certificates": {
       "key": "",
@@ -907,7 +927,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "sasl": {
       "mechanism": "",
@@ -1087,7 +1111,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "log": {
-      "level": "info"
+      "level": "info",
+      "errorToWarn": [
+        "The group is rebalancing, re-joining",
+        "Response Heartbeat(key: 12, version: 3)"
+      ]
     },
     "sasl": {
       "mechanism": "",
