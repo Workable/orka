@@ -15,7 +15,7 @@ nav_order: 1
   {:toc}
 
 Orka is exposing a useful factory to create workers. This is a convenient boilerplate code to execute long running tasks keeping some state in a mongodb collection.
-Sometimes you need to execute long running tasks that need to continue from where the left when being restarted. E.g. Processing some million of rows in a table.
+Sometimes you need to execute long running tasks that need to continue from where it had left off when being restarted. E.g. Processing some million of rows in a table and keeping the last processed row.
 Orka's worker will automatically create and use a mongo collection called workerjob for this.
 
 ## Installation
@@ -63,7 +63,7 @@ async function execute(job, logger) {
 
 ```js
 const schema = {
-  payload: any;
+  payload: any; // to keep the progress
   name: string;
   initialized: boolean;
   finished: boolean;
