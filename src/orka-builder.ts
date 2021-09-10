@@ -27,6 +27,7 @@ import postgres from './initializers/postgres';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
+import type WorkerType from './initializers/worker';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;
@@ -163,7 +164,12 @@ export default class OrkaBuilder {
     return this;
   }
 
-  with(tasks) {
+  createWorker(name: string) {
+    const Worker: typeof WorkerType = require('./initializers/worker').default;
+    return new Worker(this, name);
+  }
+
+  with(tasks: ((config: any) => void)[] | ((config: any) => void)) {
     tasks = lodash.flatten([tasks]).filter(lodash.identity);
     tasks.forEach(task => this.queue.push(() => task(this.config)));
     return this;

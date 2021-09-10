@@ -96,6 +96,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addMongoDBConfig(config);
   addRedisConfig(config);
   addPostgresConfig(config);
+  addWorkersConfig(config);
 
   config.requestContext = {
     enabled: alsSupported(),
@@ -136,10 +137,7 @@ function addKafkaConfig(config) {
     ...config.kafka,
     log: {
       level: 'info',
-      errorToWarn: [
-        'The group is rebalancing, re-joining',
-        'Response Heartbeat(key: 12, version: 3)'
-      ],
+      errorToWarn: ['The group is rebalancing, re-joining', 'Response Heartbeat(key: 12, version: 3)'],
       ...config.kafka?.log
     },
     certificates: {
@@ -232,5 +230,13 @@ function addRedisConfig(config) {
         ...config?.redis?.options?.tls
       }
     }
+  };
+}
+
+function addWorkersConfig(config) {
+  config.workers = {
+    retryDelay: 1000 * 60 * 60,
+    initializationCheckDelay: 1000,
+    ...config.workers
   };
 }
