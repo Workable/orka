@@ -216,15 +216,17 @@ You can find the default values below:
     }
   },
   "queue": {
-     "url": "",
-     "prefetch": 1,
-     "options": { // options that go into rabbit-queue constructor
-       "scheduledPublish": true
-      }
+    "url": "",
+    "prefetch": 1,
+    "options": {
+      // options that go into rabbit-queue constructor
+      "scheduledPublish": true
+    }
   },
   "mongodb": {
     "url": "",
-    "options": { // options that go into mongoose connect
+    "options": {
+      // options that go into mongoose connect
       "useNewUrlParser": true,
       "useCreateIndex": true,
       "useFindAndModify": false,
@@ -232,13 +234,13 @@ You can find the default values below:
     }
   },
   "postgres": {
-    "url":"",
+    "url": "",
     "useSsl": true,
     "sslConfig": {
       "rejectUnauthorized": false,
-        "ca": "",
-        "cert": "",
-        "key": ""
+      "ca": "",
+      "cert": "",
+      "key": ""
     }
   },
   "redis": {
@@ -249,11 +251,15 @@ You can find the default values below:
         "cert": "",
         "key": ""
       }
-  }
-}
+    }
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": ["requestId", "visitor"]
+  },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
   }
 }
 ```

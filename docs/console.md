@@ -60,5 +60,5 @@ npx node-nc
 
 ```sh
 npx node-nc
-> getRabbit.publish('queue', {data:{}}, {correlationId:'test'})
+> getRabbit().publish('queue', {data:{}}, {correlationId:'test'})
 ```
