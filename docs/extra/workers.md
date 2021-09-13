@@ -43,12 +43,12 @@ const worker = o.createWorker('example-worker');
 
 worker.start(initialize, execute);
 
-// once this is completed model will be set to initialized=true so that it won't run again
+// once this is completed, model will be set to initialized=true so that it won't run again
 async function initialize(job, logger) {
   job.payload = { progress: 0 };
 }
 
-// once this is completed model will be set to finished=true so that it won't run again
+// once this is completed, model will be set to finished=true so that it won't run again
 async function execute(job, logger) {
   const progress = job.payload.progress;
   for (let i = progress + 1; i < 100; i++) {

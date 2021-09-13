@@ -273,7 +273,7 @@ You can overwrite those values with various ways:
 
 eg:
 
-` HONEYBADGER_API_KEY={key} node app.js`
+`HONEYBADGER_API_KEY={key} node app.js`
 
 will connect to honeybadger for error logging without any further configuration needed.
 
