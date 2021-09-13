@@ -154,7 +154,7 @@ describe('Test worker', function () {
   });
 
   context('worker throws error', function () {
-    it('runs executeCB and updates state', async function () {
+    it('runs executeCB and updates state and reruns start after delay', async function () {
       await WorkerJob.create({ name: 'name', initialized: true });
       const logger = getLogger(`workers.name`);
       sandbox.stub(logger, 'info');
@@ -166,15 +166,16 @@ describe('Test worker', function () {
         throw new Error('test');
       };
       const start = worker.start(initializeCB as any, executeCB);
-      worker.start = () => ({});
+      worker.start = sandbox.stub();
       await start;
       snapshot((logger.info as any).args);
       snapshot((logger.error as any).args);
+      (worker.start as any).args.should.eql([[initializeCB, executeCB]]);
     });
   });
 
   context('worker is already finished', function () {
-    it('runs nothing', async function () {
+    it('will retry start after delay', async function () {
       await WorkerJob.create({ name: 'name', initialized: true, finished: true });
       const logger = getLogger(`workers.name`);
       sandbox.stub(logger, 'info');
@@ -187,9 +188,10 @@ describe('Test worker', function () {
         job.payload = { progress: 100 };
       };
       const start = worker.start(initializeCB, executeCB);
-      worker.start = () => ({});
+      worker.start = sandbox.stub();
       await start;
       snapshot((logger.info as any).args);
+      (worker.start as any).args.should.eql([[initializeCB, executeCB]]);
     });
   });
 });
