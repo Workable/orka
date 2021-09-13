@@ -165,6 +165,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       "key": ""
     }
   },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -343,6 +347,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "cert": "",
       "key": ""
     }
+  },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
   },
   "requestContext": {
     "enabled": true,
@@ -523,6 +531,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "key": ""
     }
   },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -702,6 +714,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "key": ""
     }
   },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -880,6 +896,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "cert": "",
       "key": ""
     }
+  },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
   },
   "requestContext": {
     "enabled": true,
@@ -1064,6 +1084,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "cert": "",
       "key": ""
     }
+  },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
   },
   "requestContext": {
     "enabled": true,
@@ -1250,6 +1274,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "cert": "",
       "key": ""
     }
+  },
+  "workers": {
+    "retryDelay": 3600000,
+    "initializationCheckDelay": 1000
   },
   "requestContext": {
     "enabled": true,
