@@ -18,6 +18,13 @@ Orka is exposing a useful factory to create workers. This is a convenient boiler
 Sometimes you need to execute long running tasks that need to continue from where it had left off when being restarted. E.g. Processing some million of rows in a table and keeping the last processed row.
 Orka's worker will automatically create and use a mongo collection called workerjob for this.
 
+Some scenarios you would like to use a worker when you have a long running task (e.g. a custom migration):
+
+- It might take several days and needs to run without continuous supervision
+- It needs to resume from the point it stopped when restarted
+- You need to replicate it across environments and possibly pass from QA
+- It needs to run periodically. So it's better committed and handled as a worker task
+
 ## Installation
 
 To use the build in worker you need to have mongodb configured. See [mongodb](https://workable.github.io/orka/integrations/mongodb)
