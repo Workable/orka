@@ -1,6 +1,7 @@
 import { Context, Middleware } from 'koa';
 import { getLogger } from 'log4js';
 import { getRequestContext } from '../../builder';
+import * as uuid from 'uuid';
 
 const logger = getLogger('orka.visitor');
 
@@ -14,12 +15,14 @@ export default function (config): Middleware {
     const cookie = ctx.cookies && ctx.cookies.get(config.visitor.cookie);
     try {
       const { cookie_id: visitor } = decode(cookie);
-      ctx.state.visitor = visitor;
-      getRequestContext()?.set('visitor', ctx.state.visitor);
+      if (uuid.validate(visitor)) {
+        ctx.state.visitor = visitor;
+        getRequestContext()?.set('visitor', ctx.state.visitor);
+      }
     } catch (e) {
-      logger.error(`Failed to parse cookie ${config.visitor.cookie} = ${cookie}`, e);
+      logger.warn(`Failed to parse cookie ${config.visitor.cookie} = ${cookie}`, e);
     } finally {
-      return await next();
+      return next();
     }
   };
 }
