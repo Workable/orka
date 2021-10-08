@@ -20,7 +20,7 @@ export default class OrkaKafka {
   }
 
   public async connect(options?: KafkajsType.ProducerConfig) {
-    const { producer, clientId } = this.options;
+    const { producer, clientId, connectionTimeout, authenticationTimeout } = this.options;
     this.healthy = false;
 
     this.produceClient = new Kafka({
@@ -31,7 +31,9 @@ export default class OrkaKafka {
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
         getLogger('orka.kafka.producer')[level](message, extra);
       },
-      ...getAuthOptions(producer)
+      ...getAuthOptions(producer),
+      connectionTimeout,
+      authenticationTimeout
     });
 
     this.producer = this.produceClient.producer(options);
@@ -61,7 +63,7 @@ export default class OrkaKafka {
 
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
     groupId ??= this.options.groupId;
-    const { brokers, clientId } = this.options;
+    const { brokers, clientId, connectionTimeout, authenticationTimeout } = this.options;
     this.consumeClient = new Kafka({
       brokers,
       clientId,
@@ -70,7 +72,9 @@ export default class OrkaKafka {
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
         getLogger('orka.kafka.consumer')[level](message, extra);
       },
-      ...getAuthOptions(this.options)
+      ...getAuthOptions(this.options),
+      connectionTimeout,
+      authenticationTimeout
     });
     const consumer = this.consumeClient.consumer({ groupId, ...rest });
     await consumer.connect();
@@ -79,7 +83,7 @@ export default class OrkaKafka {
   }
 
   public async connectAdmin() {
-    const { brokers, clientId } = this.options;
+    const { brokers, clientId, connectionTimeout, authenticationTimeout } = this.options;
     const kafka = new Kafka({
       brokers,
       clientId,
@@ -89,7 +93,9 @@ export default class OrkaKafka {
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
         getLogger('orka.kafka.admin')[level](message, extra);
       },
-      ...getAuthOptions(this.options)
+      ...getAuthOptions(this.options),
+      connectionTimeout,
+      authenticationTimeout
     });
     const admin = kafka.admin();
     await admin.connect();

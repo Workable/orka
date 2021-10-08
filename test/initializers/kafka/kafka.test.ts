@@ -67,7 +67,9 @@ describe('kafka class', () => {
           producer: {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
-          }
+          },
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
@@ -98,7 +100,9 @@ describe('kafka class', () => {
           producer: {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
-          }
+          },
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
@@ -128,7 +132,9 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' },
             ssl: true
-          }
+          },
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         const producerConfig = { maxInFlightRequests: 10 };
         const producerSpy = sandbox.spy(kafkaStubReturn, 'producer');
@@ -165,7 +171,9 @@ describe('kafka class', () => {
           producer: {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
-          }
+          },
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.createConsumer();
         consumerStub.args.should.eql([[{ groupId: 'groupId' }]]);
@@ -192,7 +200,9 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
-          ssl: true
+          ssl: true,
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.createConsumer({ groupId: 'foo' });
         consumerStub.args.should.eql([[{ groupId: 'foo' }]]);
@@ -222,7 +232,9 @@ describe('kafka class', () => {
           producer: {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
-          }
+          },
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.connectAdmin();
         adminStub.args.should.eql([[]]);
@@ -249,7 +261,9 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
-          ssl: true
+          ssl: true,
+          connectionTimeout: 1000,
+          authenticationTimeout: 1000
         });
         await kafka.connectAdmin();
         adminStub.args.should.eql([[]]);

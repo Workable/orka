@@ -33,4 +33,6 @@ export interface KafkaConfig {
     level: 'info' | 'debug' | 'error' | 'warn' | 'nothing';
     errorToWarn: string[];
   };
+  connectionTimeout?: number;
+  authenticationTimeout?: number;
 }
