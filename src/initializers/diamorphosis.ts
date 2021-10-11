@@ -170,7 +170,9 @@ function addKafkaConfig(config) {
         password: '',
         ...config.kafka?.producer?.sasl
       }
-    }
+    },
+    connectionTimeout: 1000,
+    authenticationTimeout: 1000
   };
 }
 
