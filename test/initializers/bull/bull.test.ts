@@ -37,6 +37,15 @@ describe('bull class', () => {
         public async count() {
           return 10;
         }
+        public async getJobCounts() {
+          return {
+            active: 2,
+            completed: 3,
+            failed: 1,
+            delayed: 4,
+            waiting: 6
+          };
+        }
         public async getFailedCount() {
           return 3;
         }
@@ -91,8 +100,8 @@ describe('bull class', () => {
     it('should retrieve the stats from each queue configured', async () => {
       const stats = await bull.getStats();
       stats.should.be.eql([
-        { queue: 'test_one', count: 10, failed: 3 },
-        { queue: 'rate_limited', count: 10, failed: 3 }
+        { queue: 'test_one', count: 10, active: 2, completed: 3, failed: 1, delayed: 4, waiting: 6 },
+        { queue: 'rate_limited', count: 10, active: 2, completed: 3, failed: 1, delayed: 4, waiting: 6 }
       ]);
     });
   });
@@ -111,13 +120,22 @@ describe('bull class', () => {
       });
     });
     describe('when prometheus is available', () => {
-      let depth, failed, register;
+      let depth, active, completed, failed, delayed, waiting, register;
       beforeEach(async () => {
         depth = sandbox.stub();
+        active = sandbox.stub();
+        completed = sandbox.stub();
         failed = sandbox.stub();
+        delayed = sandbox.stub();
+        waiting = sandbox.stub();
         register = sandbox.stub();
         register.onCall(0).returns({ set: depth });
-        register.onCall(1).returns({ set: failed });
+        register.onCall(1).returns({ set: active });
+        register.onCall(2).returns({ set: completed });
+        register.onCall(3).returns({ set: failed });
+        register.onCall(4).returns({ set: delayed });
+        register.onCall(5).returns({ set: waiting });
+
         const prometheus = {
           registerGauge: register
         } as Prometheus;
@@ -129,11 +147,19 @@ describe('bull class', () => {
         await bull.updateMetrics();
         sandbox.assert.calledOnce(getStatsSpy);
         sandbox.assert.callCount(depth, queues.length);
+        sandbox.assert.callCount(active, queues.length);
+        sandbox.assert.callCount(completed, queues.length);
         sandbox.assert.callCount(failed, queues.length);
+        sandbox.assert.callCount(delayed, queues.length);
+        sandbox.assert.callCount(waiting, queues.length);
         queues.forEach(q => {
           const queue = q.name;
           sandbox.assert.calledWith(depth, { queue }, 10);
-          sandbox.assert.calledWith(failed, { queue }, 3);
+          sandbox.assert.calledWith(active, { queue }, 2);
+          sandbox.assert.calledWith(completed, { queue }, 3);
+          sandbox.assert.calledWith(failed, { queue }, 1);
+          sandbox.assert.calledWith(delayed, { queue }, 4);
+          sandbox.assert.calledWith(waiting, { queue }, 6);
         });
       });
     });

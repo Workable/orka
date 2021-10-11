@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 import Prometheus from '../prometheus/prometheus';
+import { JobCounts } from 'bull';
 
 const Queue = requireInjected('bull');
 export default class Bull {
@@ -56,7 +57,11 @@ export default class Bull {
     try {
       this.metrics = {
         depth: this.prometheus.registerGauge('external', 'bull_queue_depth', 'Bull Jobs in Queue', ['queue']),
-        failed: this.prometheus.registerGauge('external', 'bull_queue_failed', 'Bull Jobs Failed', ['queue'])
+        active: this.prometheus.registerGauge('external', 'bull_queue_active', 'Bull Jobs Active', ['queue']),
+        completed: this.prometheus.registerGauge('external', 'bull_queue_completed', 'Bull Jobs Completed', ['queue']),
+        failed: this.prometheus.registerGauge('external', 'bull_queue_failed', 'Bull Jobs Failed', ['queue']),
+        delayed: this.prometheus.registerGauge('external', 'bull_queue_delayed', 'Bull Jobs Delayed', ['queue']),
+        waiting: this.prometheus.registerGauge('external', 'bull_queue_waiting', 'Bull Jobs Waiting', ['queue'])
       };
     } catch (err) {
       this.logger.error(err);
@@ -70,10 +75,14 @@ export default class Bull {
       return;
     }
     try {
-      const stats = await this.getStats();
-      stats.forEach(({ queue, count, failed }) => {
+      const stats: BullStats[] = await this.getStats();
+      stats.forEach(({ queue, count, active, completed, failed, delayed, waiting }) => {
         this.metrics.depth.set({ queue }, count);
+        this.metrics.active.set({ queue }, active);
+        this.metrics.completed.set({ queue }, completed);
         this.metrics.failed.set({ queue }, failed);
+        this.metrics.delayed.set({ queue }, delayed);
+        this.metrics.waiting.set({ queue }, waiting);
       });
     } catch (err) {
       this.logger.error(err);
@@ -90,19 +99,35 @@ export default class Bull {
     return this.instances[name];
   }
 
-  private async fetchStats(name): Promise<{ queue: string; count: number; failed: number }> {
+  private async fetchStats(name: string): Promise<BullStats> {
     const q = this.getQueue(name);
+    const counts: JobCounts = await q.getJobCounts();
+
     return {
       queue: name,
       count: await q.count(),
-      failed: await q.getFailedCount()
+      active: counts.active,
+      completed: counts.completed,
+      failed: counts.failed,
+      delayed: counts.delayed,
+      waiting: counts.waiting
     };
   }
 
-  public getStats() {
+  public getStats(): Promise<BullStats[]> {
     const stats = this.queueNames.map(this.fetchStats, this);
     return Promise.all(stats);
   }
+}
+
+export interface BullStats {
+  queue: string;
+  count: number;
+  active: number;
+  completed: number;
+  failed: number;
+  delayed: number;
+  waiting: number;
 }
 
 const handleFailure = (name, job, error) => {
