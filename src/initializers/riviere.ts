@@ -64,6 +64,11 @@ const init = (config, orkaOptions) => {
           if (!requestArgs.headers[traceHeaderName] && traceId) {
             requestArgs.headers[traceHeaderName] = traceId;
           }
+
+          if (config.requestContext.istioTraceContextHeaders.enabled) {
+            const istioTraceContextHeaders = getRequestContext()?.get('istio-headers');
+            Object.assign(requestArgs.headers, istioTraceContextHeaders);
+          }
         } catch (e) {
           getLogger('orka.riviere').error(e);
         }

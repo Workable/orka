@@ -1,6 +1,7 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import { alsSupported } from '../../src/utils';
+import * as nock from 'nock';
 
 const sandbox = sinon.createSandbox();
 
@@ -32,6 +33,7 @@ describe('request-context', function() {
     delete require.cache[require.resolve('../../build/initializers/koa/add-visitor-id.js')];
     delete require.cache[require.resolve('../../build/initializers/log4js/index.js')];
     delete require.cache[require.resolve('../../build/initializers/log4js/json-appender.js')];
+    delete require.cache[require.resolve('../../build/initializers/riviere.js')];
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
     await server.start();
@@ -77,5 +79,23 @@ describe('request-context', function() {
     logSpy.args.should.eql([
       logEntry('A log in a service', { requestId: 'test-id', query: 'testme', afterMiddleware: 'orka' })
     ]);
+  });
+
+  it('/propagateTracingHeaders returns 200 and propagate istio headers', async function() {
+    const propagatedRequestMock = nock('http://foo.com')
+      .matchHeader('x-request-id', 'istio-request-id')
+      .matchHeader('x-b3-spanid', 'istio-x-b3-spanid')
+      .post('/', (body) => true)
+      .reply(200);
+
+    const response = await request
+      .post('/propagateTracingHeaders')
+      .set('x-orka-request-id', 'test-id')
+      .set('x-request-id', 'istio-request-id')
+      .set('x-b3-spanid', 'istio-x-b3-spanid')
+      .expect(200);
+
+    response.text.should.eql('ok');
+    propagatedRequestMock.isDone().should.be.true();
   });
 });
