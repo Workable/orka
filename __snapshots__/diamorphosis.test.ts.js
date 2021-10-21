@@ -177,7 +177,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -362,7 +374,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -547,7 +571,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -732,7 +768,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -917,7 +965,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -1107,7 +1167,19 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }
 
@@ -1299,6 +1371,18 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "requestId",
       "visitor",
       "correlationId"
-    ]
+    ],
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
+    }
   }
 }

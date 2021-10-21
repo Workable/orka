@@ -1,5 +1,5 @@
 const { getLogger, getRequestContext } = require('../../build');
-const { testMe } = require('./service');
+const { testMe, postFoo } = require('./service');
 
 module.exports = {
   get: {
@@ -12,6 +12,13 @@ module.exports = {
     },
     '/logWithAppendedRequestContextVar': async (ctx, next) => {
       await testMe();
+      ctx.body = 'ok';
+      ctx.status = 200;
+    }
+  },
+  post: {
+    '/propagateTracingHeaders': async (ctx) => {
+      await postFoo('foo');
       ctx.body = 'ok';
       ctx.status = 200;
     }

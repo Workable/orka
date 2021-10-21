@@ -19,11 +19,25 @@ Orka by default exposes a Request Context to the app.
 
 It can be used for setting/getting variables that can be accessible in every code file (within the request's life). It uses nodeJS `async_hooks` to store this information.
 
-By default it appends `requestId`, `visitor` (if you have the option `config.visitor.cookie`) in the request context and `ddSpan`(if you have DataDog enabled). The `requestId` is retrieved using the option `config.traceHeaderName`
+By default it appends in the request context: `requestId`, `visitor` (if you have the option `config.visitor.cookie`), `ddSpan`(if you have DataDog enabled),
+and `istio-headers` that holds [Istio trace context headers](https://istio.io/latest/docs/tasks/observability/distributed-tracing/overview/#trace-context-propagation) (if you have the option `config.requestContext.istioTraceContextHeaders.enabled`).
+The `requestId` is retrieved using the option `config.traceHeaderName`
 
 ### Log Tracer
 
 If the Request Context is enabled, orka by default appends `requestId`, `correlationId` and `visitor` to all the application logs automatically.
+
+### Istio trace context headers
+
+Istio trace context headers are enabled by default as long as the current nodejs version supports AsyncLocalStorage (async_hooks).
+
+If option `config.requestContext.istioTraceContextHeaders` is enabled, orka propagates [Istio trace context headers](https://istio.io/latest/docs/tasks/observability/distributed-tracing/overview/#trace-context-propagation)
+from incoming http requests to any outbound http request.
+
+By default orka propagates the following Istio headers:
+`"x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"`
+
+This list can be modified by changing `config.requestContext.istioTraceContextHeaders.headers`.
 
 ### Configuration
 
@@ -32,8 +46,12 @@ If you don't specify anything in your `config.requestContext` it defaults to:
 ```js
 {
   "requestContext": {
-    "enabled": true
-    "logKeys": ["requestId", "visitor", "correlationId"]  // These are the keys that will be appended automatically to your logs
+    "enabled": true,
+    "logKeys": ["requestId", "visitor", "correlationId"],  // These are the keys that will be appended automatically to your logs
+    "istioTraceContextHeaders": {
+      "enabled": true,
+      "headers": ["x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"]
+    }
   }
 }
 ```
