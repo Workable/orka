@@ -84,6 +84,7 @@
     "@types/pg": "^7.14.11",
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
+    "axios": "^0.21.1",
     "bull": "*",
     "dd-trace": "*",
     "husky": "^3.0.9",
