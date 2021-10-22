@@ -69,7 +69,6 @@
     "rabbit-queue": "*",
     "redis": "^3.1.1",
     "source-map-support": "^0.5.16",
-    "tmp": "^0.1.0",
     "tsconfig-paths": "^3.9.0",
     "uuid": "^8.3.2"
   },
