@@ -22,7 +22,7 @@ and explicitly specifying the status code.
 
 ```js
 const { helpers } = ('@workablehr/orka');
-const o = orka({}).with(helpers.axiosErrorInterceptor);
+helpers.axiosErrorInterceptor();
 ```
 
 Having done that, when the application calls another service and receives an error from axios (e.g., a 404) and left unhandled, the application will finally throw a 404. 
