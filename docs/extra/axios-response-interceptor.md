@@ -18,6 +18,11 @@ Orka provides the ability to intercept responses of applications that use axios,
 In this manner, it is possible to properly propagate an error thrown by axios using its respective status code, instead of manually catching these errors
 and explicitly specifying the status code.
 
+Axios is an optional dependency. In order to use the interceptor, install the dependency first:
+```sh
+npm i axios
+```
+
 ### Usage
 
 ```js
