@@ -15,7 +15,7 @@ nav_order: 2
   {:toc}
 
 Orka provides the ability to intercept responses of applications that use axios, via the usage of [axios interceptors](https://axios-http.com/docs/interceptors). 
-In this manner, it is possible to properly propagate and error thrown by axios using its respective status code, instead of manually catching these errors
+In this manner, it is possible to properly propagate an error thrown by axios using its respective status code, instead of manually catching these errors
 and explicitly specifying the status code.
 
 ### Usage
