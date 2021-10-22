@@ -1,5 +1,5 @@
 import requireInjected from '../../require-injected';
-import { AxiosError } from '../errors/axios-error';
+import { AxiosError } from '../../middlewares/errors/axios-error';
 
 export default () => {
   const axios = requireInjected('axios');
