@@ -110,24 +110,33 @@ This middleware checks request's cookies and extract the cookie with name `confi
 ### Options
 
 **config.visitor.enabled**
+
 If this is set to `false`, orka will not this middleware. Defaults to `true`.
 
 **config.visitor.cookie**
+
 This is the cookie name that the middleware will try to get/set. Defaults to `wmc`.
 
 **config.visitor.setCookie**
+
 If this is set to `true`, the middleware will create and add a new visitor cookie with name `config.visitor.cookie`. Defaults to `false`.
 
 **config.visitor.maxAge**
+
 Requires: `config.visitor.setCookie=true`
+
 This is the cookie's max age. Defaults to `7d`.
 
 **config.visitor.secure**
+
 Requires: `config.visitor.setCookie=true`
+
 It forces secure cookies in context. Use this when you only want to use `secure=true`. Defaults to `true`.
 
 **config.visitor.getCookieDomain**
+
 Requires: `config.visitor.setCookie=true`
+
 You can use this method to set the preferable cookie domain.
 
 Default:
