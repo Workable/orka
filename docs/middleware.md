@@ -23,11 +23,12 @@ Orka adds by default the following middleware:
 - errorHandler (Handles errors thrown in any middleware added afterwards)
 - [koa-compress](https://www.npmjs.com/package/koa-compress)
 - [koa2-cors](https://www.npmjs.com/package/koa2-cors)
-- addVisitorId (adds a visitorId in ctx.state.visitorId from cookie ctx.visitor.cookie)
+- addVisitorId (adds a visitorId in ctx.state.visitor from cookie ctx.visitor.cookie)
 
 Any middlewares you add in beforeMiddleware go before this list.
 Any middlewares you add in afterMiddleware go after this list.
 Orka also adds a last middleware (after your afterMiddleware) for [routing](https://workable.github.io/orka/routing).
+
 ## Health Middleware
 
 It supports a health middleware that currently checks the availablity of mongo
@@ -101,3 +102,9 @@ module.exports = {
   }
 };
 ```
+
+## Add Visitor Middleware
+
+This middleware checks request's cookies and extract the cookie with name `config.visitor.cookie`, it parses it and add it to `ctx.state.visitor`.
+
+If the option `config.visitor.setCookie` is set, then if the cookie does not exist, it sets a new cookie with name `config.visitor.cookie` and value a new uuid.
