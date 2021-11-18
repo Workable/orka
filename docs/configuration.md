@@ -264,6 +264,13 @@ You can find the default values below:
   "workers": {
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
+  },
+  "visitor": {
+    "enabled": true,
+    "setCookie": false,
+    "cookie": "wmc",
+    "maxAge": "7d",
+    "secure": true
   }
 }
 ```

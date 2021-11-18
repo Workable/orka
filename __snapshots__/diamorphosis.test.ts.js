@@ -86,7 +86,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "redis": false
   },
   "visitor": {
-    "cookie": ""
+    "cookie": "",
+    "setCookie": false
   },
   "kafka": {
     "brokers": [],
@@ -283,7 +284,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": false
   },
   "visitor": {
-    "cookie": ""
+    "cookie": "",
+    "setCookie": false
   },
   "kafka": {
     "brokers": [],
@@ -480,7 +482,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": false
   },
   "visitor": {
-    "cookie": ""
+    "cookie": "",
+    "setCookie": false
   },
   "kafka": {
     "brokers": [],
@@ -677,7 +680,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": false
   },
   "visitor": {
-    "cookie": ""
+    "cookie": "",
+    "setCookie": false
   },
   "kafka": {
     "brokers": [],
@@ -874,7 +878,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": false
   },
   "visitor": {
-    "cookie": ""
+    "cookie": "",
+    "setCookie": false
   },
   "kafka": {
     "brokers": [],
@@ -1036,7 +1041,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": true
   },
   "visitor": {
-    "cookie": "cookie"
+    "cookie": "cookie",
+    "setCookie": false
   },
   "app": {
     "env": "testProcess"
@@ -1238,7 +1244,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "redis": true
   },
   "visitor": {
-    "cookie": "cookie"
+    "cookie": "cookie",
+    "setCookie": false
   },
   "app": {
     "env": "testProcess"

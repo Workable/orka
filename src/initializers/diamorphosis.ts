@@ -88,6 +88,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
 
   config.visitor = {
     cookie: '',
+    setCookie: false,
     ...config.visitor
   };
 
