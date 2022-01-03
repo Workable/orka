@@ -1,4 +1,4 @@
-import * as Honeybadger from 'honeybadger';
+import * as Honeybadger from '@honeybadger-io/js';
 
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
@@ -33,14 +33,6 @@ function notifyHoneybadger(categoryName, error, ...rest) {
   Object.assign(context, error.context);
 
   const computedComponent = component || categoryName;
-
-  console.log(`name: ${name}`);
-  console.log(`error.message: ${error.message}`);
-  console.log(`component: ${component}`);
-  console.log(`categoryName: ${categoryName}`);
-  console.log(`action: ${action}`);
-  console.log(`computed: ${computedComponent}`);
-  console.log(`fingerprint: ${action && computedComponent ? `${computedComponent}_${action}` : categoryName}`);
 
   Honeybadger.notify(
     { stack: error.stack, message, name },

@@ -1,6 +1,6 @@
 import * as appender from '../../../src/initializers/log4js/honeybadger-appender';
 import 'should';
-import * as Honeybadger from 'honeybadger';
+import * as Honeybadger from '@honeybadger-io/js';
 import * as sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();

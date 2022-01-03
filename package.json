@@ -53,11 +53,11 @@
   "dependencies": {
     "@google-cloud/debug-agent": "^5.1.3",
     "@hapi/joi": "^17.1.0",
+    "@honeybadger-io/js": "^3.2.7",
     "@workablehr/riviere": "*",
     "codependency": "^2.1.0",
     "diamorphosis": "^0.8.3",
     "fast-koa-router": "^1.3.0",
-    "honeybadger": "^1.3.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
