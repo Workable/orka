@@ -34,6 +34,14 @@ function notifyHoneybadger(categoryName, error, ...rest) {
 
   const computedComponent = component || categoryName;
 
+  console.log(`name: ${name}`);
+  console.log(`error.message: ${error.message}`);
+  console.log(`component: ${component}`);
+  console.log(`categoryName: ${categoryName}`);
+  console.log(`action: ${action}`);
+  console.log(`computed: ${computedComponent}`);
+  console.log(`fingerprint: ${action && computedComponent ? `${computedComponent}_${action}` : categoryName}`);
+
   Honeybadger.notify(
     { stack: error.stack, message, name },
     {
