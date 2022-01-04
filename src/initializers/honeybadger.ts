@@ -7,13 +7,9 @@ export default async config => {
       developmentEnvironments: config.honeybadger.developmentEnvironments
     });
     honeybadger.beforeNotify(function (notice) {
-      // For testing purposes. Will delete after
-      console.log(`fingerprint before: ${notice.fingerprint}`);
-
       if (notice.backtrace.length > 0) {
         notice.fingerprint += `_${notice.backtrace[0].file}_${notice.backtrace[0].number}`;
       }
-      console.log(`fingerprint after: ${notice.fingerprint}`);
     });
   }
 };
