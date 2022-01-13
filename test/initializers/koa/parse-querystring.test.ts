@@ -28,4 +28,17 @@ describe('parse-querystring', function () {
       children: ['bolek', 'lolek']
     });
   });
+
+  it('overrides query in state', async function () {
+    // Prepare
+    const next = sandbox.stub();
+
+    // Execute
+    await middleware(ctx, next);
+
+    // Assert
+    next.called.should.be.true();
+    ctx.state.query = 'asd';
+    ctx.state.query.should.eql('asd');
+  });
 });
