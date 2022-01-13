@@ -4,7 +4,7 @@ import middleware from '../../../src/initializers/koa/parse-querystring';
 const sandbox = sinon.createSandbox();
 
 describe('parse-querystring', function () {
-  let ctx, getRequestContextStub;
+  let ctx;
 
   beforeEach(function () {
     ctx = {
