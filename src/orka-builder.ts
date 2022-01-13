@@ -14,6 +14,7 @@ import { getLogger } from './initializers/log4js';
 import riviere from './initializers/riviere';
 import addRequestId from './initializers/koa/add-request-id';
 import addVisitorId from './initializers/koa/add-visitor-id';
+import parseQuerystring from './initializers/koa/parse-querystring';
 import addRequestContext from './initializers/koa/add-request-context';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
@@ -77,6 +78,7 @@ export default class OrkaBuilder {
       );
     }
     this.use(() => bodyParser(this.config.bodyParser));
+    this.use(() => parseQuerystring);
     this.use(() => riviere(this.config, this.options));
     this.use(() => this.errorHandler(this.config, this.options));
     this.use(
