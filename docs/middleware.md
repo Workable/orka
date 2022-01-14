@@ -23,6 +23,7 @@ Orka adds by default the following middleware:
 - errorHandler (Handles errors thrown in any middleware added afterwards)
 - [koa-compress](https://www.npmjs.com/package/koa-compress)
 - [koa2-cors](https://www.npmjs.com/package/koa2-cors)
+- parseQuerystring (Uses [qs](https://www.npmjs.com/package/qs) and adds an object to `ctx.state.query` with the parsed attributes)
 - addVisitorId (adds a visitorId in ctx.state.visitor from cookie ctx.visitor.cookie)
 
 Any middlewares you add in beforeMiddleware go before this list.
