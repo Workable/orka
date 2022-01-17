@@ -1,6 +1,6 @@
 import 'should';
 import * as sinon from 'sinon';
-import { CustomError } from '../../../../src/middlewares/errors/custom-error';
+import { CustomError } from '../../src/errors/custom-error';
 
 const sandbox = sinon.createSandbox();
 

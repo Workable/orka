@@ -1,5 +1,5 @@
 import * as Joi from '@hapi/joi';
-import { ValidationError } from './errors/validation-error';
+import { ValidationError } from '../errors/validation-error';
 import * as Koa from 'koa';
 
 function validate(body: any, schema: Joi.ObjectSchema) {

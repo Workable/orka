@@ -1,7 +1,7 @@
 import * as _axios from 'axios';
 import snapshot = require('snap-shot-it');
 import * as util from 'util';
-import { AxiosError } from '../../../../src/middlewares/errors/axios-error';
+import { AxiosError } from '../../src/errors/axios-error';
 import * as sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
