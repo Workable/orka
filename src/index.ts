@@ -1,6 +1,7 @@
 import Orka from './orka';
 import * as middlewares from './middlewares';
 import * as helpers from './helpers';
+import * as errors from './errors';
 
 export { default as builder, getRequestContext, runWithContext } from './builder';
 export { getLogger } from './initializers/log4js';
@@ -14,4 +15,4 @@ export { getRedis, createRedisConnection } from './initializers/redis';
 export { getBull } from './initializers/bull';
 export { getPrometheus } from './initializers/prometheus';
 export { getPostgresPool, withPostgresTransaction } from './initializers/postgres';
-export { middlewares, helpers };
+export { middlewares, helpers, errors };

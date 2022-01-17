@@ -58,7 +58,7 @@ export const createValidLog = (layout, logEvent, config) => {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message,
+    message: message,
     context
   };
 };
