@@ -51,7 +51,7 @@
     "instrument": true
   },
   "dependencies": {
-    "@google-cloud/debug-agent": "^5.1.3",
+    "@google-cloud/debug-agent": "^5.2.8",
     "@hapi/joi": "^17.1.0",
     "@workablehr/riviere": "*",
     "codependency": "^2.1.0",
