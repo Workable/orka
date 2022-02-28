@@ -123,16 +123,16 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
         topic: string;
       }) => {
         const start = logMetrics.start();
-        let handleResponse;
+        let output;
         if (alsSupported()) {
-          handleResponse = runWithContext(new Map([['correlationId', message.key.toString()]]), () =>
+          output = runWithContext(new Map([['correlationId', message.key.toString()]]), () =>
             this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
           );
         } else {
-          handleResponse = this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
+          output = this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
         }
         logMetrics.end(start, 'topic-' + topic, 'kafka', message.key.toString());
-        return handleResponse;
+        return output;
       }) as any
     });
   }
@@ -157,9 +157,9 @@ export abstract class BaseKafkaBatchHandler<Input, Output> extends Base<Input, O
           messages:
             batch?.messages?.map(m => this.transformToKafkaHandlerMessage(m, batch.topic, batch.partition)) || []
         };
-        const handleResponse = this.handleBatch(transformed);
+        const output = this.handleBatch(transformed);
         logMetrics.end(start, 'topic-' + batch.topic, 'kafka.batch', batch?.partition?.toString());
-        return handleResponse;
+        return output;
       }
     });
   }
