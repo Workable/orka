@@ -4,6 +4,7 @@ import { flatten } from 'lodash';
 import type * as KafkajsType from 'kafkajs';
 import { runWithContext } from '../../builder';
 import { alsSupported } from '../../utils';
+import { logMetrics } from '../../helpers';
 
 export type BaseKafkaHandlerOptions = {
   topic: string | string[];
@@ -14,7 +15,7 @@ export type BaseKafkaHandlerOptions = {
   runOptions?: KafkajsType.ConsumerRunConfig;
   jsonParseValue?: boolean;
   stringifyHeaders?: boolean;
-  onConsumerCreated?: (consumer: KafkajsType.Consumer) => any
+  onConsumerCreated?: (consumer: KafkajsType.Consumer) => any;
 };
 
 export type BaseKafkaHandlerMessage<Input> = KafkajsType.KafkaMessage & {
@@ -73,10 +74,7 @@ abstract class Base<Input, Output> {
   }
 
   parseHeaders(headers: KafkajsType.IHeaders) {
-    return Object.keys(headers).reduce(
-      (m, k) => ({ ...m, [k]: headers[k].toString() }),
-      {}
-    );
+    return Object.keys(headers).reduce((m, k) => ({ ...m, [k]: headers[k].toString() }), {});
   }
   transformToKafkaHandlerMessage(
     message: KafkajsType.KafkaMessage,
@@ -87,8 +85,12 @@ abstract class Base<Input, Output> {
       ...message,
       topic,
       partition,
-      ...(this.jsonParseValue && message.value ? { rawValue: message.value, value: this.parseValue(message.value) } : {}),
-      ...(this.stringifyHeaders && message.headers ? { rawHeaders: message.headers, headers: this.parseHeaders(message.headers) } : {})
+      ...(this.jsonParseValue && message.value
+        ? { rawValue: message.value, value: this.parseValue(message.value) }
+        : {}),
+      ...(this.stringifyHeaders && message.headers
+        ? { rawHeaders: message.headers, headers: this.parseHeaders(message.headers) }
+        : {})
     };
   }
 
@@ -120,14 +122,15 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
         partition: number;
         topic: string;
       }) => {
+        const start = logMetrics.start();
         if (alsSupported()) {
-          return runWithContext(
-            new Map([['correlationId', message.key.toString()]]),
-            () => this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
+          await runWithContext(new Map([['correlationId', message.key.toString()]]), () =>
+            this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
           );
         } else {
-          return this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
+          await this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
         }
+        logMetrics.end(start, 'topic-' + topic, 'kafka', message.key.toString());
       }) as any
     });
   }
@@ -144,12 +147,16 @@ export abstract class BaseKafkaBatchHandler<Input, Output> extends Base<Input, O
     await this.consumer.run({
       ...this.runOptions,
       eachBatch: async ({ batch, heartbeat }) => {
+        const start = logMetrics.start();
+
         await heartbeat();
         const transformed: BaseKafkaHandlerBatch<Input> = {
           ...batch,
-          messages: batch?.messages?.map(m => this.transformToKafkaHandlerMessage(m, batch.topic, batch.partition)) || []
+          messages:
+            batch?.messages?.map(m => this.transformToKafkaHandlerMessage(m, batch.topic, batch.partition)) || []
         };
-        return this.handleBatch(transformed);
+        await this.handleBatch(transformed);
+        logMetrics.end(start, 'topic-' + batch.topic, 'kafka.batch', batch?.partition?.toString());
       }
     });
   }
