@@ -208,10 +208,6 @@ function addMongoDBConfig(config) {
     url: '',
     ...config.mongodb,
     options: {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: false,
       ...config?.mongodb?.options
     }
   };

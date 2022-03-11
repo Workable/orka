@@ -4,12 +4,6 @@ module.exports = {
 
   mongodb: {
     url: 'mongodb://localhost/orka',
-    // mongoose options for tuning mongodb.
-    // Details: https://mongoosejs.com/docs/connections.html
-    options: {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false
-    }
+    options: {}
   }
 };

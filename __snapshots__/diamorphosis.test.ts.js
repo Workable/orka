@@ -140,12 +140,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -338,12 +333,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -536,12 +526,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -734,12 +719,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -932,12 +912,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -1135,12 +1110,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
@@ -1340,12 +1310,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "mongodb": {
     "url": "",
-    "options": {
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
-    }
+    "options": {}
   },
   "redis": {
     "url": "",
