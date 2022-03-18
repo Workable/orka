@@ -21,8 +21,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
-        mongodb-version: [4.0]
+        node-version: [12.x, 14.x, 16.x]
+        mongodb-version: [4.0, 5.0]
         rabbit-version: [3.8.4]
         redis-version: [6.0]
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -45,7 +45,7 @@ jobs:
         uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: ${{ matrix.rabbit-version }}
-      
+
       - name: Start Redis
         uses: supercharge/redis-github-action@1.2.0
         with:

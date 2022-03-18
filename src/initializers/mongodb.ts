@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
 import { getLogger } from 'log4js';
-import * as lodash from 'lodash';
 
 const logger = getLogger('orka.mongodb');
 
@@ -16,12 +15,7 @@ export default function mongodb(config, mongoOnConnected = () => undefined) {
     return;
   }
 
-  const options: mongoose.ConnectionOptions = lodash.defaultsDeep(config.mongodb.options, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: false
-  });
+  const options: mongoose.ConnectOptions = config.mongodb.options;
 
   mongoose.connect(dbUrl, options);
   connection = mongoose.connection;

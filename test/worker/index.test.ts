@@ -6,12 +6,11 @@ import * as snapshot from 'snap-shot-it';
 import * as mongoose from 'mongoose';
 import * as should from 'should';
 import { getLogger } from '../../src/initializers/log4js';
-import { start } from '@google-cloud/debug-agent';
 const sandbox = sinon.createSandbox();
 
 describe('Test worker', function () {
-  before(function () {
-    mongoose.connect('mongodb://localhost/orka');
+  before(async function () {
+    await mongoose.connect('mongodb://localhost/orka');
   });
 
   beforeEach(async function () {

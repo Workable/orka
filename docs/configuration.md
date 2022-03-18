@@ -227,10 +227,7 @@ You can find the default values below:
     "url": "",
     "options": {
       // options that go into mongoose connect
-      "useNewUrlParser": true,
-      "useCreateIndex": true,
-      "useFindAndModify": false,
-      "useUnifiedTopology": false
+      // https://mongoosejs.com/docs/connections.html#options
     }
   },
   "postgres": {
