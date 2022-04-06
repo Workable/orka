@@ -124,13 +124,13 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
       }) => {
         const start = logMetrics.start();
         if (alsSupported()) {
-          await runWithContext(new Map([['correlationId', message.key.toString()]]), () =>
+          await runWithContext(new Map([['correlationId', message.key?.toString()]]), () =>
             this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
           );
         } else {
           await this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
         }
-        logMetrics.end(start, 'topic-' + topic, 'kafka', message.key.toString());
+        logMetrics.end(start, 'topic-' + topic, 'kafka', message.key?.toString());
       }) as any
     });
   }
