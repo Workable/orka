@@ -6,10 +6,7 @@ name: Node.js Package
 on:
   release:
     types: 
-      - published
-      - created
-      - edited
-      - released
+      - prereleased
 
 jobs:
   publish-npm:
@@ -22,7 +19,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm publish --ignore-scripts
+      - run: npm publish --tag beta --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
