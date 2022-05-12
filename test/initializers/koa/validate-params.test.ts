@@ -1,6 +1,6 @@
 import 'should';
 import * as sinon from 'sinon';
-import * as Joi from '@hapi/joi';
+import * as Joi from 'joi';
 import { validateBody, validateQueryString } from '../../../src/middlewares/validate-params';
 
 const sandbox = sinon.createSandbox();
