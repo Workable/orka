@@ -53,7 +53,7 @@ module.exports = {
 ## ValidateBody and ValidateQueryString Middlewares
 
 It supports validation middlewares for both body or query string parameters
-using the joi validation module. @hapi/joi is now a dependency of orka.
+using the joi validation module. joi is now a dependency of orka.
 
 Example route configuration
 

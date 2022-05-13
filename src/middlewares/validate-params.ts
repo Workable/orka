@@ -1,4 +1,4 @@
-import * as Joi from '@hapi/joi';
+import * as Joi from 'joi';
 import { ValidationError } from '../errors/validation-error';
 import * as Koa from 'koa';
 

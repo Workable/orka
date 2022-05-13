@@ -1,7 +1,7 @@
 const {
   middlewares: { validateQueryString, validateBody }
 } = require('../../build');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const schema = Joi.object().keys({
   keyString: Joi.string(),

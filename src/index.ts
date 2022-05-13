@@ -16,3 +16,4 @@ export { getBull } from './initializers/bull';
 export { getPrometheus } from './initializers/prometheus';
 export { getPostgresPool, withPostgresTransaction } from './initializers/postgres';
 export { middlewares, helpers, errors };
+export { default as Joi } from './initializers/joi';
