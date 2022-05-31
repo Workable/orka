@@ -42,7 +42,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
     type: 'string',
     base: joi.string(),
     prepare: (val, helpers) => {
-      let newVal = val === null || val === undefined ? undefined : clearNullByte(val);
+      let newVal = val === null || val === undefined ? val : clearNullByte(val);
 
       const defaultIfEmptyRule = helpers.schema.$_getRule('defaultIfEmpty');
       if (defaultIfEmptyRule?.args?.v) {
