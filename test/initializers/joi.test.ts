@@ -47,9 +47,17 @@ describe('joi extensions', function () {
       Joi.stringWithEmpty().validate(`asd ${String.fromCharCode(0, 0)}asd`).value.should.equal('asd asd');
     });
     it('allows empty or null values', function () {
-      should(Joi.stringWithEmpty().validate('').error).be.undefined();
-      should(Joi.stringWithEmpty().validate(null).error).be.undefined();
-      should(Joi.stringWithEmpty().validate(undefined).error).be.undefined();
+      const result1 = Joi.stringWithEmpty().validate('');
+      should(result1.error).be.undefined();
+      result1.value.should.equal('');
+
+      const result2 = Joi.stringWithEmpty().validate(null);
+      should(result2.error).be.undefined();
+      should(result2.value).be.null();
+
+      const result3 = Joi.stringWithEmpty().validate(undefined);
+      should(result3.error).be.undefined();
+      should(result3.value).be.undefined();
     });
     describe('defaultIfEmpty', function () {
       it('with empty string', function () {
