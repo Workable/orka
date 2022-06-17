@@ -33,6 +33,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -45,7 +52,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": true,
@@ -127,8 +141,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
         "password": ""
       }
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "queue": {
     "url": "",
@@ -230,6 +244,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -242,7 +263,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": true,
@@ -320,8 +348,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "queue": {
     "url": "",
@@ -423,6 +451,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -435,7 +470,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": true,
@@ -513,8 +555,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "queue": {
     "url": "",
@@ -616,6 +658,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -628,7 +677,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": true,
@@ -706,8 +762,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "queue": {
     "url": "",
@@ -828,6 +884,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -840,7 +903,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": true,
@@ -899,8 +969,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "queue": {
     "url": "",
@@ -1008,8 +1078,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "username": "",
       "password": ""
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "healthCheck": {
     "kafka": true,
@@ -1052,6 +1122,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -1064,7 +1141,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": false,
@@ -1206,8 +1290,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "username": "",
       "password": ""
     },
-    connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    "connectionTimeout": 1000,
+    "authenticationTimeout": 1000
   },
   "healthCheck": {
     "kafka": true,
@@ -1250,6 +1334,13 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -1262,7 +1353,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
       "ageBuckets": 10,
-      "maxAgeSeconds": 60
+      "maxAgeSeconds": 60,
+      "percentiles": [
+        0.05,
+        0.5,
+        0.9,
+        0.95,
+        0.999
+      ]
     }
   },
   "printLogo": false,

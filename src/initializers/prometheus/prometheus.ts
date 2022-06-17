@@ -36,6 +36,7 @@ type metricOptionsType = {
   type: metricType;
   name: string;
   help: string;
+  percentiles: number[];
   ageBuckets: number;
   maxAgeSeconds: number;
 };
@@ -64,6 +65,7 @@ export default class Prometheus {
     if (metric?.enabled) {
       this.timeSummary = this.registerSummary(metric.type, metric.name, metric.help, metric.labels, {
         ageBuckets: metric.ageBuckets,
+        percentiles: metric.percentiles,
         maxAgeSeconds: metric.maxAgeSeconds
       });
     }
@@ -71,6 +73,7 @@ export default class Prometheus {
     if (metric?.enabled) {
       this.eventSummary = this.registerSummary(metric.type, metric.name, metric.help, metric.labels, {
         ageBuckets: metric.ageBuckets,
+        percentiles: metric.percentiles,
         maxAgeSeconds: metric.maxAgeSeconds
       });
     }
