@@ -34,6 +34,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       name: 'flow_duration_seconds',
       help: 'Flow duration in seconds',
       ageBuckets: 10,
+      // default: 0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 0.999
+      percentiles: [0.05, 0.5, 0.9, 0.95, 0.999],
       maxAgeSeconds: 60,
       ...config.prometheus?.timeSummary
     },
@@ -45,6 +47,8 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       help: 'Custom events, eg: event occurences, event lengths',
       ageBuckets: 10,
       maxAgeSeconds: 60,
+      // default: 0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 0.999
+      percentiles: [0.05, 0.5, 0.9, 0.95, 0.999],
       ...config.prometheus?.eventSummary
     }
   };
@@ -111,7 +115,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
         'x-b3-parentspanid',
         'x-b3-sampled',
         'x-b3-flags',
-        'x-ot-span-context',
+        'x-ot-span-context'
       ],
       ...config.requestContext?.istioTraceContextHeaders
     },

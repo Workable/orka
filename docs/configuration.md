@@ -143,6 +143,7 @@ You can find the default values below:
       "name": "flow_duration_seconds",
       "help": "Flow duration in seconds",
       "ageBuckets": 10,
+      "percentiles": [0.05, 0.5, 0.9, 0.95, 0.999],
       "maxAgeSeconds": 60
     },
     "eventSummary": {
@@ -151,6 +152,7 @@ You can find the default values below:
       "type": "external",
       "name": "events",
       "help": "Custom events, eg: event occurences, event lengths",
+      "percentiles": [0.05, 0.5, 0.9, 0.95, 0.999],
       "ageBuckets": 10,
       "maxAgeSeconds": 60
     }
@@ -255,7 +257,15 @@ You can find the default values below:
     "logKeys": ["requestId", "visitor"],
     "istioTraceContextHeaders": {
       "enabled": true,
-      "headers": ["x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"]
+      "headers": [
+        "x-request-id",
+        "x-b3-traceid",
+        "x-b3-spanid",
+        "x-b3-parentspanid",
+        "x-b3-sampled",
+        "x-b3-flags",
+        "x-ot-span-context"
+      ]
     }
   },
   "workers": {
