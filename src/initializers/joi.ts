@@ -1,7 +1,7 @@
 import * as _Joi from 'joi';
-import * as objectid from 'objectid';
 import { isString } from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
+const ObjectID = require('mongodb').ObjectID;
 
 export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.test(val);
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
@@ -30,13 +30,13 @@ const Joi: JoiWithExtensions = _Joi.extend(
     base: joi.string(),
     messages: { 'objectId.invalid': 'Invalid objectId' },
     validate: (value, helpers) => {
-      return objectid.isValid(value)
+      return ObjectID.isValid(value)
         ? { value }
         : {
-          value,
-          errors: helpers.error('objectId.invalid'),
-        };
-    },
+            value,
+            errors: helpers.error('objectId.invalid')
+          };
+    }
   }),
   joi => ({
     type: 'string',
@@ -54,7 +54,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
       }
 
       return {
-        value: newVal,
+        value: newVal
       };
     },
     rules: {
@@ -68,15 +68,15 @@ const Joi: JoiWithExtensions = _Joi.extend(
             name: 'v',
             ref: true,
             assert: value => typeof value === 'string' && value?.trim()?.length !== 0,
-            message: 'must be a non empty string',
-          },
-        ],
-      },
-    },
+            message: 'must be a non empty string'
+          }
+        ]
+      }
+    }
   }),
   joi => ({
     type: 'url',
-    base: joi.string().uri({ domain: { minDomainSegments: 2 } }),
+    base: joi.string().uri({ domain: { minDomainSegments: 2 } })
   }),
   joi => ({
     type: 'urlWithEmpty',
@@ -84,7 +84,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
       .string()
       .uri({ domain: { minDomainSegments: 2 } })
       .allow('')
-      .allow(null),
+      .allow(null)
   }),
   joi => ({
     type: 'phone',
@@ -94,20 +94,20 @@ const Joi: JoiWithExtensions = _Joi.extend(
       stripIfInvalid: {
         method() {
           return this.$_setFlag('stripIfInvalid', true);
-        },
-      },
+        }
+      }
     },
     validate: (value, helpers) => {
       // From: https://github.com/Workable/workable/blob/master/app/validators/phone_validator.rb#L3
       return isValidPhone(value)
         ? { value }
         : helpers.schema.$_getFlag('stripIfInvalid')
-          ? { value: undefined }
-          : {
+        ? { value: undefined }
+        : {
             value,
-            errors: helpers.error('string.phone'),
+            errors: helpers.error('string.phone')
           };
-    },
+    }
   }),
   joi => ({
     type: 'hexColor',
@@ -117,29 +117,29 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return isValidHexColor(value)
         ? { value }
         : {
-          value,
-          errors: helpers.error('string.hexcolor'),
-        };
-    },
+            value,
+            errors: helpers.error('string.hexcolor')
+          };
+    }
   }),
   joi => ({
     type: 'stringWithEmpty',
-    base: joi.string().allow('').allow(null),
+    base: joi.string().allow('').allow(null)
   }),
   joi => ({
     type: 'booleanWithEmpty',
-    base: joi.boolean().allow(null).empty().falsy(''),
+    base: joi.boolean().allow(null).empty().falsy('')
   }),
   joi => ({
     type: 'dateInThePast',
-    base: joi.date().iso().max(Date.now()).message('Date must be in the past'),
+    base: joi.date().iso().max(Date.now()).message('Date must be in the past')
   }),
   joi => ({
     type: 'urlInOwnS3',
     base: joi.string().uri(),
     messages: {
       'string.notInS3': 'Invalid path provided',
-      'string.bucketRuleMissing': 'You need to provide a bucket rule',
+      'string.bucketRuleMissing': 'You need to provide a bucket rule'
     },
     rules: {
       bucket: {
@@ -150,23 +150,23 @@ const Joi: JoiWithExtensions = _Joi.extend(
           {
             name: 'bucket',
             assert: value => !!(typeof value === 'string' && value),
-            message: 'must be a non empty string',
-          },
+            message: 'must be a non empty string'
+          }
         ],
         validate(value, helpers, { bucket }) {
           if (!isOwnS3Path(bucket, value)) {
             return helpers.error('string.notInS3');
           }
           return value;
-        },
-      },
+        }
+      }
     },
     validate(value, helpers) {
       if (!helpers.schema.$_getRule('bucket')) {
         return { errors: helpers.error('string.bucketRuleMissing') };
       }
       return { value };
-    },
+    }
   }),
   joi => ({
     type: 'safeHtml',
@@ -176,18 +176,18 @@ const Joi: JoiWithExtensions = _Joi.extend(
         method() {
           // @ts-ignore
           return this.$_root.allow('').allow(null);
-        },
-      },
+        }
+      }
     },
     prepare: value => ({
       value: sanitizeHtml(value, {
         allowedTags: ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'],
         allowedAttributes: {
           a: ['href', 'target', 'rel'],
-          font: ['color'],
-        },
-      }),
-    }),
+          font: ['color']
+        }
+      })
+    })
   })
 );
 
