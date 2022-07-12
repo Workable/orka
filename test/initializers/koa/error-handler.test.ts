@@ -7,14 +7,14 @@ import { isBlacklisted } from '../../../src/initializers/koa/error-handler';
 
 const sandbox = sinon.createSandbox();
 
-describe('error-handler', function() {
+describe('error-handler', function () {
   let server;
 
-  after(function() {
+  after(function () {
     if (server) server.stop();
   });
 
-  it('tests custom error handler', async function() {
+  it('tests custom error handler', async function () {
     const errorHandler = sandbox.stub().callsFake((ctx, err, { omitErrorKeys }) => {
       ctx.body = err;
       return [err, { state: omit(ctx.state, omitErrorKeys) }];
@@ -25,10 +25,10 @@ describe('error-handler', function() {
 
     server = await init(
       () => [
-        ctx => {
+        async (ctx, next) => {
           ctx.state.foo = 'foo';
           ctx.state.bar = 'bar';
-          throw new Error('test');
+          await next();
         }
       ],
       errorHandler,
@@ -36,22 +36,23 @@ describe('error-handler', function() {
     );
     const loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'error');
     const { body } = await (supertest('localhost:3000') as any)
-      .get('/')
+      .get('/error/test')
       .set('X-Orka-Request-Id', '1')
       .expect(500);
     body.should.eql({
-      action: '/',
+      action: '/error/:type',
       component: 'koa',
       params: {
+        path: { type: 'test' },
         body: {},
         query: {},
         requestId: '1'
       }
     });
-    const error = Object.assign(new Error('test'), {
+    const error = Object.assign(new Error('new error'), {
       component: 'koa',
-      action: '/',
-      params: { requestId: '1', body: {}, query: {} }
+      action: '/error/:type',
+      params: { path: { type: 'test' }, requestId: '1', body: {}, query: {} }
     });
     errorHandler.args[0][1].should.eql(error);
     loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo' } }]]);
