@@ -22,6 +22,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
         component: err.component || 'koa',
         action: err.action || ctx._matchedRoute || ctx.request.path,
         params: {
+          path: ctx.params,
           query: omit(ctx.request.query, orkaOptions.omitErrorKeys),
           requestId: ctx.state.requestId,
           body: omit(ctx.request.body, orkaOptions.omitErrorKeys)

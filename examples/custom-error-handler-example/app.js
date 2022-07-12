@@ -1,6 +1,6 @@
 const { orka } = require('../../build');
 
-function init(afterMiddleware = [], errorHandler = (ctx, err) => (ctx.body = err), omitErrorKeys = []) {
+function init(afterMiddleware = () => [], errorHandler = (ctx, err) => (ctx.body = err), omitErrorKeys = []) {
   return orka({
     afterMiddleware,
     diamorphosis: { configFolder: './examples/simple-example' },

@@ -99,7 +99,7 @@ describe('json-appender', function() {
                 status: 505,
                 component: 'koa',
                 action: '/logError',
-                params: { query: {}, body: {}, requestId: 'test-id' },
+                params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
                 state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
                 requestId: hasALS ? 'test-id' : undefined
               },
