@@ -16,11 +16,11 @@ To use seamlessly with orka a simple nc.js file could be:
 process.env.NODE_ENV = 'console';
 const { orka, getRabbit } = require('@workablehr/orka');
 
-globla.orka = orka({
-  // your custom configuration would go here
-})
-  .initTasks()
-  .initMiddleware();
+global.orka = orka({
+ // your custom configuration would go here
+});
+global.orka.initTasks();
+global.orka.initMiddleWare();
 
 global.getRabbit = getRabbit;
 ```
