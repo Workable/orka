@@ -10,7 +10,7 @@ export default async function(ctx: Context, next: () => Promise<null>) {
     }
     // Export metrics
     ctx.type = prom.contentType;
-    ctx.body = prom.metrics();
+    ctx.body = await prom.metrics();
     ctx.status = 200;
   } else {
     ctx.status = 404;

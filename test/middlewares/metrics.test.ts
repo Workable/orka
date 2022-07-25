@@ -6,19 +6,19 @@ import * as prometheus from '../../src/initializers/prometheus';
 import * as bull from '../../src/initializers/bull';
 import OrkaBuilder from '../../src/orka-builder';
 
-describe('Metrics middleware', function() {
-  describe('Prometheus enabled', function() {
+describe('Metrics middleware', function () {
+  describe('Prometheus enabled', function () {
     const sandbox = sinon.createSandbox();
     let metricsSpy = sandbox.stub();
     let updateMetricsStub = sandbox.stub();
-    beforeEach(function() {
+    beforeEach(function () {
       sandbox.stub(prometheus, 'getPrometheus').returns({ metrics: metricsSpy } as any);
       sandbox.stub(bull, 'getBull').returns({ updateMetrics: updateMetricsStub } as any);
     });
-    afterEach(function() {
+    afterEach(function () {
       sandbox.restore();
     });
-    it('returns 200 when no bull is configured', async function() {
+    it('returns 200 when no bull is configured', async function () {
       const ctx = {} as Context;
       OrkaBuilder.INSTANCE = { config: { bull: '' } } as any;
       metricsSpy.returns({ metric: 1 });
@@ -29,7 +29,20 @@ describe('Metrics middleware', function() {
       next.called.should.be.true();
       updateMetricsStub.called.should.be.false();
     });
-    it('returns 200 and calls bull update when bull is configured', async function() {
+
+    it('returns 200 even if metrics returns a promise', async function () {
+      const ctx = {} as Context;
+      OrkaBuilder.INSTANCE = { config: { bull: '' } } as any;
+      metricsSpy.returns(Promise.resolve({ metric: 1 }));
+      const next = sandbox.stub();
+      await metrics(ctx, next);
+      ctx.status.should.eql(200);
+      ctx.body.metric.should.eql(1);
+      next.called.should.be.true();
+      updateMetricsStub.called.should.be.false();
+    });
+    
+    it('returns 200 and calls bull update when bull is configured', async function () {
       const ctx = {} as Context;
       OrkaBuilder.INSTANCE = { config: { bull: {} } } as any;
       metricsSpy.returns({ metric: 1 });
@@ -43,15 +56,15 @@ describe('Metrics middleware', function() {
     });
   });
 
-  describe('Prometheus not configured', function() {
+  describe('Prometheus not configured', function () {
     const sandbox = sinon.createSandbox();
-    before(function() {
+    before(function () {
       sandbox.stub(prometheus, 'getPrometheus').returns(undefined);
     });
-    after(function() {
+    after(function () {
       sandbox.restore();
     });
-    it('returns 404', async function() {
+    it('returns 404', async function () {
       const ctx = {} as Context;
       OrkaBuilder.INSTANCE = { config: { bull: {} } } as any;
       const next = sandbox.stub();
