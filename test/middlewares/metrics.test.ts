@@ -41,7 +41,7 @@ describe('Metrics middleware', function () {
       next.called.should.be.true();
       updateMetricsStub.called.should.be.false();
     });
-    
+
     it('returns 200 and calls bull update when bull is configured', async function () {
       const ctx = {} as Context;
       OrkaBuilder.INSTANCE = { config: { bull: {} } } as any;
