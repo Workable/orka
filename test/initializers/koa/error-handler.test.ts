@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import * as log4js from 'log4js';
 import { omit } from 'lodash';
-import { isBlacklisted } from '../../../src/initializers/koa/error-handler';
+import { isBlacklisted, onlyWarn } from '../../../src/initializers/koa/error-handler';
 
 const sandbox = sinon.createSandbox();
 
@@ -66,5 +66,18 @@ describe('error-handler', function () {
     isBlacklisted({ status: '500' } as any, config).should.equal(true);
     isBlacklisted({ status: 200 } as any, config).should.equal(false);
     isBlacklisted({ status: '200' } as any, config).should.equal(false);
+  });
+
+  it('tests onlyWarn from error logLevel', () => {
+    onlyWarn({}).should.equal(false);
+    onlyWarn({ logLevel: null }).should.equal(false);
+    onlyWarn({ logLevel: undefined }).should.equal(false);
+    onlyWarn({ logLevel: 'FATAL' }).should.equal(false);
+    onlyWarn({ logLevel: 'ERROR' }).should.equal(false);
+    onlyWarn({ logLevel: 'error' }).should.equal(false);
+    onlyWarn({ logLevel: 'warn' }).should.equal(true);
+    onlyWarn({ logLevel: 'WARN' }).should.equal(true);
+    onlyWarn({ logLevel: 'INFO' }).should.equal(true);
+    onlyWarn({ logLevel: 'DEBUG' }).should.equal(true);
   });
 });
