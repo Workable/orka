@@ -9,12 +9,12 @@ export const isBlacklisted = (err: { status: number } = {} as any, config) =>
   // tslint:disable-next-line:triple-equals
   err.status && config.blacklistedErrorCodes.some(b => err.status == b);
 
-export const onlyWarn = (err) => {
+export const getExplicitLogLevel = (err) => {
   const levelStr = err?.logLevel;
-  if (typeof levelStr !== 'string') return false;
-  const level = Levels[levelStr.toUpperCase()]?.level;
-  if (!level) return false;
-  return level <= Levels.WARN.level;
+  if (typeof levelStr !== 'string') return null;
+  const level = Levels[levelStr.toUpperCase()]?.levelStr;
+  if (!level) return null;
+  return levelStr.toLowerCase();
 };
 
 export default (config, orkaOptions: Partial<OrkaOptions>) =>
@@ -41,7 +41,12 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       ctx.status = err.status || 500;
 
       const errorArgs = (await orkaOptions.errorHandler(ctx, err, orkaOptions)) || [err as Error];
-      if (isBlacklisted(err, config) || onlyWarn(err)) {
+      const explicitLevel = getExplicitLogLevel(err);
+      const blackslisted = isBlacklisted(err, config);
+
+      if (explicitLevel) {
+        logger[explicitLevel](...errorArgs);
+      } else if (blackslisted) {
         logger.warn(...errorArgs);
       } else {
         logger.error(...errorArgs);

@@ -1,9 +1,9 @@
-import 'should';
+import * as should from 'should';
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import * as log4js from 'log4js';
 import { omit } from 'lodash';
-import { isBlacklisted, onlyWarn } from '../../../src/initializers/koa/error-handler';
+import { isBlacklisted, getExplicitLogLevel } from '../../../src/initializers/koa/error-handler';
 
 const sandbox = sinon.createSandbox();
 
@@ -68,16 +68,21 @@ describe('error-handler', function () {
     isBlacklisted({ status: '200' } as any, config).should.equal(false);
   });
 
-  it('tests onlyWarn from error logLevel', () => {
-    onlyWarn({}).should.equal(false);
-    onlyWarn({ logLevel: null }).should.equal(false);
-    onlyWarn({ logLevel: undefined }).should.equal(false);
-    onlyWarn({ logLevel: 'FATAL' }).should.equal(false);
-    onlyWarn({ logLevel: 'ERROR' }).should.equal(false);
-    onlyWarn({ logLevel: 'error' }).should.equal(false);
-    onlyWarn({ logLevel: 'warn' }).should.equal(true);
-    onlyWarn({ logLevel: 'WARN' }).should.equal(true);
-    onlyWarn({ logLevel: 'INFO' }).should.equal(true);
-    onlyWarn({ logLevel: 'DEBUG' }).should.equal(true);
+  it('tests getExplicitLogLevel from error logLevel', () => {
+    should.equal(null, getExplicitLogLevel(null));
+    should.equal(null, getExplicitLogLevel(undefined));
+    should.equal(null, getExplicitLogLevel({}));
+    should.equal(null, getExplicitLogLevel({ logLevel: null }));
+    should.equal(null, getExplicitLogLevel({ logLevel: undefined }));
+    should.equal(null, getExplicitLogLevel({ logLevel: 'level' }));
+    should.equal(null, getExplicitLogLevel({ logLevel: 'non_existing_level' }));
+
+    getExplicitLogLevel({ logLevel: 'FATAL' }).should.equal('fatal');
+    getExplicitLogLevel({ logLevel: 'ERROR' }).should.equal('error');
+    getExplicitLogLevel({ logLevel: 'error' }).should.equal('error');
+    getExplicitLogLevel({ logLevel: 'warn' }).should.equal('warn');
+    getExplicitLogLevel({ logLevel: 'WARN' }).should.equal('warn');
+    getExplicitLogLevel({ logLevel: 'INFO' }).should.equal('info');
+    getExplicitLogLevel({ logLevel: 'DEBUG' }).should.equal('debug');
   });
 });
