@@ -265,6 +265,10 @@ To control what is logged in console (and to honeybadger if enabled) during http
 async (ctx, err, orkaOptions) => [err, { state: omit(ctx.state, orkaOptions.omitErrorKeys) }];
 ```
 
+If the error object thrown contains the `logLevel` attribute that accepts all string values of log4js levels:
+ `['all' 'trace' 'debug' 'info' 'warn' 'error' 'fatal' 'mark' 'off']`
+errorHandler uses that log level to log an error of the corresponding level
+
 ### omitErrorKeys
 
 An array of keys (strings) from ctx.request.query, ctx.request.body that should not be logged in console (or honeybadger)

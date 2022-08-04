@@ -20,7 +20,7 @@ Orka adds by default the following middleware:
 - addRequestContext (enabled by default see [request-context](https://workable.github.io/orka/request-context) )
 - [koa-bodyparser](https://www.npmjs.com/package/koa-bodyparser)
 - [riviere](https://www.npmjs.com/package/@workablehr/riviere)
-- errorHandler (Handles errors thrown in any middleware added afterwards)
+- [errorHandler](./getting-started.md#errorhandler) (Handles errors thrown in any middleware added afterwards)
 - [koa-compress](https://www.npmjs.com/package/koa-compress)
 - [koa2-cors](https://www.npmjs.com/package/koa2-cors)
 - parseQuerystring (Uses [qs](https://www.npmjs.com/package/qs) and adds an object to `ctx.state.query` with the parsed attributes)
