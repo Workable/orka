@@ -2,7 +2,7 @@ import * as Koa from 'koa';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from 'orka/typings/orka';
 import { omit } from 'lodash';
-const Levels = require('log4js/lib/levels');
+import { levels as Levels } from 'log4js';
 const logger = getLogger('orka.errorHandler');
 
 export const isBlacklisted = (err: { status: number } = {} as any, config) =>
