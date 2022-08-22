@@ -140,7 +140,7 @@ describe('joi extensions', function () {
         '<a href="/j/ABCDEFG">banana</a>'
       );
     });
-    it.only('invalid tags', function() {
+    it('invalid tags', function() {
       Joi.safeHtml().validate('<script src="javascript:alert(1);">asd</script><p>foo</p>').value.should.equal(
         '<p>foo</p>'
       );
