@@ -140,7 +140,7 @@ describe('joi extensions', function () {
         '<a href="/j/ABCDEFG">banana</a>'
       );
     });
-    it('invalid tags', function() {
+    it.only('invalid tags', function() {
       Joi.safeHtml().validate('<script src="javascript:alert(1);">asd</script><p>foo</p>').value.should.equal(
         '<p>foo</p>'
       );
@@ -152,7 +152,7 @@ describe('joi extensions', function () {
       );
     });
     it('required', function() {
-      should(Joi.safeHtml().allowEmpty().validate('').error).be.undefined();
+      should(Joi.safeHtml().allow('', null).validate('').error).be.undefined();
       Joi.safeHtml().validate('').error.message.should.equal('"value" is not allowed to be empty');
     });
   });

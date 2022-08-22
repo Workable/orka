@@ -16,7 +16,7 @@ interface JoiWithExtensions extends _Joi.Root {
   hexColor(): _Joi.StringSchema;
   objectId(): _Joi.StringSchema;
   phone(): _Joi.StringSchema & { stripIfInvalid: () => _Joi.StringSchema };
-  safeHtml(): _Joi.StringSchema & { allowEmpty: () => _Joi.StringSchema };
+  safeHtml(): _Joi.StringSchema;
   stringWithEmpty(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
   string(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
   urlInOwnS3(): _Joi.StringSchema & { bucket: (name: string) => _Joi.StringSchema };
@@ -171,14 +171,6 @@ const Joi: JoiWithExtensions = _Joi.extend(
   joi => ({
     type: 'safeHtml',
     base: joi.string(),
-    rules: {
-      allowEmpty: {
-        method() {
-          // @ts-ignore
-          return this.$_root.allow('').allow(null);
-        }
-      }
-    },
     prepare: value => ({
       value: sanitizeHtml(value, {
         allowedTags: ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'],
