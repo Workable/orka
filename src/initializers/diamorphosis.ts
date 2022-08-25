@@ -67,14 +67,18 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.riviere = {
     enabled: true,
     inbound: {
+      ...config.riviere?.inbound,
       request: {
-        enabled: false
+        enabled: false,
+        ...config.riviere?.inbound?.request
       }
     },
     outbound: {
       blacklistedPathRegex: new RegExp('^/v0.4/traces$', 'i'),
+      ...config.riviere?.outbound,
       request: {
-        enabled: false
+        enabled: false,
+        ...config.riviere?.outbound?.request
       }
     },
     color: true,

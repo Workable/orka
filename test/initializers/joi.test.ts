@@ -152,7 +152,7 @@ describe('joi extensions', function () {
       );
     });
     it('required', function() {
-      should(Joi.safeHtml().allowEmpty().validate('').error).be.undefined();
+      should(Joi.safeHtml().allow('', null).validate('').error).be.undefined();
       Joi.safeHtml().validate('').error.message.should.equal('"value" is not allowed to be empty');
     });
   });
