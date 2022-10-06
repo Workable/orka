@@ -6,8 +6,23 @@ nav_order: 10
 ---
 
 # PostgreSQL
+{: .no_toc }
 
-Orka uses [pg](https://node-postgres.com/).
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+Orka is using [pg](https://node-postgres.com/).
+
+## Installation
+
+pg is an optional dependency. In order to enable it install the dependency first:
+
+```sh
+npm i pg
+```
 
 It will connect to postgres automatically if a connection url is given.
 
