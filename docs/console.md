@@ -14,15 +14,15 @@ To use seamlessly with orka a simple nc.js file could be:
 
 ```js
 process.env.NODE_ENV = 'console';
-const { orka, getRabbit } = require('@workablehr/orka');
+const { orka, getRabbit, getKafka } = require('@workablehr/orka');
 
 global.orka = orka({
- // your custom configuration would go here
+  // your custom configuration would go here
 });
-global.orka.initTasks();
-global.orka.initMiddleWare();
+global.orka.initTasks().then(() => global.orka.initMiddleWare());
 
 global.getRabbit = getRabbit;
+global.getKafka = getKafka;
 ```
 
 ## Checking config that it is reading env correctly

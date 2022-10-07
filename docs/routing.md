@@ -19,7 +19,7 @@ Orka is using [fast-koa-router](https://www.npmjs.com/package/fast-koa-router) t
 A routes example:
 
 ```js
-const { getLogger } = require('../../build');
+const { getLogger } = require('@workablehr/orka');
 
 module.exports = {
   get: {
