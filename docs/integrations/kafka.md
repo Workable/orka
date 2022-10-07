@@ -35,7 +35,7 @@ and then add some brokers and authentication keys in your environment.
 // config/config.js
 module.exports = {
 "kafka": {
-    "brokers": [], // An array of the brokers url
+    "brokers": ["localhost:9092"], // An array of the brokers url
     "groupId": "", // Default groupId to be used. Can be used by at most one consumer. All following consumers must overwrite it
     "clientId": "", // An name identifying the application
     "ssl": true,
@@ -83,7 +83,7 @@ Depending on what you need to do you should choose to use either `BaseKafkaHandl
 #### app/services/kafka/handler.js
 ```js
 // app/services/kafka/handler.js
-const { BaseKafkaHandler, getKafka } = require('../../build');
+const { BaseKafkaHandler } = require('@workablehr/orka');
 
 module.exports = class KafkaHandler extends BaseKafkaHandler {
   handle(message) {
@@ -97,7 +97,7 @@ module.exports = class KafkaHandler extends BaseKafkaHandler {
 #### app/services/kafka/batch-handler.js
 ```js
 // app/services/kafka/batch-handler.js
-const { BaseKafkaBatchHandler, getKafka } = require('../../build');
+const { BaseKafkaBatchHandler, getKafka } = require('@workablehr/orka');
 
 module.exports = class KafkaHandler extends BaseKafkaBatchHandler {
 

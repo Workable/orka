@@ -29,7 +29,7 @@ module.exports = {
 ```js
 // app/services/queue-handlers/example-handler.js
 const { BaseQueueHandler } = require('rabbit-queue');
-const { getRabbit } = require('../../build');
+const { getRabbit } = require('@workablehr/orka');
 
 class ExampleHandler extends BaseQueueHandler {
   constructor(queueName, logEnabled = true) {
@@ -100,3 +100,9 @@ class ExampleHandler extends BaseQueueHandler {
 ```
 
 Note: In the above example only `correlationId` is logged by default. If you want to have the `test-var` automatically logged on each log entry, you need to include it on your configuration `requestContext.logKeys`. For more, see the [Log Tracer](https://workable.github.io/orka/request-context.html#log-tracer) docs.
+
+## Local RabbitMQ Server
+
+You can easily start a local RabbitMQ server for development with the below command:
+
+`npm explore @workablehr/orka -- npm run rabbitmq:start`

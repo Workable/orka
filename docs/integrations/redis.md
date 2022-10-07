@@ -34,6 +34,7 @@ const { getRedis } = require('@workablehr/orka');
 const { promisify } = require('util');
 
 async function demo() {
+  const redis = getRedis();
   await promisify(redis.set.bind(redis))('key', 'some key');
   await promisify(redis.get.bind(redis))('key');
 }
