@@ -103,6 +103,6 @@ Note: In the above example only `correlationId` is logged by default. If you wan
 
 ## Local RabbitMQ Server
 
-You can easily start a local kafka server for development with the below command:
+You can easily start a local RabbitMQ server for development with the below command:
 
 `npm explore @workablehr/orka -- npm run rabbitmq:start`
