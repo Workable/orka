@@ -64,18 +64,27 @@ const schema = {
 P.S The regex `/^[\d\s\(\)\-\+–\.]+$/` is used for phone validation.
 
 ### Joi.safeHtml()
-Validates and transforms a value to a safeHtml string by using the following code
+Validates and transforms a value to a safeHtml string by using the following code. It supports `allowedTags` & `allowedAttributes` rules.
 
+e.g.
 ```js
-import * as sanitizeHtml from 'sanitize-html';
+const schema = {
+  html: Joi
+    .safeHtml()
+    .allowedTags(['a'])
+    .allowedAttributes({
+      a: ['href', 'class']
+    })
+};
+```
 
-sanitizeHtml(value, {
-  allowedTags: ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'],
-  allowedAttributes: {
-    a: ['href', 'target', 'rel'],
-    font: ['color'],
-  },
-}),
+It defaults to:
+```js
+const allowedTags = ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'];
+const allowedAttributes = {
+  a: ['href', 'target', 'rel'],
+  font: ['color']
+};
 ```
 
 ### Joi.string()
