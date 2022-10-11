@@ -10,13 +10,18 @@ export const isOwnS3Path = (bucket: string, val: string): boolean =>
   val?.startsWith(`https://${bucket}.s3.amazonaws.com`) ||
   new RegExp(`^https:\\/\\/s3\\..+\\.amazonaws\\.com\\/${bucket}\\/.*`, 'g').test(val);
 
+type SafeHtml = _Joi.StringSchema & {
+  allowedTags: (tags: string[]) => SafeHtml;
+  allowedAttributes: (attributes: { [key: string]: string[] }) => SafeHtml;
+};
+
 interface JoiWithExtensions extends _Joi.Root {
   booleanWithEmpty(): _Joi.BooleanSchema;
   dateInThePast(): _Joi.DateSchema;
   hexColor(): _Joi.StringSchema;
   objectId(): _Joi.StringSchema;
   phone(): _Joi.StringSchema & { stripIfInvalid: () => _Joi.StringSchema };
-  safeHtml(): _Joi.StringSchema;
+  safeHtml(): SafeHtml;
   stringWithEmpty(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
   string(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
   urlInOwnS3(): _Joi.StringSchema & { bucket: (name: string) => _Joi.StringSchema };
@@ -33,9 +38,9 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return mongodb.ObjectId.isValid(value)
         ? { value }
         : {
-            value,
-            errors: helpers.error('objectId.invalid')
-          };
+          value,
+          errors: helpers.error('objectId.invalid')
+        };
     }
   }),
   joi => ({
@@ -102,8 +107,8 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return isValidPhone(value)
         ? { value }
         : helpers.schema.$_getFlag('stripIfInvalid')
-        ? { value: undefined }
-        : {
+          ? { value: undefined }
+          : {
             value,
             errors: helpers.error('string.phone')
           };
@@ -117,9 +122,9 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return isValidHexColor(value)
         ? { value }
         : {
-            value,
-            errors: helpers.error('string.hexcolor')
-          };
+          value,
+          errors: helpers.error('string.hexcolor')
+        };
     }
   }),
   joi => ({
@@ -171,15 +176,50 @@ const Joi: JoiWithExtensions = _Joi.extend(
   joi => ({
     type: 'safeHtml',
     base: joi.string(),
-    prepare: value => ({
-      value: sanitizeHtml(value, {
-        allowedTags: ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'],
-        allowedAttributes: {
-          a: ['href', 'target', 'rel'],
-          font: ['color']
+    rules: {
+      allowedTags: {
+        method(allowedTags: string) {
+          return this.$_addRule({ name: 'allowedTags', args: { allowedTags } });
+        },
+        args: [
+          {
+            name: 'allowedTags',
+            assert: value => (Array.isArray(value) && value.length > 0),
+            message: 'must be a non empty array'
+          }
+        ],
+        validate(value) {
+          return value;
         }
-      })
-    })
+      },
+      allowedAttributes: {
+        method(allowedAttributes: string) {
+          return this.$_addRule({ name: 'allowedAttributes', args: { allowedAttributes } });
+        },
+        args: [
+          {
+            name: 'allowedAttributes',
+            assert: value => (typeof value === 'object' && Object.keys(value).length > 0),
+            message: 'must be a non empty object'
+          }
+        ],
+        validate(value) {
+          return value;
+        }
+      }
+    },
+    prepare: (value, helpers) => {
+      const allowedTags = helpers.schema.
+        $_getRule('allowedTags')
+        ?.args?.allowedTags || ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'];
+      const allowedAttributes = helpers.schema.$_getRule('allowedAttributes')?.args?.allowedAttributes || {
+        a: ['href', 'target', 'rel'],
+        font: ['color']
+      };
+      return {
+        value: sanitizeHtml(value, { allowedTags, allowedAttributes })
+      };
+    }
   })
 );
 

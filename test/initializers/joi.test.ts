@@ -96,72 +96,85 @@ describe('joi extensions', function () {
     });
   });
 
-  describe('url', function() {
-    it('rejects URLs with less than two domain fragments', function() {
+  describe('url', function () {
+    it('rejects URLs with less than two domain fragments', function () {
       Joi.url().validate('https://foo').error.message.should.equal('"value" must contain a valid domain name');
     });
 
-    it('accepts URLs with two or more domain fragments', function() {
+    it('accepts URLs with two or more domain fragments', function () {
       should(Joi.url().validate('https://foo.com/').error).be.undefined();
     });
   });
 
-  describe('urlWithEmpty', function() {
-    it('accepts undefined', function() {
+  describe('urlWithEmpty', function () {
+    it('accepts undefined', function () {
       should(Joi.urlWithEmpty().validate(undefined).error).be.undefined();
     });
 
-    it('accepts null', function() {
+    it('accepts null', function () {
       should(Joi.urlWithEmpty().validate(null).error).be.undefined();
     });
 
-    it('accepts ""', function() {
+    it('accepts ""', function () {
       should(Joi.urlWithEmpty().validate('').error).be.undefined();
     });
 
-    it('rejects URLs with less than two domain fragments', function() {
+    it('rejects URLs with less than two domain fragments', function () {
       Joi.urlWithEmpty().validate('https://foo').error.message.should.equal('"value" must contain a valid domain name');
     });
 
-    it('accepts URLs with two or more domain fragments', function() {
+    it('accepts URLs with two or more domain fragments', function () {
       Joi.urlWithEmpty().validate('https://foo.com/').value.should.equal('https://foo.com/');
     });
   });
 
-  describe('safeHtml', function() {
-    it('valid html', function() {
+  describe('safeHtml', function () {
+    it('valid html', function () {
       Joi.safeHtml().validate('<p>banana</p>').value.should.equal('<p>banana</p>');
       Joi.safeHtml().validate('<b>banana</b>').value.should.equal('<b>banana</b>');
 
-        Joi.safeHtml().validate('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>').value
-      .should.equal('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>');
+      Joi.safeHtml().validate('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>').value
+        .should.equal('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>');
 
       Joi.safeHtml().validate('<a href="/j/ABCDEFG">banana</a>').value.should.equal(
         '<a href="/j/ABCDEFG">banana</a>'
       );
     });
-    it('invalid tags', function() {
+    it('invalid tags', function () {
       Joi.safeHtml().validate('<script src="javascript:alert(1);">asd</script><p>foo</p>').value.should.equal(
         '<p>foo</p>'
       );
       Joi.safeHtml().validate('<img src="https://www.google.com" />').value.should.equal('');
     });
-    it('invalid attributes', function() {
+    it('invalid attributes', function () {
       Joi.safeHtml().validate('<a href="https://workable.com" name="invalid">asd</a>').value.should.equal(
         '<a href="https://workable.com">asd</a>'
       );
     });
-    it('required', function() {
+    it('required', function () {
       should(Joi.safeHtml().allow('', null).validate('').error).be.undefined();
       Joi.safeHtml().validate('').error.message.should.equal('"value" is not allowed to be empty');
     });
+    it('specify tags', function () {
+      Joi
+        .safeHtml()
+        .allowedTags(['a'])
+        .allowedAttributes({
+          a: ['href', 'class']
+        })
+        .validate('<script src="javascript:alert(1);">asd</script><a href="http://google.com" ' +
+          'class="aclass" target="_blank"></a><p>foo</p>')
+        .value
+        .should
+        .equal('<a href="http://google.com" class="aclass"></a>foo');
+    });
   });
 
-  describe('objectid', function() {
-    it('rejects if invalid objectid', function() {
+  describe('objectid', function () {
+    it('rejects if invalid objectid', function () {
       Joi.objectId().validate('123').error.message.should.equal('Invalid objectId');
     });
-    it('accepts if valid objectid', function() {
+    it('accepts if valid objectid', function () {
       should(Joi.objectId().validate('627b825fb99b51cc16df1b41').error).be.undefined();
       Joi.objectId().validate('627b825fb99b51cc16df1b41').value.should.equal('627b825fb99b51cc16df1b41');
     });
