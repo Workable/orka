@@ -52,3 +52,18 @@ A modern Node.js framework based on koa@2 that comes powered with RabbitMQ, Kafk
   ```
 - Visitor cookie won't be used if `config.visitor.enabled` is false even if `config.visitor.cookie` exists
 - Deprecated builder method `withNewrelic` is removed. Use config instead to enable newrelic see [integrations/newrelic](https://workable.github.io/orka/integrations/newrelic.html)
+
+
+### Migrating from orka  2.x to 3.x
+
+- Mongoose version is specified to 6. `useNewUrlParser`, `useUnifiedTopology`, `useFindAndModify`, and `useCreateIndex`
+are no longer supported options. Mongoose 6 always behaves as if `useNewUrlParser`, `useUnifiedTopology`, and 
+`useCreateIndex` are `true`, and `useFindAndModify` is `false`. 
+- Also be sure to check any incompatibilities with libraries using the mongoDB Node.js driver as it derives from the 
+Mongoose version.
+- For Typescript using app,  Types.ObjectId is now a class, which means you can no longer omit new when creating a new 
+ObjectId using new mongoose. 
+  ```js 
+  new mongoose.Types.ObjectId()
+  ```
+- Additional advice for breaking changes when migrating to Mongoose 6 can be found at https://mongoosejs.com/docs/migrating_to_6.html 
