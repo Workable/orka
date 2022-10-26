@@ -32,7 +32,7 @@ interface JoiWithExtensions extends _Joi.Root {
 const Joi: JoiWithExtensions = _Joi.extend(
   joi => ({
     type: 'objectId',
-    base: joi.string(),
+    base: joi.string().meta({ baseType: 'string' }),
     messages: { 'objectId.invalid': 'Invalid objectId' },
     validate: (value, helpers) => {
       return mongodb.ObjectId.isValid(value)
@@ -45,7 +45,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'string',
-    base: joi.string(),
+    base: joi.string().meta({ baseType: 'string' }),
     prepare: (val, helpers) => {
       let newVal = val === null || val === undefined ? val : clearNullByte(val);
 
@@ -81,7 +81,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'url',
-    base: joi.string().uri({ domain: { minDomainSegments: 2 } })
+    base: joi.string().uri({ domain: { minDomainSegments: 2 } }).meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'urlWithEmpty',
@@ -90,10 +90,11 @@ const Joi: JoiWithExtensions = _Joi.extend(
       .uri({ domain: { minDomainSegments: 2 } })
       .allow('')
       .allow(null)
+      .meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'phone',
-    base: joi.string(),
+    base: joi.string().meta({ baseType: 'string' }),
     messages: { 'string.phone': 'The provided phone is invalid' },
     rules: {
       stripIfInvalid: {
@@ -116,7 +117,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'hexColor',
-    base: joi.string(),
+    base: joi.string().meta({ baseType: 'string' }),
     messages: { 'string.hexcolor': 'The provided color is invalid' },
     validate: (value, helpers) => {
       return isValidHexColor(value)
@@ -129,19 +130,19 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'stringWithEmpty',
-    base: joi.string().allow('').allow(null)
+    base: joi.string().allow('').allow(null).meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'booleanWithEmpty',
-    base: joi.boolean().allow(null).empty().falsy('')
+    base: joi.boolean().allow(null).empty().falsy('').meta({ baseType: 'boolean' })
   }),
   joi => ({
     type: 'dateInThePast',
-    base: joi.date().iso().max(Date.now()).message('Date must be in the past')
+    base: joi.date().iso().max(Date.now()).message('Date must be in the past').meta({ baseType: 'date' })
   }),
   joi => ({
     type: 'urlInOwnS3',
-    base: joi.string().uri(),
+    base: joi.string().uri().meta({ baseType: 'string' }),
     messages: {
       'string.notInS3': 'Invalid path provided',
       'string.bucketRuleMissing': 'You need to provide a bucket rule'
@@ -175,7 +176,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'safeHtml',
-    base: joi.string(),
+    base: joi.string().meta({ baseType: 'string' }),
     rules: {
       allowedTags: {
         method(allowedTags: string) {
