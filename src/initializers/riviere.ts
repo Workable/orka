@@ -45,6 +45,7 @@ const init = (config, orkaOptions) => {
     styles: config.riviere.styles,
     bodyKeys: config.riviere.bodyKeys,
     bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
+    bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
     context: (ctx: Koa.Context) => {
       return {
