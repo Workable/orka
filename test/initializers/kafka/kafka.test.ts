@@ -14,6 +14,7 @@ describe('kafka class', () => {
   let kafkaStubReturn;
   let fetchOffsetsStub;
   let setOffsetsStub;
+  let listTopicsStub;
   let Kafka: typeof KafkaType;
 
   beforeEach(async function () {
@@ -36,13 +37,15 @@ describe('kafka class', () => {
     createTopicsStub = sandbox.stub().onFirstCall().resolves(true).resolves(false);
     fetchOffsetsStub = sandbox.stub();
     setOffsetsStub = sandbox.stub();
+    listTopicsStub = sandbox.stub().resolves([]);
     adminStub = sandbox.stub().returns({
       connect: sandbox.stub(),
       disconnect: sandbox.stub(),
       fetchTopicMetadata: fetchTopicMetadataStub,
       createTopics: createTopicsStub,
       fetchOffsets: fetchOffsetsStub,
-      setOffsets: setOffsetsStub
+      setOffsets: setOffsetsStub,
+      listTopics: listTopicsStub,
     });
     kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
     kafkaStub = sinon.stub().returns(kafkaStubReturn);
@@ -327,6 +330,30 @@ describe('kafka class', () => {
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'test' }] }]
       ]);
       response.should.eql([{ foo: true }, { bar: false }, { test: false }]);
+    });
+    it('creates topics that do not exist', async function () {
+      const kafka = new Kafka({
+        sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
+        groupId: 'groupId',
+        clientId: 'clientId',
+        brokers: ['broker-consumer'],
+        producer: {
+          brokers: ['broker-producer'],
+          sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
+        },
+        ssl: true
+      });
+      listTopicsStub.resolves(['foo', 'test']);
+      const response = await kafka.createTopics([
+        { topic: 'foo', numPartitions: 10, replicationFactor: 1 },
+        { topic: 'bar', numPartitions: 10, replicationFactor: 1 },
+        { topic: 'test', numPartitions: 10, replicationFactor: 1 }
+      ]);
+      adminStub.args.should.eql([[]]);
+      createTopicsStub.args.should.eql([
+        [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }],
+      ]);
+      response.should.eql([{ bar: true }]);
     });
   });
 

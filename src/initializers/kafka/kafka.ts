@@ -140,8 +140,15 @@ export default class OrkaKafka {
 
   public async createTopics(topics: KafkajsType.ITopicConfig[]) {
     const admin = await this.connectAdmin();
+    const existingTopics = new Set(await admin.listTopics());
+    const toBeCreated = topics.filter(t => !existingTopics.has(t.topic));
+    if (!toBeCreated?.length) {
+      await admin.disconnect();
+      logger.info(`Skipping topic creation. Topics already exist.`);
+      return;
+    }
     const responses = await Promise.all(
-      topics.map(topic =>
+      toBeCreated.map(topic =>
         admin
           .createTopics({ topics: [topic] })
           .catch(e => {
