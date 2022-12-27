@@ -5,6 +5,7 @@ let tracer;
 export default config => {
   if (process.env.DD_SERVICE && process.env.DD_ENV) {
     tracer = requireInjected('dd-trace').init();
+    tracer.use('http', { client: false })
     tracer.use('koa', {
       blacklist: config?.datadog?.blacklistedPaths,
       blocklist: config?.datadog?.blacklistedPaths,
