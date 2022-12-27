@@ -11,7 +11,6 @@ export default config => {
       blocklist: config?.datadog?.blacklistedPaths,
       hooks: {
         request: (span, ctx) => {
-          getLogger('orka.initializers.datadog').info(`ctx: ${JSON.stringify(ctx)}`);
           getLogger('orka.initializers.datadog').info(`ctx.req: ${JSON.stringify(ctx.req)}`);
           getLogger('orka.initializers.datadog').info(`ctx.request: ${JSON.stringify(ctx.request)}`);
           if (!ctx.req?._datadog) ctx.req = { _datadog: span };
