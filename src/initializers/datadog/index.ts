@@ -5,10 +5,16 @@ let tracer;
 export default config => {
   if (process.env.DD_SERVICE && process.env.DD_ENV) {
     tracer = requireInjected('dd-trace').init();
-    tracer.use('http', { client: false })
+    tracer.use('http', { client: false });
     tracer.use('koa', {
       blacklist: config?.datadog?.blacklistedPaths,
       blocklist: config?.datadog?.blacklistedPaths,
+      hooks: {
+        request: (span, ctx) => {
+          getLogger('orka.initializers.datadog').info(`ctx.req: ${JSON.stringify(ctx.req)}`);
+          if (!ctx.req._datadog) ctx.request = { _datadog: span };
+        }
+      },
       ...config.datadog
     });
   }
