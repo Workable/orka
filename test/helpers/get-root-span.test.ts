@@ -6,7 +6,7 @@ import * as datadog from '../../src/initializers/datadog/index';
 
 const sandbox = sinon.createSandbox();
 
-describe.only('Test get-root-span helper', function () {
+describe('Test get-root-span helper', function () {
   afterEach(function () {
     sandbox.restore();
   });
