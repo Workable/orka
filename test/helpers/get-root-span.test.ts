@@ -7,6 +7,16 @@ import * as datadog from '../../src/initializers/datadog/index';
 const sandbox = sinon.createSandbox();
 
 describe('Test get-root-span helper', function () {
+  before(function () {
+    process.env.DD_SERVICE = 'true';
+    process.env.DD_ENV = 'true';
+  });
+
+  after(function () {
+    delete process.env.DD_SERVICE;
+    delete process.env.DD_ENV;
+  });
+
   afterEach(function () {
     sandbox.restore();
   });

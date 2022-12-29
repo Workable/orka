@@ -1,6 +1,8 @@
-import { getDatadogTracer } from '../initializers/datadog/index';
+import { getDatadogTracer, isDatadogEnabled } from '../initializers/datadog/index';
 
 export default function getRootSpan(ctx) {
+  if (!isDatadogEnabled()) return;
+
   let ddSpan = ctx.req?._datadog?.span;
   if (!ddSpan) {
     const activeSpan = getDatadogTracer()?.scope()?.active();

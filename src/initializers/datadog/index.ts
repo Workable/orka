@@ -3,7 +3,7 @@ import { getLogger } from '../log4js';
 
 let tracer;
 export default config => {
-  if (process.env.DD_SERVICE && process.env.DD_ENV) {
+  if (isDatadogEnabled()) {
     tracer = requireInjected('dd-trace').init();
     tracer.use('koa', {
       blacklist: config?.datadog?.blacklistedPaths,
@@ -18,4 +18,8 @@ export const getDatadogTracer = () => {
     getLogger('orka.initializers.datadog').error(new Error('Datadog tracer required before initialized.'));
   }
   return tracer;
+};
+
+export const isDatadogEnabled = () => {
+  return process.env.DD_SERVICE && process.env.DD_ENV;
 };
