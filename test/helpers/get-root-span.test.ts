@@ -87,7 +87,7 @@ describe('Test get-root-span helper', function () {
       const span = getRootSpan(ctx);
 
       loggerStub.calledOnce.should.be.true();
-      loggerStub.args[0][0].should.containEql('dd-trace error trying to find root span');
+      loggerStub.args[0][1].should.containEql('dd-trace error trying to find root span');
     });
   });
 });
