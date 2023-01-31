@@ -226,6 +226,8 @@ function addPostgresConfig(config) {
     url: '',
     poolSize: 50,
     useSsl: true,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 0,
     ...config.postgres,
     sslConfig: {
       rejectUnauthorized: false,
