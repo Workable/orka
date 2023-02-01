@@ -50,7 +50,9 @@ describe('Test postgres connection', function () {
         {
           connectionString: 'postgres://localhost',
           max: undefined,
-          ssl: { rejectUnauthorized: false }
+          ssl: { rejectUnauthorized: false },
+          idleTimeoutMillis: undefined,
+          connectionTimeoutMillis: undefined
         }
       ]
     ]);
@@ -66,7 +68,9 @@ describe('Test postgres connection', function () {
           ca: '',
           cert: '',
           key: ''
-        }
+        },
+        idleTimeoutMillis: 10000,
+        connectionTimeoutMillis: 0
       }
     });
     poolStub.args.should.eql([
@@ -74,7 +78,9 @@ describe('Test postgres connection', function () {
         {
           connectionString: 'postgres://localhost',
           max: undefined,
-          ssl: undefined
+          ssl: undefined,
+          idleTimeoutMillis: 10000,
+          connectionTimeoutMillis: 0
         }
       ]
     ]);
@@ -90,7 +96,9 @@ describe('Test postgres connection', function () {
           ca: 'ca',
           cert: 'cert',
           key: 'key'
-        }
+        },
+        idleTimeoutMillis: 10000,
+        connectionTimeoutMillis: 0
       }
     });
     poolStub.args.should.eql([
@@ -103,7 +111,9 @@ describe('Test postgres connection', function () {
             ca: 'ca',
             cert: 'cert',
             key: 'key'
-          }
+          },
+          idleTimeoutMillis: 10000,
+          connectionTimeoutMillis: 0
         }
       ]
     ]);

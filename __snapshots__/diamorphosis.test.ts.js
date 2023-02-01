@@ -170,6 +170,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -377,6 +379,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -584,6 +588,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -791,6 +797,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -998,6 +1006,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -1210,6 +1220,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",
@@ -1424,6 +1436,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "url": "",
     "poolSize": 50,
     "useSsl": true,
+    "idleTimeoutMillis": 10000,
+    "connectionTimeoutMillis": 0,
     "sslConfig": {
       "rejectUnauthorized": false,
       "ca": "",

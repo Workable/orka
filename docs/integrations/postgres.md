@@ -37,12 +37,23 @@ eg:
 
 module.exports = {
   postgres: {
-    url: 'postgres://localhost:5432/orka_development'
+    url: 'postgres://localhost:5432/orka_development',
+    // default values used below. Only include them to overwrite them
+    poolSize: 50,
+    useSsl: true,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 0,
+    sslConfig: {
+      rejectUnauthorized: false,
+      ca: '',
+      cert: '',
+      key: '',
   }
-}
+};
 ```
 
 If don't need to support ssl
+
 ```js
 //config/config.js
 
@@ -51,7 +62,7 @@ module.exports = {
     url: 'postgres://localhost:5432/orka_development',
     useSsl: false
   }
-}
+};
 ```
 
 For more information about ssl support look at [node-postgres docs](https://node-postgres.com/features/ssl).
@@ -61,23 +72,25 @@ For more information about ssl support look at [node-postgres docs](https://node
 You can call `getPostgresPool` to acquire a new client to communicate with the database.
 
 If you choose to run `client = await pool.connect()` you should ALWAYS release the client using `client.release()` after finishing your operations.
+
 ```js
-const {getPostgresPool} = require('@workablehr/orka');
+const { getPostgresPool } = require('@workablehr/orka');
 
 const client = await getPostgresPool().connect();
 try {
-  const res = await client.query('SELECT * FROM users WHERE id = $1', [1])
-  console.log(res.rows[0])
+  const res = await client.query('SELECT * FROM users WHERE id = $1', [1]);
+  console.log(res.rows[0]);
 } finally {
   // Make sure to release the client before any error handling,
   // just in case the error handling itself throws an error.
-  client.release()
+  client.release();
 }
 ```
+
 Alternatively, you can use `pool.query` for single queries.
 
 ```js
-const {getPostgresPool} = require('@workablehr/orka');
+const { getPostgresPool } = require('@workablehr/orka');
 
 const pool = getPostgresPool();
 const results = await pool.query('SELECT NOW() as now');
@@ -88,7 +101,7 @@ const results = await pool.query('SELECT NOW() as now');
 Orka also provides a transaction wrapper that handles begin, commit & rollback of a transaction if something fails. In addition, it releases the client uppon completion
 
 ```js
-const {withPostgresTransaction} = require('@workablehr/orka');
+const { withPostgresTransaction } = require('@workablehr/orka');
 
 const callback = async c => {
   await c.query('INSERT INTO users VALUES(1, "orka user")');
@@ -96,5 +109,4 @@ const callback = async c => {
 };
 
 await withPostgresTransaction(callback);
-
 ```
