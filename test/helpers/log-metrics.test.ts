@@ -18,9 +18,11 @@ describe('Test log-metrics helper', function () {
   describe('Test end', function () {
     let observeSpy;
     let recordMetricSpy;
-    let loggerStub;
+    let loggerDebugStub;
+    let loggerTraceStub;
     beforeEach(function () {
-      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerDebugStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerTraceStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'trace');
 
       observeSpy = sandbox.stub();
       sandbox.stub(logMetrics, 'prometheusEndClient').returns({
@@ -45,8 +47,8 @@ describe('Test log-metrics helper', function () {
         const start = logMetrics.start();
         logMetrics.end(start, 'name', 'type', 'corID');
 
-        loggerStub.calledOnce.should.be.true();
-        loggerStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
+        loggerDebugStub.calledOnce.should.be.true();
+        loggerDebugStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
         recordMetricSpy.calledOnce.should.be.true();
         recordMetricSpy.args[0][0].should.eql('Custom/type/name');
         observeSpy.calledOnce.should.be.true();
@@ -62,7 +64,9 @@ describe('Test log-metrics helper', function () {
         const start = logMetrics.start();
         logMetrics.end(start, 'name', 'type', 'corID', false);
 
-        loggerStub.calledOnce.should.be.false();
+        loggerDebugStub.calledOnce.should.be.false();
+        loggerTraceStub.calledOnce.should.be.true();
+        loggerTraceStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
         recordMetricSpy.calledOnce.should.be.true();
         recordMetricSpy.args[0][0].should.eql('Custom/type/name');
         observeSpy.calledOnce.should.be.true();
@@ -81,11 +85,11 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.false();
         observeSpy.called.should.be.false();
-        loggerStub.called.should.be.true();
-        loggerStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
+        loggerDebugStub.called.should.be.true();
+        loggerDebugStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
       });
 
-      it('should not log debug if enableLog: false', function () {
+      it('should log trace if enableLog: false', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true } } } as any;
 
         const start = logMetrics.start();
@@ -93,7 +97,9 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.false();
         observeSpy.called.should.be.false();
-        loggerStub.called.should.be.false();
+        loggerDebugStub.called.should.be.false();
+        loggerTraceStub.called.should.be.true();
+        loggerTraceStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
       });
     });
   });
@@ -101,9 +107,11 @@ describe('Test log-metrics helper', function () {
   describe('Test recordMetric', function () {
     let observeSpy;
     let recordMetricSpy;
-    let loggerStub;
+    let loggerDebugStub;
+    let loggerTraceStub;
     beforeEach(function () {
-      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerDebugStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerTraceStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'trace');
 
       observeSpy = sandbox.stub();
       sandbox.stub(logMetrics, 'prometheusRecordMetricsClient').returns({
@@ -129,8 +137,8 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.true();
         recordMetricSpy.calledWith('Custom/type/test', 1).should.be.true();
-        loggerStub.calledOnce.should.be.true();
-        loggerStub.calledWith('[type][test]: 1').should.be.true();
+        loggerDebugStub.calledOnce.should.be.true();
+        loggerDebugStub.calledWith('[type][test]: 1').should.be.true();
         observeSpy.args[0].should.containDeep([{ event: 'test', eventType: 'type' }, 1]);
 
         delete process.env.NEW_RELIC_LICENSE_KEY;
@@ -144,7 +152,9 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.true();
         recordMetricSpy.calledWith('Custom/type/test', 1).should.be.true();
-        loggerStub.calledOnce.should.be.false();
+        loggerDebugStub.calledOnce.should.be.false();
+        loggerTraceStub.calledOnce.should.be.true();
+        loggerTraceStub.calledWith('[type][test]: 1').should.be.true();
         observeSpy.args[0].should.containDeep([{ event: 'test', eventType: 'type' }, 1]);
 
         delete process.env.NEW_RELIC_LICENSE_KEY;
@@ -159,8 +169,8 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.false();
         observeSpy.called.should.be.false();
-        loggerStub.called.should.be.true();
-        loggerStub.calledWith('[type][test]: 1').should.be.true();
+        loggerDebugStub.called.should.be.true();
+        loggerDebugStub.calledWith('[type][test]: 1').should.be.true();
       });
 
       it('should not log debug if enableLog: false', function () {
@@ -170,7 +180,9 @@ describe('Test log-metrics helper', function () {
 
         recordMetricSpy.called.should.be.false();
         observeSpy.called.should.be.false();
-        loggerStub.called.should.be.false();
+        loggerDebugStub.called.should.be.false();
+        loggerTraceStub.called.should.be.true();
+        loggerTraceStub.calledWith('[type][test]: 1').should.be.true();
       });
     });
   });

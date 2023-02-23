@@ -22,11 +22,14 @@ const logMetrics = {
     const s = Number(ns) / 1e9;
     if (prometheusTimeEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
     if (newRelicEnabled()) getNewRelic().recordMetric(`Custom/${flowType}/${flow}`, s);
+
     if (enableLog) logger.debug(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
+    else logger.trace(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
   },
 
   recordMetric(event: string, eventType: string, value: number, enableLog: boolean = true) {
     if (enableLog) logger.debug(`[${eventType}][${event}]: ${value}`);
+    else logger.trace(`[${eventType}][${event}]: ${value}`);
 
     if (newRelicEnabled()) getNewRelic().recordMetric('Custom/' + eventType + '/' + event, value);
     if (prometheusEventEnabled()) logMetrics.prometheusRecordMetricsClient().observe({ event, eventType }, value);
