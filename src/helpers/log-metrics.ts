@@ -17,18 +17,18 @@ const logMetrics = {
     return process.hrtime.bigint();
   },
 
-  end(start: bigint, flow: string, flowType: string, id: string, enableLog: boolean = true) {
+  end(start: bigint, flow: string, flowType: string, id: string, logLevelDebug: boolean = true) {
     const ns = process.hrtime.bigint() - start;
     const s = Number(ns) / 1e9;
     if (prometheusTimeEnabled()) logMetrics.prometheusEndClient().observe({ flow, flowType }, s);
     if (newRelicEnabled()) getNewRelic().recordMetric(`Custom/${flowType}/${flow}`, s);
 
-    if (enableLog) logger.debug(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
+    if (logLevelDebug) logger.debug(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
     else logger.trace(`[${id}] TIME_LOGGING[${flowType}][${flow}] ${s.toFixed(3)} s`);
   },
 
-  recordMetric(event: string, eventType: string, value: number, enableLog: boolean = true) {
-    if (enableLog) logger.debug(`[${eventType}][${event}]: ${value}`);
+  recordMetric(event: string, eventType: string, value: number, logLevelDebug: boolean = true) {
+    if (logLevelDebug) logger.debug(`[${eventType}][${event}]: ${value}`);
     else logger.trace(`[${eventType}][${event}]: ${value}`);
 
     if (newRelicEnabled()) getNewRelic().recordMetric('Custom/' + eventType + '/' + event, value);

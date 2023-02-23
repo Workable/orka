@@ -57,7 +57,7 @@ describe('Test log-metrics helper', function () {
         delete process.env.NEW_RELIC_LICENSE_KEY;
       });
 
-      it('should not log debug and send to newRelic and prometheus if enableLog: false', function () {
+      it('should not log debug and send to newRelic and prometheus if logLevelDebug: false', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true, timeSummary: { enabled: true } } } } as any;
         process.env.NEW_RELIC_LICENSE_KEY = 'foo';
 
@@ -89,7 +89,7 @@ describe('Test log-metrics helper', function () {
         loggerDebugStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
       });
 
-      it('should log trace if enableLog: false', function () {
+      it('should log trace if logLevelDebug: false', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true } } } as any;
 
         const start = logMetrics.start();
@@ -144,7 +144,7 @@ describe('Test log-metrics helper', function () {
         delete process.env.NEW_RELIC_LICENSE_KEY;
       });
 
-      it('should not log debug and send to newRelic and prometheus if enableLog: false', function () {
+      it('should not log debug and send to newRelic and prometheus if logLevelDebug: false', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true, eventSummary: { enabled: true } } } } as any;
         process.env.NEW_RELIC_LICENSE_KEY = 'foo';
 
@@ -173,10 +173,10 @@ describe('Test log-metrics helper', function () {
         loggerDebugStub.calledWith('[type][test]: 1').should.be.true();
       });
 
-      it('should not log debug if enableLog: false', function () {
+      it('should not log debug if logLevelDebug: false', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: false } } } as any;
 
-        logMetrics.recordMetric('test', 'type', 1, false);
+        logMetrics.recordMetric('test', 'type', 1, );
 
         recordMetricSpy.called.should.be.false();
         observeSpy.called.should.be.false();
