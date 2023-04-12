@@ -20,29 +20,30 @@ const ws: [string, string, Function?][] = [
   ]
 ];
 
-describe('examples', function() {
+describe('examples', function () {
   let loggerSpy;
-  before(function() {
+  before(function () {
     mockRequire('newrelic', () => console.log('initialized newrelic'));
     mockRequire('tracer', () => console.log('initialized datadog tracer'));
     const logger = getLogger('orka');
     loggerSpy = sandbox.stub(logger, 'warn');
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  ws.forEach(function([serverPath, name, setEnv]: [string, string, Function?]) {
+  ws.forEach(function ([serverPath, name, setEnv]: [string, string, Function?]) {
     let server;
-    describe('Example:' + name, function() {
-      after(function() {
+    describe('Example:' + name, function () {
+      after(function () {
         if (server) server.stop();
       });
 
-      before(function() {
+      before(function () {
         delete require.cache[require.resolve(serverPath)];
         delete require.cache[require.resolve('mongoose')];
+        delete require.cache[require.resolve('mongodb')];
         delete require.cache[require.resolve('koa')];
         delete require.cache[require.resolve('amqplib')];
         delete require.cache[require.resolve('../../build/builder.js')];
@@ -52,11 +53,11 @@ describe('examples', function() {
         return server.start();
       });
 
-      afterEach(function() {
+      afterEach(function () {
         sandbox.reset();
       });
 
-      it('/test returns ok', async function() {
+      it('/test returns ok', async function () {
         const { text } = await (supertest('localhost:3000') as any).get('/test').expect(200);
         text.should.eql('ok changed by prefix');
         const spyArgs = hasALS
@@ -69,11 +70,11 @@ describe('examples', function() {
         loggerSpy.args.should.eql(spyArgs);
       });
 
-      it('/testPolicy returns 401', async function() {
+      it('/testPolicy returns 401', async function () {
         await (supertest('localhost:3000') as any).get('/testPolicy').expect(401);
       });
 
-      it('/testPolicy returns 200', async function() {
+      it('/testPolicy returns 200', async function () {
         const { text } = await (supertest('localhost:3000') as any).get('/testPolicy?secret_key=success').expect(200);
         text.should.eql('ok changed by prefix');
       });

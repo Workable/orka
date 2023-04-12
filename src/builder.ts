@@ -42,7 +42,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
     logger.error(
       new Error(
         `Config in path ${options.diamorphosis.configPath} was already required. ` +
-        `Your config might be used before being initialized by orka (diamorphosis).`
+          `Your config might be used before being initialized by orka (diamorphosis).`
       )
     );
   }
@@ -52,10 +52,16 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
   diamorphosis(config, options);
 
   options.appName ||= config?.app?.name;
-  if (require.cache[require.resolve('koa')]) logger.warn('Koa was initialized before orka');
-  if (config.mongodb?.url && require.cache[require.resolve('mongoose')]) logger.warn('Mongoose was initialized before orka');
-  if (config.queue?.url && require.cache[require.resolve('amqplib')]) logger.warn('Amqplib was initialized before orka');
-  if (config.postgres?.url && require.cache[require.resolve('pg')]) logger.warn('postgres was initialized before orka');
+  const checkModulesAreNotInitialized = (...modules: string[]) => {
+    modules.forEach(m => {
+      try {
+        if (require.cache[require.resolve(m)]) logger.warn(`${m} was initialized before orka`);
+      } catch (e) {
+        // module not found at all
+      }
+    });
+  };
+  checkModulesAreNotInitialized('koa', 'mongoose', 'amqplib', 'pg', 'mongodb');
 
   // Always call newrelic
   newrelic(config, options.appName);
