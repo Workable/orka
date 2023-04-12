@@ -38,9 +38,9 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return mongodb.ObjectId.isValid(value)
         ? { value }
         : {
-          value,
-          errors: helpers.error('objectId.invalid')
-        };
+            value,
+            errors: helpers.error('objectId.invalid')
+          };
     }
   }),
   joi => ({
@@ -81,7 +81,10 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'url',
-    base: joi.string().uri({ domain: { minDomainSegments: 2 } }).meta({ baseType: 'string' })
+    base: joi
+      .string()
+      .uri({ domain: { minDomainSegments: 2 } })
+      .meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'urlWithEmpty',
@@ -108,8 +111,8 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return isValidPhone(value)
         ? { value }
         : helpers.schema.$_getFlag('stripIfInvalid')
-          ? { value: undefined }
-          : {
+        ? { value: undefined }
+        : {
             value,
             errors: helpers.error('string.phone')
           };
@@ -123,9 +126,9 @@ const Joi: JoiWithExtensions = _Joi.extend(
       return isValidHexColor(value)
         ? { value }
         : {
-          value,
-          errors: helpers.error('string.hexcolor')
-        };
+            value,
+            errors: helpers.error('string.hexcolor')
+          };
     }
   }),
   joi => ({
@@ -185,7 +188,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
         args: [
           {
             name: 'allowedTags',
-            assert: value => (Array.isArray(value) && value.length > 0),
+            assert: value => Array.isArray(value) && value.length > 0,
             message: 'must be a non empty array'
           }
         ],
@@ -200,7 +203,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
         args: [
           {
             name: 'allowedAttributes',
-            assert: value => (typeof value === 'object' && Object.keys(value).length > 0),
+            assert: value => typeof value === 'object' && Object.keys(value).length > 0,
             message: 'must be a non empty object'
           }
         ],
@@ -210,9 +213,16 @@ const Joi: JoiWithExtensions = _Joi.extend(
       }
     },
     prepare: (value, helpers) => {
-      const allowedTags = helpers.schema.
-        $_getRule('allowedTags')
-        ?.args?.allowedTags || ['b', 'i', 'u', 'span', 'p', 'div', 'a', 'font'];
+      const allowedTags = helpers.schema.$_getRule('allowedTags')?.args?.allowedTags || [
+        'b',
+        'i',
+        'u',
+        'span',
+        'p',
+        'div',
+        'a',
+        'font'
+      ];
       const allowedAttributes = helpers.schema.$_getRule('allowedAttributes')?.args?.allowedAttributes || {
         a: ['href', 'target', 'rel'],
         font: ['color']
