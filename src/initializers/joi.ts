@@ -1,7 +1,6 @@
 import * as _Joi from 'joi';
 import { isString } from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
-import * as mongodb from 'mongodb';
 
 export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.test(val);
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
@@ -35,7 +34,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
     base: joi.string().meta({ baseType: 'string' }),
     messages: { 'objectId.invalid': 'Invalid objectId' },
     validate: (value, helpers) => {
-      return mongodb.ObjectId.isValid(value)
+      return require('mongodb').ObjectId.isValid(value)
         ? { value }
         : {
             value,
