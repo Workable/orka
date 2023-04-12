@@ -1,0 +1,10 @@
+{
+  "src/*.ts": {
+    "alternate": "test/{}.test.ts",
+    "type": "test"
+  },
+  "test/*.test.ts": {
+    "alternate": "src/{}.ts",
+    "type": "source"
+  }
+}
