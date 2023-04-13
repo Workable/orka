@@ -1,4 +1,4 @@
-remote_theme: just-the-docs
+theme: just-the-docs
 title: Orka
 description: Orka is a modern Node.js framework based on koa@2 that comes powered with RabbitMQ, Kafka, MongoDB and Redis integrations out of the box
 # Enable or disable the site search
