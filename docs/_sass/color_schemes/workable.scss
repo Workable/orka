@@ -3,15 +3,17 @@ $link-color: #4385e0;
 $body-text-color: #333e49;
 $nav-child-link-color: #333e49;
 $body-font-family: 'Proxima Nova';
-// $font-size-2: 12px; //h4 - uppercased!, h6 not uppercased, text-small
-// $font-size-3: 14px; //h5
-// $font-size-4: 16px;
-// $font-size-5: 18px; //h3
-// $font-size-6: 24px; //h2
-// $font-size-7: 32px;
-// $font-size-8: 36px; //h1
-// $font-size-9: 42px;
-// $font-size-10: 48px;
-// $font-size-10-sm: 54px;
+
 $content-line-height: 19.49px;
 $body-line-height: 19.49px;
+$body-background-color: $white !default;
+$body-heading-color: $grey-dk-300 !default;
+$base-button-color: #f7f7f7 !default;
+$btn-primary-color: $purple-100 !default;
+$code-background-color: $grey-lt-000 !default;
+$feedback-color: darken($sidebar-color, 3%) !default;
+$table-background-color: $white !default;
+$search-background-color: $white !default;
+$search-result-preview-color: $grey-dk-000 !default;
+
+@import "./vendor/OneLightJekyll/syntax";
