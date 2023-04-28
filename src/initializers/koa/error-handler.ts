@@ -5,9 +5,9 @@ import { omit } from 'lodash';
 import { levels as Levels } from 'log4js';
 const logger = getLogger('orka.errorHandler');
 
-export const isBlacklisted = (err: { status: number } = {} as any, config) =>
+export const isBlacklisted = (err: { status: number, blacklist: boolean } = {} as any, config) =>
   // tslint:disable-next-line:triple-equals
-  err.status && config.blacklistedErrorCodes.some(b => err.status == b);
+  err.blacklist || (err.status && config.blacklistedErrorCodes.some(b => err.status == b));
 
 export const getExplicitLogLevel = (err) => {
   const levelStr = err?.logLevel;
