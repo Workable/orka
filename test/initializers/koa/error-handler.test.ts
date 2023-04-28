@@ -66,6 +66,8 @@ describe('error-handler', function () {
     isBlacklisted({ status: '500' } as any, config).should.equal(true);
     isBlacklisted({ status: 200 } as any, config).should.equal(false);
     isBlacklisted({ status: '200' } as any, config).should.equal(false);
+    isBlacklisted({ status: 404 }, config).should.equal(false);
+    isBlacklisted({ status: 404, blacklist: true }, config).should.equal(true);
   });
 
   it('tests getExplicitLogLevel from error logLevel', () => {
