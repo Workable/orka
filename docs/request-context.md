@@ -39,6 +39,16 @@ By default orka propagates the following Istio headers:
 
 This list can be modified by changing `config.requestContext.istioTraceContextHeaders.headers`.
 
+### Header Propagation
+Cloudflare headers are appended to the context by default as long as the current nodejs version supports AsyncLocalStorage (async_hooks).
+
+If option `config.request.headerPropagation` is enabled, orka propagates any header specified in its whitelist.
+
+By default the following headers are propagated:
+- cf-ray
+
+The whitelist can be overriden by changing `config.requestContext.headerPropagation.headers` value.
+
 ### Configuration
 
 If you don't specify anything in your `config.requestContext` it defaults to:
@@ -51,6 +61,10 @@ If you don't specify anything in your `config.requestContext` it defaults to:
     "istioTraceContextHeaders": {
       "enabled": true,
       "headers": ["x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": ["cf-ray"]
     }
   }
 }

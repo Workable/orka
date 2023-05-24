@@ -123,6 +123,13 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       ],
       ...config.requestContext?.istioTraceContextHeaders
     },
+    headerPropagation: {
+      enabled: true,
+      headers: [
+        'cf-ray'
+      ],
+      ...config.requestContext?.headerPropagation
+    },
     ...config.requestContext
   };
   diamorphosis(orkaOptions.diamorphosis);

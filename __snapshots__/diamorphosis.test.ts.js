@@ -201,6 +201,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
         "x-b3-flags",
         "x-ot-span-context"
       ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
+      ]
     }
   }
 }
@@ -409,6 +415,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-sampled",
         "x-b3-flags",
         "x-ot-span-context"
+      ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
       ]
     }
   }
@@ -619,6 +631,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-flags",
         "x-ot-span-context"
       ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
+      ]
     }
   }
 }
@@ -828,6 +846,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-flags",
         "x-ot-span-context"
       ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
+      ]
     }
   }
 }
@@ -1036,6 +1060,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-sampled",
         "x-b3-flags",
         "x-ot-span-context"
+      ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
       ]
     }
   }
@@ -1250,6 +1280,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-sampled",
         "x-b3-flags",
         "x-ot-span-context"
+      ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
       ]
     }
   }
@@ -1466,6 +1502,12 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-b3-sampled",
         "x-b3-flags",
         "x-ot-span-context"
+      ]
+    },
+    "headerPropagation": {
+      "enabled": true,
+      "headers": [
+        "cf-ray"
       ]
     }
   }
