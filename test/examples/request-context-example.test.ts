@@ -98,4 +98,52 @@ describe('request-context', function() {
     response.text.should.eql('ok');
     propagatedRequestMock.isDone().should.be.true();
   });
+
+  describe('header Propagation', function() {
+
+    afterEach(function() {
+      delete require.cache[require.resolve('../../examples/request-context-example/config.js')];
+    });
+
+    describe('when feature flag is off', function() {
+
+      beforeEach(function() {
+        const config = require('../../examples/request-context-example/config.js');
+        config.requestContext.headerPropagation = { enabled: false };
+      });
+
+      it('should not propagate headers', async function() {
+        const propagatedRequestMock = nock('http://foo.com')
+          .post('/', (body) => true)
+          .reply(200);
+
+        await request
+          .post('/propagateTracingHeaders')
+          .set('cf-ray', 'header-value')
+          .expect(200);
+
+        propagatedRequestMock.isDone().should.be.true();
+      });
+    });
+
+    it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function() {
+      const config = require('../../examples/request-context-example/config.js');
+      config.requestContext.headerPropagation = { enabled: true, headers: ['header1', 'header2'] };
+
+      const propagatedRequestMock = nock('http://foo.com')
+        .matchHeader('header1', 'header-value')
+        .matchHeader('header2', 'header2-value')
+        .post('/', (body) => true)
+        .reply(200);
+
+      await request
+        .post('/propagateTracingHeaders')
+        .set('header1', 'header-value')
+        .set('header2', 'header2-value')
+        .set('header3', 'header3-value')
+        .expect(200);
+
+      propagatedRequestMock.isDone().should.be.true();
+    });
+  });
 });

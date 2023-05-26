@@ -70,6 +70,11 @@ const init = (config, orkaOptions) => {
             const istioTraceContextHeaders = getRequestContext()?.get('istio-headers');
             Object.assign(requestArgs.headers, istioTraceContextHeaders);
           }
+
+          if (config.requestContext.headerPropagation.enabled) {
+            Object.assign(requestArgs.headers, getRequestContext()?.get('propagated-headers'));
+          }
+
         } catch (e) {
           getLogger('orka.riviere').error(e);
         }
