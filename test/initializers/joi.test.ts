@@ -94,6 +94,31 @@ describe('joi extensions', function () {
       should(underTest.error).be.undefined();
       underTest.value.should.equal('https://s3.us-east.amazonaws.com/application-form/a/path?asd=foo');
     });
+    it('expired tmp url', function () {
+      const expiredTimestamp = Math.round(Date.now() / 1000) - 100;
+      const underTest = Joi.urlInOwnS3()
+        .bucket('application-form')
+        .errorOnExpiredUrl()
+        .validate(`https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${expiredTimestamp}`);
+      underTest.error.message.should.equal('Your url is expired');
+    });
+    it('expired tmp url with no rule should succeed', function () {
+      const expiredTimestamp = Math.round(Date.now() / 1000) - 100;
+      const underTest = Joi.urlInOwnS3()
+        .bucket('application-form')
+        .validate(`https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${expiredTimestamp}`);
+      should(underTest.error).be.undefined();
+    });
+    it('not expired tmp url should succeed', function () {
+      const futureTimestamp = Math.round(Date.now() / 1000) + 100000;
+      const url = `https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${futureTimestamp}`;
+      const underTest = Joi.urlInOwnS3()
+        .bucket('application-form')
+        .errorOnExpiredUrl()
+        .validate(url);
+      should(underTest.error).be.undefined();
+      underTest.value.should.equal(url);
+    });
   });
 
   describe('url', function () {
