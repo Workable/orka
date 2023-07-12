@@ -94,12 +94,12 @@ Validates that the provided value is a string. It clears the `null` byte from st
 Validates that the provided value is a string and allows empty strings or null. It clears the `null` byte from strings
 
 ### Joi.urlInOwnS3()
-Validates that the provided value is an valid url in the provided S3 bucket
+Validates that the provided value is an valid url in the provided S3 bucket. You can also provide an option to return error if the S3 url provided is expired or not
 
 e.g.
 ```js
 const schema = {
-  url: Joi.urlInOwnS3().bucket('bucket-name'),
+  url: Joi.urlInOwnS3().bucket('bucket-name').errorOnExpiredUrl(),
 };
 ```
 
