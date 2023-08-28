@@ -29,6 +29,7 @@ import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
 import { alsSupported } from './utils';
 import type WorkerType from './initializers/worker';
+import growthbook from './initializers/growthbook';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;
@@ -163,6 +164,11 @@ export default class OrkaBuilder {
 
   withBull(appName: string = this.options.appName) {
     this.queue.push(() => bull(this.config, appName));
+    return this;
+  }
+
+  withGrowthbook() {
+    this.queue.push(() => growthbook(this.config));
     return this;
   }
 
