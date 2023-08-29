@@ -38,5 +38,6 @@ export default {
     orkaOptions: { omitErrorKeys?: string[] }
   ): Promise<[string | Error, ...any[]]> => [err, { state: omit(ctx.state, orkaOptions.omitErrorKeys) }],
   omitErrorKeys: [],
-  riviereContext: (ctx: Koa.Context) => ({})
+  riviereContext: (ctx: Koa.Context) => ({}),
+  growthbookAttributes: (ctx: Koa.Context) => ({}),
 };
