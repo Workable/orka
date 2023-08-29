@@ -276,11 +276,7 @@ function addGrowthbookConfig(config) {
   config.growthbook = {
     apiHost: 'https://cdn.growthbook.io',
     clientKey: '',
-    setAttributesCallback: setAttributesCallback,
+    setAttributesCallback: (ctx: Context) => ({}),
     ...config.growthbook
   };
-}
-
-function setAttributesCallback(ctx: Context) {
-  return  {};
 }

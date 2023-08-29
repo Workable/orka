@@ -33,10 +33,12 @@ describe('Growthbook middleware', function () {
     };
     growthbookSpy.returns(growthbookMockInstance);
     OrkaBuilder.INSTANCE = {
+      options: {
+        growthbookAttributes: () => ({attributeA: 'foo'})
+      },
       config: {
         growthbook: {
-          clientKey: 'sdk-123',
-          setAttributesCallback: () => ({attributeA: 'foo'})
+          clientKey: 'sdk-123'
         }
       }
     } as any;
