@@ -9,5 +9,5 @@ import type * as GrowthbookType from 'growthbook';
 export const createGrowthbook = <AppFeatures extends Record<string, any> = Record<string, any>>(config: GrowthbookType.Context) => {
   if (!config?.clientKey) return;
   const {GrowthBook} = requireInjected('growthbook');
-  return new GrowthBook<AppFeatures>(config);
+  return new GrowthBook(config) as GrowthbookType.GrowthBook<AppFeatures>;
 };

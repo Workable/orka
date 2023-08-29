@@ -12,6 +12,10 @@ export default async function growthbook(ctx: Context, next: () => Promise<void>
   const gb = createGrowthbook(config);
   ctx.state.growthbook = gb;
   gb.loadFeatures().catch(e => logger.error(e, 'failed to load growthbook'));
+  gb.setAttributes({
+    ...gb.getAttributes(),
+    ...(config.setAttributesCallback && config.setAttributesCallback(ctx) || {})
+  });
   if (ctx.state.growthbook) {
     getRequestContext()?.set('growthbook', ctx.state.growthbook);
   }

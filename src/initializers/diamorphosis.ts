@@ -2,6 +2,7 @@ import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
 import { defaultTo, isBoolean } from 'lodash';
 import { alsSupported } from '../utils';
+import { Context } from 'koa';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.nodeEnv = config.nodeEnv || 'development';
@@ -275,6 +276,11 @@ function addGrowthbookConfig(config) {
   config.growthbook = {
     apiHost: 'https://cdn.growthbook.io',
     clientKey: '',
+    setAttributesCallback: setAttributesCallback,
     ...config.growthbook
   };
+}
+
+function setAttributesCallback(ctx: Context) {
+  return  {};
 }

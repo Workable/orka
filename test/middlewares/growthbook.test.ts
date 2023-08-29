@@ -12,6 +12,7 @@ describe('Growthbook middleware', function () {
   let next: sinon.SinonStub;
   let growthbookMockInstance;
   let loadFeaturesStub: sinon.SinonStub;
+  let setAttributesStub: sinon.SinonStub;
   let destroyStub: sinon.SinonStub;
   let growthbookSpy: sinon.SinonStub;
 
@@ -23,17 +24,27 @@ describe('Growthbook middleware', function () {
     next = sandbox.stub();
     loadFeaturesStub = sandbox.stub().resolves();
     destroyStub = sandbox.stub();
+    setAttributesStub = sandbox.stub();
     growthbookMockInstance = {
       loadFeatures: loadFeaturesStub,
-      destroy: destroyStub
+      destroy: destroyStub,
+      setAttributes: setAttributesStub,
+      getAttributes: () => ({})
     };
     growthbookSpy.returns(growthbookMockInstance);
-    OrkaBuilder.INSTANCE = { config: { growthbook: {clientKey: 'sdk-123'} } } as any;
+    OrkaBuilder.INSTANCE = {
+      config: {
+        growthbook: {
+          clientKey: 'sdk-123',
+          setAttributesCallback: () => ({attributeA: 'foo'})
+        }
+      }
+    } as any;
   });
 
   it('calls next when growthbook is missing from config', async function () {
     const ctx = {state: {}} as Context;
-    OrkaBuilder.INSTANCE = { config: { } } as any;
+    OrkaBuilder.INSTANCE = {config: {}} as any;
 
     await growthbook(ctx, next);
 
@@ -50,12 +61,13 @@ describe('Growthbook middleware', function () {
     next.called.should.be.true();
   });
 
-  it('loadsFeatures and calls next', async function () {
+  it('loadsFeatures, setsAttributes and calls next', async function () {
     const ctx = {state: {}} as Context;
     await growthbook(ctx, next);
     ctx.state.growthbook.should.equal(growthbookMockInstance);
     next.called.should.be.true();
     loadFeaturesStub.called.should.be.true();
     destroyStub.called.should.be.true();
+    setAttributesStub.called.should.be.true();
   });
 });
