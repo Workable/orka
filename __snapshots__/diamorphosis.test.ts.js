@@ -183,6 +183,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
   },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -397,6 +401,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "workers": {
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
+  },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
   },
   "requestContext": {
     "enabled": true,
@@ -613,6 +621,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
   },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -828,6 +840,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
   },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -1042,6 +1058,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "workers": {
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
+  },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
   },
   "requestContext": {
     "enabled": true,
@@ -1262,6 +1282,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "workers": {
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
+  },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
   },
   "requestContext": {
     "enabled": true,
@@ -1484,6 +1508,10 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "workers": {
     "retryDelay": 3600000,
     "initializationCheckDelay": 1000
+  },
+  "growthbook": {
+    "apiHost": "https://cdn.growthbook.io",
+    "clientKey": ""
   },
   "requestContext": {
     "enabled": true,

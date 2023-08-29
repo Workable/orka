@@ -106,6 +106,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addRedisConfig(config);
   addPostgresConfig(config);
   addWorkersConfig(config);
+  addGrowthbookConfig(config);
 
   config.requestContext = {
     enabled: alsSupported(),
@@ -267,5 +268,13 @@ function addWorkersConfig(config) {
     retryDelay: 1000 * 60 * 60,
     initializationCheckDelay: 1000,
     ...config.workers
+  };
+}
+
+function addGrowthbookConfig(config) {
+  config.growthbook = {
+    apiHost: 'https://cdn.growthbook.io',
+    clientKey: '',
+    ...config.growthbook
   };
 }

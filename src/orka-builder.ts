@@ -166,6 +166,16 @@ export default class OrkaBuilder {
     return this;
   }
 
+  loadGrowthbookFeatures() {
+    this.queue.push(async () => {
+      const { createGrowthbook } = require('./initializers/growthbook');
+      const gb = createGrowthbook(this.config.growthbook);
+      if (!gb) return;
+      await gb.loadFeatures().catch(e => getLogger('orka.growthbook').error('Unable to load features', e));
+    });
+    return this;
+  }
+
   createWorker(name: string) {
     const Worker: typeof WorkerType = require('./initializers/worker').default;
     return new Worker(this, name);
