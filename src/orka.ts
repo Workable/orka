@@ -22,7 +22,7 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .withPrometheus()
     .withBull()
     .withPostgres()
-    .withGrowthbook()
+    .loadGrowthbookFeatures()
     .with(options.beforeStart)
     .routes(options.routesPath);
 };

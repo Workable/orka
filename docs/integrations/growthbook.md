@@ -40,17 +40,20 @@ module.exports = {
 };
 ```
 
-### getGrowthbook
+### createGrowthbook
 
-You can call `getGrowthbook` to retrieve the existing growthbook instance. You can use a generic typing so you will have
-autocompletion when using the `isOn` method
+You can call `createGrowthbook` to retrieve a new growthbook instance. You can use a generic typing, so you will have
+autocompletion when using the `isOn` method. 
+
+> **IMPORTANT:** If you call this method you are responsible for calling `.destroy()` when finished
 
 ```ts
-const { getGrowthbook } = require('@workablehr/orka');
+const { createGrowthbook } = require('@workablehr/orka');
 
-const gb = getGrowthbook<{featureA: boolean}>();
+const gb = createGrowthbook<{featureA: boolean}>();
 await gb.loadFeatures();
 if (gb.isOn('featureA')) {
   // Do stuff...
 }
+gb.destroy();
 ```
