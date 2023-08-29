@@ -24,7 +24,7 @@ Orka adds by default the following middleware:
 - [koa-compress](https://www.npmjs.com/package/koa-compress)
 - [koa2-cors](https://www.npmjs.com/package/koa2-cors)
 - parseQuerystring (Uses [qs](https://www.npmjs.com/package/qs) and adds an object to `ctx.state.query` with the parsed attributes)
-- addVisitorId (adds a visitorId in ctx.state.visitor from cookie ctx.visitor.cookie)
+- addVisitorId (adds a visitorId in `ctx.state.visitor` from cookie `ctx.visitor.cookie`)
 
 Any middlewares you add in beforeMiddleware go before this list.
 Any middlewares you add in afterMiddleware go after this list.
@@ -145,3 +145,27 @@ Default:
 // If hostname is www.google.com the cookie domain will be .google.com
 const getCookieDomain = ctx => domain((ctx.origin && new URL(ctx.origin).hostname) || ctx.hostname)
 ```
+## Growthbook middleware
+
+It is responsible for acquiring the growthbook instance, loading the features and setting the instance in the 
+`ctx.state.growthbook` to be used by other middlewares.
+
+Example route configuration
+
+```js
+const { middlewares: { growthbook } } = require('@workablehr/orka');
+
+module.exports = {
+  get: {
+    '/endpoint': async (ctx, next) => {
+      ctx.body = ctx.state.growthbook.isOn('featureA') ? 'ON' : 'OFF';
+    }
+  },
+  prefix: {
+    '/': growthbook
+  }
+};
+```
+
+If you need to set attributes you can do by accessing the `ctx.state.growthbook` to another endpoint and using the 
+`setAttributes` method of growthbook instance.
