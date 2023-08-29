@@ -3,10 +3,11 @@ import type * as GrowthbookType from 'growthbook';
 
 let gb: GrowthbookType.GrowthBook;
 
-export default config => {
+const createGrowthbook = <AppFeatures extends Record<string, any> = Record<string, any>>(config) => {
+  if (!config.growthbook) return;
   if (!gb) {
     const {GrowthBook} = requireInjected('growthbook');
-    gb = new GrowthBook({
+    gb = new GrowthBook<AppFeatures>({
       apiHost: 'https://cdn.growthbook.io',
       clientKey: config.growthbook.clientKey
     });
@@ -14,9 +15,11 @@ export default config => {
   return gb;
 };
 
-export const getGrowthbook = () => {
+export default createGrowthbook;
+
+export const getGrowthbook = <AppFeatures extends Record<string, any> = Record<string, any>>() => {
   if (!gb) {
     throw new Error('growthbook is not initialized');
   }
-  return gb;
+  return gb as GrowthbookType.GrowthBook<AppFeatures>;
 };

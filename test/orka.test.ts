@@ -28,6 +28,7 @@ describe('Orka', function() {
     builderStub.withPrometheus.returns(builderStub);
     builderStub.withRedis.returns(builderStub);
     builderStub.withPostgres.returns(builderStub);
+    builderStub.withGrowthbook.returns(builderStub);
     builderStub.with.returns(builderStub);
     builderStub.routes.returns(builderStub);
 
