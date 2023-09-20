@@ -190,7 +190,8 @@ const Joi: JoiWithExtensions = _Joi.extend(
           }
         ],
         validate(value, helpers, {bucket}) {
-          if (!isOwnS3Path(bucket, value)) {
+          const { hostname, protocol, pathname} = new URL(value);
+          if (!isOwnS3Path(bucket, `${protocol}//${hostname}${pathname}`)) {
             return helpers.error('string.notInS3');
           }
           return value;

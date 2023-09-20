@@ -119,8 +119,22 @@ describe('joi extensions', function () {
       should(underTest.error).be.undefined();
       underTest.value.should.equal(url);
     });
+    it('s3 url with @ after domain should throw error', function () {
+      const urls = [
+          'https://application-form.s3.amazonaws.com@malicious-url.com/tmp/123-456-789',
+          'https://application-form.s3.amazonaws.com@google.com/tmp/123-456-789',
+          'https://application-form.s3.amazonaws.com@joecup/tmp/123-456-789',
+          'https://application-form.s3.amazonaws.com@hello',
+          'https://application-form.s3.amazonaws.com@4nsex02yymx4wzjzc0ljcmsar1xsli97.oastify.com'
+      ];
+      urls.forEach(url => {
+        const underTest = Joi.urlInOwnS3()
+            .bucket('application-form')
+            .validate(url);
+        underTest.error.message.should.equal('Invalid path provided');
+      });
+    });
   });
-
   describe('url', function () {
     it('rejects URLs with less than two domain fragments', function () {
       Joi.url().validate('https://foo').error.message.should.equal('"value" must contain a valid domain name');
