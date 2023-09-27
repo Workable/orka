@@ -1,7 +1,7 @@
 module.exports = {
   nodeEnv: 'demo',
   log: {
-    json: true
+    json: false
   },
   app: {
     name: 'foo'
@@ -10,7 +10,17 @@ module.exports = {
     publicPrefixes: ['/api/allowAll']
   },
   riviere: {
-    bodyKeysRegex: '.*'
+    bodyKeysRegex: '.*',
+    inbound: {
+      request: {
+        enabled: false
+      }
+    },
+    outbound: {
+      request: {
+        enabled: false
+      }
+    }
   },
   requestContext: {
     logKeys: ['requestId', 'query', 'afterMiddleware']

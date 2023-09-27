@@ -1,5 +1,5 @@
 const { getLogger, getRequestContext } = require('../../build');
-const { testMe, postFoo } = require('./service');
+const { testMe, postFoo, get } = require('./service');
 
 module.exports = {
   get: {
@@ -14,10 +14,20 @@ module.exports = {
       await testMe();
       ctx.body = 'ok';
       ctx.status = 200;
+    },
+    '/first': async ctx => {
+      ctx.body = await get('second');
+    },
+    '/second': async ctx => {
+      ctx.body = await get('third');
+    },
+    '/third': async ctx => {
+      ctx.body = ctx.headers;
     }
   },
+
   post: {
-    '/propagateTracingHeaders': async (ctx) => {
+    '/propagateTracingHeaders': async ctx => {
       await postFoo('foo');
       ctx.body = 'ok';
       ctx.status = 200;

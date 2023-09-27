@@ -93,7 +93,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     },
     "color": true,
     "styles": [],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "healthCheck": {
     "kafka": false,
@@ -312,7 +312,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "healthCheck": {
     "kafka": false,
@@ -531,7 +531,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "healthCheck": {
     "kafka": false,
@@ -750,7 +750,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "healthCheck": {
     "kafka": false,
@@ -896,7 +896,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "simple"
     ],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "nodeEnv": "development",
   "app": {
@@ -1242,7 +1242,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     },
     "color": true,
     "styles": [],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "queue": {
     "url": "",
@@ -1468,7 +1468,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "^X-.*"
+    "headersRegex": "(^X-.*)|cf-ray"
   },
   "queue": {
     "url": "",
