@@ -84,7 +84,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     },
     color: true,
     styles: [],
-    headersRegex: '^X-.*',
+    headersRegex: '(^X-.*)|cf-ray',
     maxBodyValueChars: undefined,
     ...config.riviere
   };
@@ -127,9 +127,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     },
     headerPropagation: {
       enabled: true,
-      headers: [
-        'cf-ray'
-      ],
+      headers: ['cf-ray'],
       ...config.requestContext?.headerPropagation
     },
     ...config.requestContext
