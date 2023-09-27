@@ -6,9 +6,12 @@ import {URL} from 'url';
 export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.test(val);
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
 export const isValidHexColor = (val: string): boolean => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val);
-export const isOwnS3Path = (bucket: string, val: string): boolean =>
-  val?.startsWith(`https://${bucket}.s3.amazonaws.com`) ||
+export const isOwnS3Path = (bucket: string, val: string): boolean => {
+  const { origin, pathname } = new URL(val);
+  val = `${origin}${pathname}`;
+  return val?.startsWith(`https://${bucket}.s3.amazonaws.com`) ||
   new RegExp(`^https:\\/\\/s3\\..+\\.amazonaws\\.com\\/${bucket}\\/.*`, 'g').test(val);
+};
 
 export const isExpiredUrl = (val: string): boolean => {
   const parsed = new URL(val);
@@ -190,8 +193,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
           }
         ],
         validate(value, helpers, {bucket}) {
-          const { hostname, protocol, pathname} = new URL(value);
-          if (!isOwnS3Path(bucket, `${protocol}//${hostname}${pathname}`)) {
+          if (!isOwnS3Path(bucket, value)) {
             return helpers.error('string.notInS3');
           }
           return value;
