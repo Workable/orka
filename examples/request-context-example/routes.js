@@ -1,5 +1,5 @@
 const { getLogger, getRequestContext } = require('../../build');
-const { testMe, postFoo, get } = require('./service');
+const { testMe, postFoo, post, get } = require('./service');
 
 module.exports = {
   get: {
@@ -22,11 +22,16 @@ module.exports = {
       ctx.body = await get('third');
     },
     '/third': async ctx => {
-      ctx.body = ctx.headers;
+      ctx.set('x-custom-header', 'custom-header');
+      ctx.body = await post('fourth', { foo: 'bar' });
     }
   },
 
   post: {
+    '/fourth': async ctx => {
+      ctx.set('x-custom-header', 'custom-header-fourth');
+      ctx.body = ctx.headers;
+    },
     '/propagateTracingHeaders': async ctx => {
       await postFoo('foo');
       ctx.body = 'ok';

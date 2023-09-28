@@ -67,14 +67,18 @@ const init = (config, orkaOptions) => {
           }
 
           if (config.requestContext.istioTraceContextHeaders.enabled) {
-            const istioTraceContextHeaders = getRequestContext()?.get('istio-headers');
-            Object.assign(requestArgs.headers, istioTraceContextHeaders);
+            const headers = getRequestContext()?.get('istio-headers');
+            Object.keys(headers).forEach(key => {
+              requestArgs.headers[key] = requestArgs.headers[key] ?? headers[key];
+            });
           }
 
           if (config.requestContext.headerPropagation.enabled) {
-            Object.assign(requestArgs.headers, getRequestContext()?.get('propagated-headers'));
+            const headers = getRequestContext()?.get('propagated-headers');
+            Object.keys(headers).forEach(key => {
+              requestArgs.headers[key] = requestArgs.headers[key] ?? headers[key];
+            });
           }
-
         } catch (e) {
           getLogger('orka.riviere').error(e);
         }
