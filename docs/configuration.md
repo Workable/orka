@@ -159,7 +159,7 @@ You can find the default values below:
   },
   "printLogo": true,
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
     "json": false
@@ -255,9 +255,10 @@ You can find the default values below:
   "requestContext": {
     "enabled": true,
     "logKeys": ["requestId", "visitor"],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
