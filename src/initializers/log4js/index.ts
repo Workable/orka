@@ -1,7 +1,8 @@
-import { pick } from 'lodash';
+import { pick, difference } from 'lodash';
 import * as Log4js from 'log4js';
 import * as path from 'path';
 import { getRequestContext } from '../../builder';
+import chalk from 'chalk';
 
 let tmp = name => {
   const logger = Log4js.getLogger('initializing.' + name);
@@ -28,14 +29,41 @@ export default async config => {
         type: 'pattern',
         pattern: config.log.pattern,
         tokens: {
-          logTracer: () => {
+          requestId: data => {
+            const msg = data.data[0];
+            let traceId;
+            if (config.requestContext.logKeys.includes('requestId')) {
+              traceId = traceId ?? getRequestContext()?.get('requestId');
+            }
+            if (config.requestContext.logKeys.includes('correlationId')) {
+              traceId = traceId ?? getRequestContext()?.get('correlationId');
+            }
+            if (!traceId) return '';
+            return msg?.startsWith && !msg?.startsWith(`[${traceId}`) ? chalk.gray(`[${traceId}] `) : '';
+          },
+
+          logTracer: data => {
             const tracerObject = pick(
               Object.fromEntries(getRequestContext() || new Map()),
-              config.requestContext.logKeys
+              difference(config.requestContext.logKeys, ['requestId', 'correlationId'])
             );
-            const values = Object.values(tracerObject);
-            if (!values.length) return '';
-            return values.map(v => `[${v}]`).join(' ');
+            const entries = Object.entries(tracerObject);
+            if (!entries.length) return '';
+
+            const log = entries
+              .map(([k, v]) => {
+                if (typeof v === 'object') {
+                  return toLog(
+                    v,
+                    `${k === 'propagatedHeaders' ? 'headers' : k}.`,
+                    k === 'propagatedHeaders' && config.traceHeaderName.toLowerCase()
+                  );
+                } else {
+                  return `${k}="${v}"`;
+                }
+              })
+              .join(', ');
+            if (log) return chalk.gray(`| ${log}`);
           }
         }
       }
@@ -78,3 +106,10 @@ export default async config => {
 
   tmp = Log4js.getLogger.bind(Log4js);
 };
+
+function toLog(obj, prefix = '', skipKey) {
+  return Object.entries(obj)
+    .filter(([k, v]) => k !== skipKey)
+    .map(([k, v]) => `${prefix}${k}="${v}"`)
+    .join(', ');
+}
