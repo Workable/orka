@@ -1,5 +1,6 @@
 const { orka } = require('../../build');
 const ExampleHandler = require('./example-handler');
+const { getRabbit } = require('../../build');
 
 const w = orka({
   beforeMiddleware: () => [
@@ -17,6 +18,7 @@ const w = orka({
   rabbitOnConnected: () => {
     console.log('Custom rabbitOnConnected');
     new ExampleHandler('example_queue');
+    getRabbit().bindToTopic('example_queue', '*.example');
   }
 });
 

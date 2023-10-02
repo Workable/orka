@@ -3,6 +3,8 @@ module.exports = {
   app: {
     name: 'foo'
   },
+  log: { json: false },
+  traceHeaderName: 'x-request-id',
   queue: {
     prefetch: 100,
     url: 'amqp://localhost',
@@ -10,5 +12,17 @@ module.exports = {
     maxRetries: 0,
     retryDelay: 1000,
     connectDelay: 5000
+  },
+  riviere: {
+    inbound: {
+      request: {
+        enabled: true
+      }
+    },
+    outbound: {
+      request: {
+        enabled: true
+      }
+    }
   }
 };
