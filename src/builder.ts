@@ -5,14 +5,10 @@ import * as lodash from 'lodash';
 import { getLogger } from './initializers/log4js';
 import orkaType from './orka-builder';
 import { AsyncLocalStorage } from 'async_hooks';
-import { alsSupported } from './utils';
 import datadog from './initializers/datadog';
 import riviere from './initializers/riviere';
 
-let als: AsyncLocalStorage<Map<string, any>> | undefined;
-if (alsSupported()) {
-  als = new AsyncLocalStorage<Map<string, any>>();
-}
+let als: AsyncLocalStorage<Map<string, any>> = new AsyncLocalStorage<Map<string, any>>();
 
 export const getRequestContext = () => als?.getStore();
 

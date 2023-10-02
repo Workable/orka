@@ -1,30 +1,28 @@
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-import { alsSupported } from '../../src/utils';
 import * as nock from 'nock';
 
 const sandbox = sinon.createSandbox();
 
-describe('request-context', function() {
+describe('request-context', function () {
   let server;
   let clock;
   let request;
-  const hasALS = alsSupported();
 
-  before(function() {
+  before(function () {
     process.env.LOG_LEVEL = 'info';
     process.env.LOG_JSON = 'true';
     delete process.env.NEW_RELIC_LICENSE_KEY;
   });
 
-  after(function() {
+  after(function () {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
     if (server) server.stop();
     clock.restore();
   });
 
-  before(async function() {
+  before(async function () {
     const serverPath = '../../examples/request-context-example/app';
     delete require.cache[require.resolve('../../build/builder.js')];
     delete require.cache[require.resolve('../../build/index.js')];
@@ -41,7 +39,7 @@ describe('request-context', function() {
     clock = sinon.useFakeTimers(new Date('2019-01-01'));
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
@@ -51,16 +49,13 @@ describe('request-context', function() {
       severity: 'INFO',
       categoryName: 'log',
       message,
-      context: hasALS ? context : {}
+      context
     })
   ];
 
-  it('/log returns 200 and logs info with requestId', async function() {
+  it('/log returns 200 and logs info with requestId', async function () {
     const logSpy = sandbox.stub(console, 'log');
-    const response = await request
-      .get('/log')
-      .set('x-orka-request-id', 'test-id')
-      .expect(200);
+    const response = await request.get('/log').set('x-orka-request-id', 'test-id').expect(200);
     response.text.should.eql('ok');
     logSpy.args.should.eql([
       logEntry('A log in controller, before service call', { requestId: 'test-id', afterMiddleware: 'orka' }),
@@ -69,7 +64,7 @@ describe('request-context', function() {
     ]);
   });
 
-  it('/logWithAppendedRequestContextVar returns 200 and logs info with requestId and appended var', async function() {
+  it('/logWithAppendedRequestContextVar returns 200 and logs info with requestId and appended var', async function () {
     const logSpy = sandbox.stub(console, 'log');
     const response = await request
       .get('/logWithAppendedRequestContextVar?q=testme')
@@ -81,11 +76,11 @@ describe('request-context', function() {
     ]);
   });
 
-  it('/propagateTracingHeaders returns 200 and propagate istio headers', async function() {
+  it('/propagateTracingHeaders returns 200 and propagate istio headers', async function () {
     const propagatedRequestMock = nock('http://foo.com')
       .matchHeader('x-request-id', 'istio-request-id')
       .matchHeader('x-b3-spanid', 'istio-x-b3-spanid')
-      .post('/', (body) => true)
+      .post('/', body => true)
       .reply(200);
 
     const response = await request
@@ -99,41 +94,36 @@ describe('request-context', function() {
     propagatedRequestMock.isDone().should.be.true();
   });
 
-  describe('header Propagation', function() {
-
-    afterEach(function() {
+  describe('header Propagation', function () {
+    afterEach(function () {
       delete require.cache[require.resolve('../../examples/request-context-example/config.js')];
     });
 
-    describe('when feature flag is off', function() {
-
-      beforeEach(function() {
+    describe('when feature flag is off', function () {
+      beforeEach(function () {
         const config = require('../../examples/request-context-example/config.js');
         config.requestContext.headerPropagation = { enabled: false };
       });
 
-      it('should not propagate headers', async function() {
+      it('should not propagate headers', async function () {
         const propagatedRequestMock = nock('http://foo.com')
-          .post('/', (body) => true)
+          .post('/', body => true)
           .reply(200);
 
-        await request
-          .post('/propagateTracingHeaders')
-          .set('cf-ray', 'header-value')
-          .expect(200);
+        await request.post('/propagateTracingHeaders').set('cf-ray', 'header-value').expect(200);
 
         propagatedRequestMock.isDone().should.be.true();
       });
     });
 
-    it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function() {
+    it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function () {
       const config = require('../../examples/request-context-example/config.js');
       config.requestContext.headerPropagation = { enabled: true, headers: ['header1', 'header2'] };
 
       const propagatedRequestMock = nock('http://foo.com')
         .matchHeader('header1', 'header-value')
         .matchHeader('header2', 'header2-value')
-        .post('/', (body) => true)
+        .post('/', body => true)
         .reply(200);
 
       await request

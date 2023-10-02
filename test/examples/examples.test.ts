@@ -3,9 +3,7 @@ import * as supertest from 'supertest';
 import * as mockRequire from 'mock-require';
 import { getLogger } from '../../build/initializers/log4js';
 import * as sinon from 'sinon';
-import { alsSupported } from '../../src/utils';
 
-const hasALS = alsSupported();
 const sandbox = sinon.createSandbox();
 const ws: [string, string, Function?][] = [
   ['../../examples/simple-example/app', 'simple-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
@@ -60,13 +58,7 @@ describe('examples', function () {
       it('/test returns ok', async function () {
         const { text } = await (supertest('localhost:3000') as any).get('/test').expect(200);
         text.should.eql('ok changed by prefix');
-        const spyArgs = hasALS
-          ? []
-          : [
-              [
-                'RequestContext is disabled!! You need to have version v12.17.0+, v13.14.0+ or v14.0.0+ if you want to enable it.'
-              ]
-            ];
+        const spyArgs = [];
         loggerSpy.args.should.eql(spyArgs);
       });
 
