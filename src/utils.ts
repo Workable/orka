@@ -35,7 +35,7 @@ export function appendHeadersFromStore(properties: any, store: Map<string, any>,
   headers['x-depth'] = parseInt(headers['x-depth'] || 0, 10) + 1;
   const traceHeaderName = config.traceHeaderName.toLowerCase();
 
-  if (headers['x-depth'] % 2 === 0) {
+  if (headers['x-depth'] % 2 === 0 && headers[traceHeaderName]) {
     if (!headers['x-initiator-id'] && headers['x-parent-id']) headers['x-initiator-id'] = headers['x-parent-id'];
     headers['x-parent-id'] = headers[traceHeaderName];
     headers[traceHeaderName] = `orka:${randomUUID()}`;

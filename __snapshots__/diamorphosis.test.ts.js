@@ -208,7 +208,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -426,7 +427,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -644,7 +646,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -862,7 +865,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -1080,7 +1084,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -1303,7 +1308,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -1528,7 +1534,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "x-ot-span-context",
         "x-depth",
         "x-parent-id",
-        "x-initiator-id"
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }

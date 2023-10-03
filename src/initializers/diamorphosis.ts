@@ -132,6 +132,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   };
   diamorphosis(orkaOptions.diamorphosis);
 
+  config.requestContext.propagatedHeaders.headers.push(config.traceHeaderName.toLowerCase());
   config.app.env = config.app.env || config.nodeEnv;
 
   // Override kafka producer config with defaults if brokers is not set

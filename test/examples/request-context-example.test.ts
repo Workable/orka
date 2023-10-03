@@ -43,15 +43,18 @@ describe('request-context', function () {
     sandbox.restore();
   });
 
-  const logEntry = (message, context) => [
-    JSON.stringify({
-      timestamp: '2019-01-01T00:00:00.000Z',
-      severity: 'INFO',
-      categoryName: 'log',
-      message,
-      context
-    })
-  ];
+  const logEntry = (message, context) => {
+    context.propagatedHeaders = { 'x-orka-request-id': 'test-id' };
+    return [
+      JSON.stringify({
+        timestamp: '2019-01-01T00:00:00.000Z',
+        severity: 'INFO',
+        categoryName: 'log',
+        message,
+        context
+      })
+    ];
+  };
 
   it('/log returns 200 and logs info with requestId', async function () {
     const logSpy = sandbox.stub(console, 'log');

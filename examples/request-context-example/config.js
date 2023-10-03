@@ -13,17 +13,17 @@ module.exports = {
     bodyKeysRegex: '.*',
     inbound: {
       request: {
-        enabled: false
+        enabled: true
       }
     },
     outbound: {
       request: {
-        enabled: false
+        enabled: true
       }
     }
   },
   requestContext: {
-    logKeys: ['requestId', 'query', 'afterMiddleware']
+    logKeys: ['requestId', 'query', 'afterMiddleware', 'propagatedHeaders']
   },
   port: 2121
 };
