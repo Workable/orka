@@ -24,7 +24,7 @@ export const nodeVersionGreaterThanEqual = (requestedVersion: string, version = 
   return true;
 };
 
-export function appendHeadersFromStore(properties, store, config) {
+export function appendHeadersFromStore(properties: any, store: Map<string, any>, config: any) {
   if (!config.requestContext.enabled) return;
   if (!config.requestContext.propagatedHeaders.enabled) return;
   properties.headers = properties.headers || {};

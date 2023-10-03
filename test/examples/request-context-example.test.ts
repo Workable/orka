@@ -102,7 +102,7 @@ describe('request-context', function () {
     describe('when feature flag is off', function () {
       beforeEach(function () {
         const config = require('../../examples/request-context-example/config.js');
-        config.requestContext.headerPropagation = { enabled: false };
+        config.requestContext.propagatedHeaders = { enabled: false };
       });
 
       it('should not propagate headers', async function () {
@@ -118,7 +118,7 @@ describe('request-context', function () {
 
     it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function () {
       const config = require('../../examples/request-context-example/config.js');
-      config.requestContext.headerPropagation = { enabled: true, headers: ['header1', 'header2'] };
+      config.requestContext.propagatedHeaders = { enabled: true, headers: ['header1', 'header2'] };
 
       const propagatedRequestMock = nock('http://foo.com')
         .matchHeader('header1', 'header-value')

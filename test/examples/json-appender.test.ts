@@ -48,6 +48,7 @@ describe('json-appender', function () {
           message: 'hello world',
           context: pickBy({
             requestId: 'test-id',
+            propagatedHeaders: {},
             context: 'foo'
           })
         })
@@ -78,6 +79,7 @@ describe('json-appender', function () {
             message: 'test - this was a test error',
             stack_trace: 'Error: test\n    at /logError ',
             context: pickBy({
+              propagatedHeaders: {},
               requestId: 'test-id',
               context: 'foo'
             })
@@ -98,6 +100,7 @@ describe('json-appender', function () {
                 component: 'koa',
                 action: '/logError',
                 params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
+                propagatedHeaders: {},
                 state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
                 requestId: 'test-id'
               },

@@ -26,7 +26,8 @@ describe('Test rabbitmq connection', function () {
         maxRetries: 0,
         retryDelay: 1000,
         connectDelay: 5000
-      }
+      },
+      requestContext: { enabled: true, propagatedHeaders: { enabled: true } }
     };
     onStub = sandbox.stub();
     stub = sandbox.stub().returns({
