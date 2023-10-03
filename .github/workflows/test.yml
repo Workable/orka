@@ -21,10 +21,10 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
-        mongodb-version: [4.0, 5.0]
-        rabbit-version: [3.8.4]
-        redis-version: [6.0]
+        node-version: [18.x,  20.x]
+        mongodb-version: [5.0, 6.0]
+        rabbit-version: [3.12.5]
+        redis-version: [7.0]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
