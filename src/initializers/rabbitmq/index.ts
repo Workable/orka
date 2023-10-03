@@ -112,12 +112,12 @@ export const close = async () => {
   }
 };
 
-function methodCreator(originalSendToQueue, paramNum, config) {
+function methodCreator(originalSendToQueue, propertiesArgIndex, config) {
   return function method(...args: any) {
-    let properties = args[paramNum - 1];
+    let properties = args[propertiesArgIndex - 1];
     if (!properties) {
       properties = {};
-      args[paramNum - 1] = properties;
+      args[propertiesArgIndex - 1] = properties;
     }
 
     const traceHeaderName = config.traceHeaderName.toLowerCase();
