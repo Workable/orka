@@ -67,3 +67,9 @@ ObjectId using new mongoose.
   new mongoose.Types.ObjectId()
   ```
 - Additional advice for breaking changes when migrating to Mongoose 6 can be found at https://mongoosejs.com/docs/migrating_to_6.html 
+
+### Migrating from orka  3.x to 4.x
+
+- Support for older node version pre v18 is dropped. Only v18 and v20+ will be unit tested and guaranteed to work
+- Usage of randomUUID that is not supported in many older versions
+- Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
