@@ -27,7 +27,6 @@ import bull from './initializers/bull';
 import postgres from './initializers/postgres';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
-import { alsSupported } from './utils';
 import type WorkerType from './initializers/worker';
 
 export default class OrkaBuilder {
@@ -72,10 +71,6 @@ export default class OrkaBuilder {
     this.use(() => addRequestId(this.config));
     if (this.config.requestContext.enabled) {
       this.use(() => addRequestContext(this.als, this.config));
-    } else if (!alsSupported()) {
-      getLogger('orka').warn(
-        'RequestContext is disabled!! You need to have version v12.17.0+, v13.14.0+ or v14.0.0+ if you want to enable it.'
-      );
     }
     this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => parseQuerystring);

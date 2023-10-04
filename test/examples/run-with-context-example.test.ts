@@ -1,6 +1,5 @@
 import * as sinon from 'sinon';
 import { runWithContext } from '../../build';
-import { alsSupported } from '../../src/utils';
 
 const sandbox = sinon.createSandbox();
 
@@ -8,7 +7,6 @@ describe('request-context', function () {
   let server;
   let testFunction;
   let clock;
-  const hasALS = alsSupported();
 
   before(function () {
     process.env.LOG_LEVEL = 'info';
@@ -48,17 +46,13 @@ describe('request-context', function () {
       severity: 'INFO',
       categoryName: 'initializing.log',
       message,
-      context: hasALS ? context : {}
+      context
     })
   ];
 
   it('it appends requestId to logs if runWithContext', async function () {
     const logSpy = sandbox.stub(console, 'log');
-    await server
-      .initTasks()
-      .then(testFunction);
-    logSpy.args.should.eql([
-      logEntry('A log in a service argument', { requestId: 'trace-id' }),
-    ]);
+    await server.initTasks().then(testFunction);
+    logSpy.args.should.eql([logEntry('A log in a service argument', { requestId: 'trace-id' })]);
   });
 });

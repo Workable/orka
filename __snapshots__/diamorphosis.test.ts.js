@@ -64,7 +64,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
   },
   "printLogo": true,
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
     "json": false
@@ -192,24 +192,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -217,7 +217,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
 
 exports['Diamorphosis Test should set json/console loggingvariables when console:not set, json:true, styles:[] shoud be console:false, json:true, styles:["json"] 1'] = {
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
     "json": true
@@ -411,24 +411,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -436,7 +436,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
 
 exports['Diamorphosis Test should set json/console loggingvariables when console:true, json:true, styles:[] shoud be console:true, json:true, styles:["json"] 1'] = {
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
     "json": true
@@ -630,24 +630,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -655,7 +655,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
 
 exports['Diamorphosis Test should set json/console loggingvariables when console:false, json:true, styles:[] shoud be console:false, json:true, styles:["json"] 1'] = {
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
     "json": true
@@ -849,24 +849,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -874,7 +874,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
 
 exports['Diamorphosis Test should set json/console loggingvariables when console:not set, json:true, styles:["simple"] shoud be console:false, json:true, styles:["simple"] 1'] = {
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
     "json": true
@@ -1068,24 +1068,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -1213,7 +1213,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "printLogo": false,
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "fatal",
     "console": true,
     "json": false
@@ -1292,24 +1292,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }
@@ -1437,7 +1437,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "printLogo": false,
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "fatal",
     "console": true,
     "json": true
@@ -1518,24 +1518,24 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "logKeys": [
       "requestId",
       "visitor",
-      "correlationId"
+      "correlationId",
+      "propagatedHeaders"
     ],
-    "istioTraceContextHeaders": {
+    "propagatedHeaders": {
       "enabled": true,
       "headers": [
+        "cf-ray",
         "x-request-id",
         "x-b3-traceid",
         "x-b3-spanid",
         "x-b3-parentspanid",
         "x-b3-sampled",
         "x-b3-flags",
-        "x-ot-span-context"
-      ]
-    },
-    "headerPropagation": {
-      "enabled": true,
-      "headers": [
-        "cf-ray"
+        "x-ot-span-context",
+        "x-depth",
+        "x-parent-id",
+        "x-initiator-id",
+        "x-orka-request-id"
       ]
     }
   }

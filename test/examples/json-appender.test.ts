@@ -1,28 +1,26 @@
 import { pickBy } from 'lodash';
 import * as sinon from 'sinon';
 import * as supertest from 'supertest';
-import { alsSupported } from '../../src/utils';
 
 const sandbox = sinon.createSandbox();
 
-describe('json-appender', function() {
+describe('json-appender', function () {
   let server;
   let clock;
-  const hasALS = alsSupported();
-  before(function() {
+  before(function () {
     process.env.LOG_LEVEL = 'info';
     process.env.LOG_JSON = 'true';
     delete process.env.NEW_RELIC_LICENSE_KEY;
   });
 
-  after(function() {
+  after(function () {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
     if (server) server.stop();
     clock.restore();
   });
 
-  before(function() {
+  before(function () {
     const serverPath = '../../examples/simple-example/app';
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
@@ -30,11 +28,11 @@ describe('json-appender', function() {
     return server.start();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('/log returns 200 and logs info', async function() {
+  it('/log returns 200 and logs info', async function () {
     const logSpy = sandbox.stub(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/log?')
@@ -49,7 +47,8 @@ describe('json-appender', function() {
           categoryName: 'log',
           message: 'hello world',
           context: pickBy({
-            requestId: hasALS ? 'test-id' : undefined,
+            requestId: 'test-id',
+            propagatedHeaders: { 'x-orka-request-id': 'test-id' },
             context: 'foo'
           })
         })
@@ -57,7 +56,7 @@ describe('json-appender', function() {
     ]);
   });
 
-  it('/logError returns 505 and logs error', async function() {
+  it('/logError returns 505 and logs error', async function () {
     const logSpy = sandbox.stub(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/logError')
@@ -80,7 +79,8 @@ describe('json-appender', function() {
             message: 'test - this was a test error',
             stack_trace: 'Error: test\n    at /logError ',
             context: pickBy({
-              requestId: hasALS ? 'test-id' : undefined,
+              propagatedHeaders: { 'x-orka-request-id': 'test-id' },
+              requestId: 'test-id',
               context: 'foo'
             })
           }
@@ -100,8 +100,9 @@ describe('json-appender', function() {
                 component: 'koa',
                 action: '/logError',
                 params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
+                propagatedHeaders: { 'x-orka-request-id': 'test-id' },
                 state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
-                requestId: hasALS ? 'test-id' : undefined
+                requestId: 'test-id'
               },
               _ => _ !== undefined
             )

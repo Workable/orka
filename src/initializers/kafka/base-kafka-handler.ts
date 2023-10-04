@@ -3,7 +3,6 @@ import { getLogger, Logger } from 'log4js';
 import { flatten } from 'lodash';
 import type * as KafkajsType from 'kafkajs';
 import { runWithContext } from '../../builder';
-import { alsSupported } from '../../utils';
 import { logMetrics } from '../../helpers';
 
 export type BaseKafkaHandlerOptions = {
@@ -123,13 +122,9 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
         topic: string;
       }) => {
         const start = logMetrics.start();
-        if (alsSupported()) {
-          await runWithContext(new Map([['correlationId', message.key?.toString()]]), () =>
-            this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
-          );
-        } else {
-          await this.handle(this.transformToKafkaHandlerMessage(message, topic, partition));
-        }
+        await runWithContext(new Map([['correlationId', message.key?.toString()]]), () =>
+          this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
+        );
         logMetrics.end(start, 'topic-' + topic, 'kafka', message.key?.toString());
       }) as any
     });

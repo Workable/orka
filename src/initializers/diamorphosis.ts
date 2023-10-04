@@ -1,7 +1,6 @@
 import * as diamorphosis from 'diamorphosis';
 import { OrkaOptions } from '../typings/orka';
 import { defaultTo, isBoolean } from 'lodash';
-import { alsSupported } from '../utils';
 import { Context } from 'koa';
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
@@ -55,7 +54,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   };
   config.printLogo = defaultTo(config.printLogo, true);
   config.log = {
-    pattern: '%[[%d] [%p] %c%] %x{logTracer} %m',
+    pattern: '%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}',
     level: 'debug',
     console: '',
     json: false,
@@ -110,29 +109,30 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addGrowthbookConfig(config);
 
   config.requestContext = {
-    enabled: alsSupported(),
-    logKeys: ['requestId', 'visitor', 'correlationId'],
-    istioTraceContextHeaders: {
+    enabled: true,
+    logKeys: ['requestId', 'visitor', 'correlationId', 'propagatedHeaders'],
+    propagatedHeaders: {
       enabled: true,
       headers: [
+        'cf-ray',
         'x-request-id',
         'x-b3-traceid',
         'x-b3-spanid',
         'x-b3-parentspanid',
         'x-b3-sampled',
         'x-b3-flags',
-        'x-ot-span-context'
+        'x-ot-span-context',
+        'x-depth',
+        'x-parent-id',
+        'x-initiator-id'
       ],
-      ...config.requestContext?.istioTraceContextHeaders
-    },
-    headerPropagation: {
-      enabled: true,
-      headers: ['cf-ray'],
-      ...config.requestContext?.headerPropagation
+      ...config.requestContext?.propagatedHeaders
     },
     ...config.requestContext
   };
   diamorphosis(orkaOptions.diamorphosis);
+
+  config.requestContext.propagatedHeaders.headers.push(config.traceHeaderName.toLowerCase());
   config.app.env = config.app.env || config.nodeEnv;
 
   // Override kafka producer config with defaults if brokers is not set

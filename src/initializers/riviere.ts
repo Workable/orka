@@ -1,9 +1,9 @@
 import { riviere } from '@workablehr/riviere';
 import { OrkaOptions } from 'orka/typings/orka';
-import { alsSupported } from '../utils';
 import * as Koa from 'koa';
 import { getRequestContext } from '../builder';
 import { getLogger } from './log4js';
+import { appendHeadersFromStore } from '../utils';
 const http = require('http');
 
 let middleware;
@@ -54,35 +54,24 @@ const init = (config, orkaOptions) => {
       };
     }
   });
-  if (alsSupported()) {
-    const handler = {
-      apply: (target, thisArg, argumentsList) => {
+  const handler = {
+    apply: (target, thisArg, argumentsList) => {
+      try {
+        const [requestArgs = {}] = argumentsList || [];
+        requestArgs.headers = requestArgs.headers || {};
         const traceHeaderName = config.traceHeaderName && config.traceHeaderName.toLowerCase();
-        try {
-          const [requestArgs = {}] = argumentsList || [];
-          requestArgs.headers = requestArgs.headers || {};
-          const traceId = getRequestContext()?.get('requestId') || getRequestContext()?.get('correlationId');
-          if (!requestArgs.headers[traceHeaderName] && traceId) {
-            requestArgs.headers[traceHeaderName] = traceId;
-          }
-
-          if (config.requestContext.istioTraceContextHeaders.enabled) {
-            const istioTraceContextHeaders = getRequestContext()?.get('istio-headers');
-            Object.assign(requestArgs.headers, istioTraceContextHeaders);
-          }
-
-          if (config.requestContext.headerPropagation.enabled) {
-            Object.assign(requestArgs.headers, getRequestContext()?.get('propagated-headers'));
-          }
-
-        } catch (e) {
-          getLogger('orka.riviere').error(e);
+        const traceId = getRequestContext()?.get('requestId') || getRequestContext()?.get('correlationId');
+        appendHeadersFromStore(requestArgs, getRequestContext(), config);
+        if (!requestArgs.headers[traceHeaderName] && traceId) {
+          requestArgs.headers[traceHeaderName] = traceId;
         }
-        return target.apply(thisArg, argumentsList);
+      } catch (e) {
+        getLogger('orka.riviere').error(e);
       }
-    };
-    http.request = new Proxy(http.request, handler);
-  }
+      return target.apply(thisArg, argumentsList);
+    }
+  };
+  http.request = new Proxy(http.request, handler);
 };
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {

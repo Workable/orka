@@ -15,7 +15,7 @@ By default the below config is used:
 ```json
 {
   "log": {
-    "pattern": "%[[%d] [%p] %c%] %x{logTracer} %m",
+    "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
     "json": false

@@ -2,11 +2,13 @@ import * as Url from 'url';
 import { getLogger } from '../log4js';
 import { OrkaOptions } from '../../typings/orka';
 import * as RabbitType from 'rabbit-queue';
-import type * as amqp from 'amqplib';
+import Queue from 'rabbit-queue/js/queue';
+import Exchange from 'rabbit-queue/js/exchange';
+import * as amqp from 'amqplib';
 import * as lodash from 'lodash';
-import { runWithContext } from '../../builder';
-import { alsSupported } from '../../utils';
+import { runWithContext, getRequestContext } from '../../builder';
 import logMetrics from '../../helpers/log-metrics';
+import { appendHeadersFromStore, appendToStore } from '../../utils';
 
 const logger = getLogger('orka.rabbit');
 
@@ -39,6 +41,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     })
   );
 
+  Queue.publish = methodCreator(Queue.publish, 2, config);
+  Queue.getReply = methodCreator(Queue.getReply, 2, config);
+  Exchange.publish = methodCreator(Exchange.publish, 5, config);
+  Exchange.getReply = methodCreator(Exchange.getReply, 5, config);
+
   connection.on('connected', () => {
     healthy = true;
     orkaOptions.rabbitOnConnected();
@@ -60,13 +67,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     msg: amqp.Message,
     ack: (error, reply) => any
   ) {
-    if (alsSupported()) {
-      return runWithContext(new Map([['correlationId', this.getCorrelationId(msg)]]), () =>
-        originalTryHandle.call(this, retries, msg, ack)
-      );
-    } else {
-      return originalTryHandle.call(this, retries, msg, ack);
-    }
+    const store = new Map([['correlationId', this.getCorrelationId(msg)]]);
+    return runWithContext(store, () => {
+      appendToStore(store, msg?.properties, config);
+      originalTryHandle.call(this, retries, msg, ack);
+    });
   };
 
   BaseQueueHandler.prototype.getTime = function getTime() {
@@ -106,3 +111,22 @@ export const close = async () => {
     healthy = false;
   }
 };
+
+function methodCreator(originalSendToQueue, propertiesArgIndex, config) {
+  return function method(...args: any) {
+    let properties = args[propertiesArgIndex - 1];
+    if (!properties) {
+      properties = {};
+      args[propertiesArgIndex - 1] = properties;
+    }
+
+    const traceHeaderName = config.traceHeaderName.toLowerCase();
+    appendHeadersFromStore(properties, getRequestContext(), config);
+
+    if (!properties.correlationId && properties.headers && properties.headers[traceHeaderName]) {
+      properties.correlationId = properties.headers[traceHeaderName];
+    }
+
+    return originalSendToQueue.call(this, ...args);
+  };
+}
