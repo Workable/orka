@@ -39,8 +39,8 @@ export function appendHeadersFromStore(properties: any, store: Map<string, any>,
     if (!headers['x-initiator-id'] && headers['x-parent-id']) {
       properties.headers['x-initiator-id'] = properties.headers['x-initiator-id'] ?? headers['x-parent-id'];
     }
-    properties.headers['x-parent-id'] = properties.headers['x-parent-id'] ?? headers[traceHeaderName];
-    properties.headers[traceHeaderName] = properties.headers[traceHeaderName] ?? `orka:${randomUUID()}`;
+    properties.headers['x-parent-id'] = headers[traceHeaderName];
+    properties.headers[traceHeaderName] = `orka:${randomUUID()}`;
   }
 
   Object.keys(headers).forEach(key => {
