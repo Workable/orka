@@ -32,18 +32,21 @@ export function appendHeadersFromStore(properties: any, store: Map<string, any>,
   const headers = store?.get('propagatedHeaders');
   if (!headers) return;
 
-  headers['x-depth'] = parseInt(headers['x-depth'] || 0, 10) + 1;
+  const depth = parseInt(headers['x-depth'] || 0, 10) + 1;
   const traceHeaderName = config.traceHeaderName.toLowerCase();
 
-  if (headers['x-depth'] % 2 === 0 && headers[traceHeaderName]) {
-    if (!headers['x-initiator-id'] && headers['x-parent-id']) headers['x-initiator-id'] = headers['x-parent-id'];
-    headers['x-parent-id'] = headers[traceHeaderName];
-    headers[traceHeaderName] = `orka:${randomUUID()}`;
+  if (depth % 2 === 0 && headers[traceHeaderName]) {
+    if (!headers['x-initiator-id'] && headers['x-parent-id']) {
+      properties.headers['x-initiator-id'] = properties.headers['x-initiator-id'] ?? headers['x-parent-id'];
+    }
+    properties.headers['x-parent-id'] = properties.headers['x-parent-id'] ?? headers[traceHeaderName];
+    properties.headers[traceHeaderName] = properties.headers[traceHeaderName] ?? `orka:${randomUUID()}`;
   }
 
   Object.keys(headers).forEach(key => {
     properties.headers[key] = properties.headers[key] ?? headers[key];
   });
+  properties.headers['x-depth'] = depth;
 }
 
 export function appendToStore(store, properties, config) {

@@ -31,13 +31,7 @@ export default async config => {
         tokens: {
           requestId: data => {
             const msg = data.data[0];
-            let traceId;
-            if (config.requestContext.logKeys.includes('requestId')) {
-              traceId = traceId ?? getRequestContext()?.get('requestId');
-            }
-            if (config.requestContext.logKeys.includes('correlationId')) {
-              traceId = traceId ?? getRequestContext()?.get('correlationId');
-            }
+            const traceId = getTraceId(config);
             if (!traceId) return '';
             return msg?.startsWith && !msg?.startsWith(`[${traceId}`) ? chalk.gray(`[${traceId}] `) : '';
           },
@@ -56,7 +50,7 @@ export default async config => {
                   return toLog(
                     v,
                     `${k === 'propagatedHeaders' ? 'headers' : k}.`,
-                    k === 'propagatedHeaders' && config.traceHeaderName.toLowerCase()
+                    k === 'propagatedHeaders' && getTraceId(config)
                   );
                 } else {
                   return `${k}="${v}"`;
@@ -107,9 +101,20 @@ export default async config => {
   tmp = Log4js.getLogger.bind(Log4js);
 };
 
-function toLog(obj, prefix = '', skipKey) {
+function toLog(obj, prefix = '', traceId) {
   return Object.entries(obj)
-    .filter(([k, v]) => k !== skipKey)
+    .filter(([k, v]) => v !== traceId)
     .map(([k, v]) => `${prefix}${k}="${v}"`)
     .join(', ');
+}
+
+function getTraceId(config) {
+  let traceId;
+  if (config.requestContext.logKeys.includes('requestId')) {
+    traceId = traceId ?? getRequestContext()?.get('requestId');
+  }
+  if (config.requestContext.logKeys.includes('correlationId')) {
+    traceId = traceId ?? getRequestContext()?.get('correlationId');
+  }
+  return traceId;
 }

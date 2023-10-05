@@ -72,9 +72,10 @@ describe('utils', function () {
       it('propagates headers from store to properties chaning trace id', function () {
         sandbox.stub(crypto, 'randomUUID').returns('new-uuid' as any);
         const properties = {};
-
-        appendHeadersFromStore(properties, new Map([['propagatedHeaders', { foo: 'bar', 'x-depth': 1 }]]), Config);
+        const store = new Map([['propagatedHeaders', { foo: 'bar', 'x-depth': 1 }]]);
+        appendHeadersFromStore(properties, store, Config);
         properties.should.eql({ headers: { foo: 'orka:new-uuid', 'x-parent-id': 'bar', 'x-depth': 2 } });
+        Object.fromEntries(store).should.eql({ propagatedHeaders: { foo: 'bar', 'x-depth': 1 } });
       });
 
       it('propagates headers from store to properties adding initiator id too', function () {

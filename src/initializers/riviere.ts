@@ -5,6 +5,7 @@ import { getRequestContext } from '../builder';
 import { getLogger } from './log4js';
 import { appendHeadersFromStore } from '../utils';
 const http = require('http');
+const https = require('https');
 
 let middleware;
 
@@ -72,6 +73,7 @@ const init = (config, orkaOptions) => {
     }
   };
   http.request = new Proxy(http.request, handler);
+  https.request = new Proxy(https.request, handler);
 };
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
