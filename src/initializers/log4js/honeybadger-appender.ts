@@ -34,7 +34,8 @@ function notifyHoneybadger(categoryName, error, ...rest) {
 
   const computedComponent = component || categoryName;
 
-  const fingerprint = generateFingerprint(name, computedComponent, action) || categoryName;
+  const fingerprint = context.fingerprint || generateFingerprint(name, computedComponent, action) || categoryName;
+  delete context.fingerprint;
 
   Honeybadger.notify(
     { stack: error.stack, message, name },
