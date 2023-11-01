@@ -99,6 +99,46 @@ describe('log4js_honeybadger_appender', () => {
       data: err
     });
     notifySpy.callCount.should.equal(1);
+    notifySpy.args[0][1].fingerprint.should.equal('testController_/test/endpoint');
+  });
+
+  it('should compute the fingerprint using the error name', () => {
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'CustomError';
+      }
+    }
+
+    const err = new CustomError('omg') as any;
+    err.status = 200;
+    err.component = 'testController';
+    err.action = '/test/endpoint';
+    appender.configure()({
+      level: {
+        level: 40000
+      },
+      categoryName: 'testCategoryName',
+      data: err
+    });
+    notifySpy.callCount.should.equal(1);
+    notifySpy.args[0][1].fingerprint.should.equal('CustomError_testController_/test/endpoint');
+  });
+
+  it('should use fingerprint from context if it exists', () => {
+    const err = new Error('omg') as any;
+    err.status = 200;
+    err.component = 'testController';
+    err.action = '/test/endpoint';
+    appender.configure()({
+      level: {
+        level: 40000
+      },
+      categoryName: 'testCategoryName',
+      data: [err, {fingerprint: 'CustomError'}]
+    });
+    notifySpy.callCount.should.equal(1);
+    notifySpy.args[0][1].fingerprint.should.equal('CustomError');
   });
 
   it('should append to the error message any additional string parameters', () => {

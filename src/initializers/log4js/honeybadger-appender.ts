@@ -34,6 +34,9 @@ function notifyHoneybadger(categoryName, error, ...rest) {
 
   const computedComponent = component || categoryName;
 
+  const fingerprint = context.fingerprint || generateFingerprint(name, computedComponent, action) || categoryName;
+  delete context.fingerprint;
+
   Honeybadger.notify(
     { stack: error.stack, message, name },
     {
@@ -45,10 +48,22 @@ function notifyHoneybadger(categoryName, error, ...rest) {
       action,
       component: computedComponent,
       params,
-      fingerprint: action && computedComponent ? `${computedComponent}_${action}` : categoryName
+      fingerprint
     }
   );
 }
+
+const generateFingerprint = (name, component, action) => {
+  if (!action || !component) {
+    return;
+  }
+
+  if (name && name !== 'Error') {
+    return `${name}_${component}_${action}`;
+  } else {
+    return `${component}_${action}`;
+  }
+};
 
 const honeyBadgerAppender = () => {
   return logEvent => {
