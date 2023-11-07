@@ -2,6 +2,9 @@ import * as _Joi from 'joi';
 import {isString} from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
 import {URL} from 'url';
+import { getLogger } from './log4js';
+
+const logger = getLogger('orka.initializers.joi');
 
 export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.test(val);
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
@@ -17,19 +20,25 @@ export const isOwnS3Path = (bucket: string, val: string): boolean => {
       pathname.startsWith(`/${bucket}/`);
     return matchingProtocol && (s3Host || s3HostBucketInPath);
   } catch (e) {
+    logger.error(`Failed to parse url: ${val}`, e);
     return false;
   }
 };
 
 export const isExpiredUrl = (val: string): boolean => {
-  const parsed = new URL(val);
-  if (parsed?.searchParams?.has('Expires')) {
-    const expiresAt = Number(parsed.searchParams.get('Expires'));
-    // If expiresAt is not a number do not validate
-    if (isNaN(expiresAt)) return false;
-    return Math.round(Date.now() / 1000) > expiresAt;
+  try {
+    const parsed = new URL(val);
+    if (parsed.searchParams.has('Expires')) {
+      const expiresAt = Number(parsed.searchParams.get('Expires'));
+      // If expiresAt is not a number do not validate
+      if (isNaN(expiresAt)) return false;
+      return Math.round(Date.now() / 1000) > expiresAt;
+    }
+    return false;
+  } catch (e) {
+    logger.error(`Failed to parse url: ${val}`, e);
+    return false;
   }
-  return false;
 };
 
 type SafeHtml = _Joi.StringSchema & {
