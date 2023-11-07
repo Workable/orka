@@ -14,11 +14,11 @@ export const isOwnS3Path = (bucket: string, val: string): boolean => {
     const { host, protocol, pathname } = new URL(val);
     const matchingProtocol = protocol === 'https:';
     const s3Host = host === `${bucket}.s3.amazonaws.com`;
-    const s3HostBucketInPath =
+    const s3HostBucketInPath = () =>
       host.startsWith('s3.') &&
       host.endsWith('.amazonaws.com') &&
       pathname.startsWith(`/${bucket}/`);
-    return matchingProtocol && (s3Host || s3HostBucketInPath);
+    return matchingProtocol && (s3Host || s3HostBucketInPath());
   } catch (e) {
     logger.error(`Failed to parse url: ${val}`, e);
     return false;
