@@ -7,10 +7,18 @@ export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.t
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
 export const isValidHexColor = (val: string): boolean => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val);
 export const isOwnS3Path = (bucket: string, val: string): boolean => {
-  const { origin, pathname } = new URL(val);
-  val = `${origin}${pathname}`;
-  return val?.startsWith(`https://${bucket}.s3.amazonaws.com`) ||
-  new RegExp(`^https:\\/\\/s3\\..+\\.amazonaws\\.com\\/${bucket}\\/.*`, 'g').test(val);
+  try {
+    const { host, protocol, pathname } = new URL(val);
+    const matchingProtocol = protocol === 'https:';
+    const s3Host = host === `${bucket}.s3.amazonaws.com`;
+    const s3HostBucketInPath =
+      host.startsWith('s3.') &&
+      host.endsWith('.amazonaws.com') &&
+      pathname.startsWith(`/${bucket}/`);
+    return matchingProtocol && (s3Host || s3HostBucketInPath);
+  } catch (e) {
+    return false;
+  }
 };
 
 export const isExpiredUrl = (val: string): boolean => {
