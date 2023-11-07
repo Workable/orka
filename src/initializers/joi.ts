@@ -2,26 +2,43 @@ import * as _Joi from 'joi';
 import {isString} from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
 import {URL} from 'url';
+import { getLogger } from './log4js';
+
+const logger = getLogger('orka.initializers.joi');
 
 export const isValidPhone = (val: string): boolean => /^[\d\s\(\)\-\+–\.]+$/.test(val);
 export const clearNullByte = (val: string): string => (val && isString(val) ? val.replace(/\u0000/g, '') : val);
 export const isValidHexColor = (val: string): boolean => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val);
 export const isOwnS3Path = (bucket: string, val: string): boolean => {
-  const { origin, pathname } = new URL(val);
-  val = `${origin}${pathname}`;
-  return val?.startsWith(`https://${bucket}.s3.amazonaws.com`) ||
-  new RegExp(`^https:\\/\\/s3\\..+\\.amazonaws\\.com\\/${bucket}\\/.*`, 'g').test(val);
+  try {
+    const { host, protocol, pathname } = new URL(val);
+    const matchingProtocol = protocol === 'https:';
+    const s3Host = host === `${bucket}.s3.amazonaws.com`;
+    const s3HostBucketInPath =
+      host.startsWith('s3.') &&
+      host.endsWith('.amazonaws.com') &&
+      pathname.startsWith(`/${bucket}/`);
+    return matchingProtocol && (s3Host || s3HostBucketInPath);
+  } catch (e) {
+    logger.error(`Failed to parse url: ${val}`, e);
+    return false;
+  }
 };
 
 export const isExpiredUrl = (val: string): boolean => {
-  const parsed = new URL(val);
-  if (parsed?.searchParams?.has('Expires')) {
-    const expiresAt = Number(parsed.searchParams.get('Expires'));
-    // If expiresAt is not a number do not validate
-    if (isNaN(expiresAt)) return false;
-    return Math.round(Date.now() / 1000) > expiresAt;
+  try {
+    const parsed = new URL(val);
+    if (parsed.searchParams.has('Expires')) {
+      const expiresAt = Number(parsed.searchParams.get('Expires'));
+      // If expiresAt is not a number do not validate
+      if (isNaN(expiresAt)) return false;
+      return Math.round(Date.now() / 1000) > expiresAt;
+    }
+    return false;
+  } catch (e) {
+    logger.error(`Failed to parse url: ${val}`, e);
+    return false;
   }
-  return false;
 };
 
 type SafeHtml = _Joi.StringSchema & {
@@ -34,7 +51,7 @@ type UrlInOwnS3 = _Joi.StringSchema & {
   errorOnExpiredUrl: () => UrlInOwnS3;
 };
 
-interface JoiWithExtensions extends _Joi.Root {
+export interface JoiWithExtensions extends _Joi.Root {
   booleanWithEmpty(): _Joi.BooleanSchema;
 
   dateInThePast(): _Joi.DateSchema;

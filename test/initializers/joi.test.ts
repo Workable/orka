@@ -134,6 +134,19 @@ describe('joi extensions', function () {
         underTest.error.message.should.equal('Invalid path provided');
       });
     });
+    it('s3 url with malicious domain should throw error', function () {
+      const urls = [
+        'https://workable-application-form.s3.amazonaws.com.ngrok.app/tmp/123-456-789',
+        'https://workable-application-form.s3.amazonaws.com.malicious.io/tmp/123-456-789',
+        'https://workable-application-form.s3.amazonaws.comattackerdomain.ly/tmp/123-456-789',
+        'https://s3.maliciousurl.maliciousamazonaws.com./workable-application-form/tmp/123-456-789',
+      ];
+
+      urls.forEach(url => {
+        const underTest = Joi.urlInOwnS3().bucket('workable-application-form').validate(url);
+        underTest.error.message.should.equal('Invalid path provided');
+      });
+    });
   });
   describe('url', function () {
     it('rejects URLs with less than two domain fragments', function () {
