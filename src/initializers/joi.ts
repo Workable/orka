@@ -51,7 +51,7 @@ type UrlInOwnS3 = _Joi.StringSchema & {
   errorOnExpiredUrl: () => UrlInOwnS3;
 };
 
-interface JoiWithExtensions extends _Joi.Root {
+export interface JoiWithExtensions extends _Joi.Root {
   booleanWithEmpty(): _Joi.BooleanSchema;
 
   dateInThePast(): _Joi.DateSchema;
