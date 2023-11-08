@@ -1,4 +1,4 @@
-import * as Honeybadger from 'honeybadger';
+import * as Honeybadger from '@honeybadger-io/js';
 
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
