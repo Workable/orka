@@ -70,7 +70,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     const store = new Map([['correlationId', this.getCorrelationId(msg)]]);
     return runWithContext(store, () => {
       appendToStore(store, msg?.properties, config);
-      originalTryHandle.call(this, retries, msg, ack);
+      return originalTryHandle.call(this, retries, msg, ack);
     });
   };
 
