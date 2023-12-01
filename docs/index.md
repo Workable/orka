@@ -73,3 +73,4 @@ ObjectId using new mongoose.
 - Support for older node version pre v18 is dropped. Only v18 and v20+ will be unit tested and guaranteed to work
 - Usage of randomUUID that is not supported in many older versions
 - Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
+- Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
