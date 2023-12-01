@@ -104,6 +104,7 @@ export const isHealthy = () => {
 
 export const close = async () => {
   if (connection) {
+    const logger = getLogger('orka.rabbit');
     logger.info('Closing rabbit connection');
     shouldReconnect = false;
     await connection.close();
