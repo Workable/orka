@@ -24,7 +24,11 @@ export const nodeVersionGreaterThanEqual = (requestedVersion: string, version = 
   return true;
 };
 
-export function appendHeadersFromStore(properties: any, store: Map<string, any>, config: any) {
+export function appendHeadersFromStore(
+  properties: { headers?: Record<string, string | Buffer | undefined> },
+  store: Map<string, string | Record<string, string>>,
+  config: Record<string, any>
+) {
   if (!config.requestContext.enabled) return;
   if (!config.requestContext.propagatedHeaders.enabled) return;
   properties.headers = properties.headers || {};
@@ -46,10 +50,14 @@ export function appendHeadersFromStore(properties: any, store: Map<string, any>,
   Object.keys(headers).forEach(key => {
     properties.headers[key] = properties.headers[key] ?? headers[key];
   });
-  properties.headers['x-depth'] = depth;
+  properties.headers['x-depth'] = depth.toString();
 }
 
-export function appendToStore(store, properties, config) {
+export function appendToStore(
+  store: Map<string, string | Record<string, string | string[]>>,
+  properties: { headers?: Record<string, string | string[]> },
+  config: Record<string, any>
+) {
   if (!config.requestContext.enabled) return;
   if (!config.requestContext.propagatedHeaders.enabled) return;
   if (!properties?.headers) return;

@@ -26,7 +26,7 @@ describe('kafka class', () => {
       on: sandbox.stub(),
       events: {
         CONNECT: 'producer.connect',
-        DISCONNECT: 'producer.disconnect',
+        DISCONNECT: 'producer.disconnect'
       }
     };
     consumerStub = sandbox.stub().returns({
@@ -45,7 +45,7 @@ describe('kafka class', () => {
       createTopics: createTopicsStub,
       fetchOffsets: fetchOffsetsStub,
       setOffsets: setOffsetsStub,
-      listTopics: listTopicsStub,
+      listTopics: listTopicsStub
     });
     kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
     kafkaStub = sinon.stub().returns(kafkaStubReturn);
@@ -59,7 +59,7 @@ describe('kafka class', () => {
     mock.stopAll();
   });
 
-  describe('connect, send', function () {
+  describe('connect', function () {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
@@ -77,7 +77,6 @@ describe('kafka class', () => {
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
 
-        await kafka.send('topic', 'msg', null, null, [{ header1: 'header' }, { header2: 'header' }]);
         kafkaStub.args.should.containDeep([
           [
             {
@@ -86,9 +85,6 @@ describe('kafka class', () => {
               ssl: { ca: ['ca'], cert: 'cert', key: 'key', rejectUnauthorized: false }
             }
           ]
-        ]);
-        producerStub.send.args.should.containDeep([
-          [{ messages: [{ headers: { header1: 'header', header2: 'header' }, value: 'msg' }], topic: 'topic' }]
         ]);
       });
     });
@@ -110,7 +106,6 @@ describe('kafka class', () => {
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
 
-        await kafka.send('topic', 'msg', null, null);
         kafkaStub.args.should.containDeep([
           [
             {
@@ -120,7 +115,6 @@ describe('kafka class', () => {
             }
           ]
         ]);
-        producerStub.send.args.should.containDeep([[{ messages: [{ value: 'msg' }], topic: 'topic' }]]);
       });
     });
 
@@ -144,7 +138,6 @@ describe('kafka class', () => {
         await kafka.connect(producerConfig);
         producerStub.connect.calledOnce.should.eql(true);
 
-        await kafka.send('topic', 'msg', null, null, [{ header1: 'header' }, { header2: 'header' }]);
         producerSpy.args.should.eql([[producerConfig]]);
         kafkaStub.args.should.containDeep([
           [
@@ -155,9 +148,6 @@ describe('kafka class', () => {
               sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
             }
           ]
-        ]);
-        producerStub.send.args.should.containDeep([
-          [{ messages: [{ headers: { header1: 'header', header2: 'header' }, value: 'msg' }], topic: 'topic' }]
         ]);
       });
     });
@@ -350,9 +340,7 @@ describe('kafka class', () => {
         { topic: 'test', numPartitions: 10, replicationFactor: 1 }
       ]);
       adminStub.args.should.eql([[]]);
-      createTopicsStub.args.should.eql([
-        [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }],
-      ]);
+      createTopicsStub.args.should.eql([[{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }]]);
       response.should.eql([{ bar: true }]);
     });
   });

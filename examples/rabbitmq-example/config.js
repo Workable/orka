@@ -7,7 +7,7 @@ module.exports = {
   traceHeaderName: 'x-request-id',
   queue: {
     prefetch: 100,
-    url: 'amqp://localhost',
+    url: 'amqp://127.0.0.1',
     frameMax: 0x1000,
     maxRetries: 0,
     retryDelay: 1000,

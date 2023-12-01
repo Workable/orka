@@ -58,6 +58,7 @@ export default async config => {
               })
               .join(', ');
             if (log) return chalk.gray(`| ${log}`);
+            return '';
           }
         }
       }

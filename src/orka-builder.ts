@@ -132,7 +132,7 @@ export default class OrkaBuilder {
   }
 
   withKafka(options = this.options.kafkaProducer) {
-    this.queue.push(() => kafka(this.config.kafka, this.options.kafkaProducer));
+    this.queue.push(() => kafka(this.config, options));
     return this;
   }
 

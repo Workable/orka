@@ -3,7 +3,6 @@ import requireInjected from '../../require-injected';
 import { KafkaConfig } from '../../typings/kafka';
 import type * as KafkajsType from 'kafkajs';
 import { flatten, isEmpty } from 'lodash';
-import * as uuid from 'uuid';
 
 const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
@@ -163,30 +162,7 @@ export default class OrkaKafka {
     return responses;
   }
 
-  /**
-   * @deprecated  use producer.send instead which is native kafkajs send
-   */
-  public async send(
-    topic: string,
-    message: string | Buffer,
-    key: string = uuid.v4(),
-    partition?: number,
-    inputHeaders?: { [key: string]: string }[]
-  ) {
-    if (!key) key = uuid.v4();
-    const headers = inputHeaders?.reduce((m, h) => ({ ...m, ...h }), {});
-    const [recordMetadata] = await this.producer.send({
-      topic,
-      messages: [{ key, value: message, headers, partition }]
-    });
-    logger.debug('Deprecated method. Use getKafka().producer.send instead');
-    logger.info(
-      `partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${key}) produced for topic ${topic}`
-    );
-    return recordMetadata;
-  }
-
-  private decideLogLevel = (message: string, level: string) => {
+  private decideLogLevel(message: string, level: string) {
     if (this.options.log.errorToWarn.includes(message) && level === 'error') {
       return 'warn';
     }

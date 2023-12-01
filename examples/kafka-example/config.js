@@ -6,11 +6,12 @@ module.exports = {
   log: {
     json: true
   },
+  traceHeaderName: 'x-request-id',
   kafka: {
     groupId: 'orka.example.pigasos',
     oldGroupId: 'orka.example.consumer',
     clientId: 'orka.example.producer',
-    brokers: ['localhost:9092'],
+    brokers: ['127.0.0.1:9092'],
     certificates: {
       ca: '',
       cert: '',
