@@ -74,7 +74,10 @@ abstract class Base<Input, Output> {
   }
 
   parseHeaders(headers: KafkajsType.IHeaders = {}) {
-    return Object.keys(headers).reduce((m, k) => ({ ...m, [k]: headers[k].toString() }), {});
+    return Object.keys(headers).reduce((m, k) => {
+      m[k] = headers[k].toString();
+      return m;
+    }, {});
   }
 
   transformToKafkaHandlerMessage(
