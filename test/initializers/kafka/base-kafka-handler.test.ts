@@ -2,13 +2,9 @@ import * as sinon from 'sinon';
 import * as should from 'should';
 import Kafka from '../../../src/initializers/kafka/kafka';
 import { BaseKafkaHandler, BaseKafkaBatchHandler } from '../../../src/initializers/kafka/base-kafka-handler';
+import OrkaBuilder from '../../../src/orka-builder';
 
 const sandbox = sinon.createSandbox();
-const logger = {
-  trace: () => null,
-  debug: () => null,
-  info: () => null
-} as any;
 
 describe('base kafka handler class', async () => {
   let handleStub, consumeStub, runStub, subscribeStub, handleBatchStub, heartBeatStub;
@@ -26,6 +22,9 @@ describe('base kafka handler class', async () => {
   }
 
   beforeEach(() => {
+    OrkaBuilder.INSTANCE = {
+      config: { requestContext: { enabled: true, propagatedHeaders: { enabled: true, headers: 'headers' } } }
+    } as any;
     handleStub = sandbox.stub();
     handleBatchStub = sandbox.stub();
     heartBeatStub = sandbox.stub().resolves();
@@ -33,33 +32,33 @@ describe('base kafka handler class', async () => {
     subscribeStub = sandbox.stub();
     consumeStub = {
       subscribe: subscribeStub,
-      run: runStub.callsFake(
-        async ({ eachMessage: fn, eachBatch: fnBatch }) => {
-          if (fnBatch) {
-            return fnBatch({
-              batch: {
-                messages: [{
+      run: runStub.callsFake(async ({ eachMessage: fn, eachBatch: fnBatch }) => {
+        if (fnBatch) {
+          return fnBatch({
+            batch: {
+              messages: [
+                {
                   key: Buffer.from('key'),
                   value: Buffer.from('{"msg":"msg"}'),
                   headers: { key: Buffer.from('key') }
-                }],
-                topic: 'topic',
-                partition: '1'
-              },
-              heartbeat: heartBeatStub,
-            });
-          }
-          return fn({
-            message: {
-              key: Buffer.from('key'),
-              value: Buffer.from('{"msg":"msg"}'),
-              headers: { key: Buffer.from('key') }
+                }
+              ],
+              topic: 'topic',
+              partition: '1'
             },
-            topic: 'topic',
-            partition: '1'
-          }).catch(e => console.log(e));
+            heartbeat: heartBeatStub
+          });
         }
-      )
+        return fn({
+          message: {
+            key: Buffer.from('key'),
+            value: Buffer.from('{"msg":"msg"}'),
+            headers: { key: Buffer.from('key') }
+          },
+          topic: 'topic',
+          partition: '1'
+        }).catch(e => console.log(e));
+      })
     };
   });
 
@@ -154,7 +153,7 @@ describe('base kafka handler class', async () => {
     });
   });
 
-  context('with jsonParseValue false, stringifyHeaders false', function () {
+  context('with jsonParseValue false', function () {
     it('should call handler with buffer data', async () => {
       const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
@@ -164,8 +163,7 @@ describe('base kafka handler class', async () => {
         topic: ['topic1', 'topic2'],
         consumerOptions,
         runOptions,
-        jsonParseValue: false,
-        stringifyHeaders: false
+        jsonParseValue: false
       });
       await new Promise(resolve => setTimeout(resolve, 10));
       createConsumer.calledOnce.should.be.true();
@@ -176,7 +174,7 @@ describe('base kafka handler class', async () => {
       ]);
       consumeStub.run.args.should.containDeep([[runOptions]]);
       handleStub.args.should.containDeep([
-        [{ value: Buffer.from('{"msg":"msg"}'), headers: { key: Buffer.from('key') }, topic: 'topic', partition: '1' }]
+        [{ value: Buffer.from('{"msg":"msg"}'), headers: { key: 'key' }, topic: 'topic', partition: '1' }]
       ]);
     });
   });

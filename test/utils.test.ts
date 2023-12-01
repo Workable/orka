@@ -66,30 +66,30 @@ describe('utils', function () {
       it('propagates headers from store to properties', function () {
         const properties = {};
         appendHeadersFromStore(properties, new Map([['propagatedHeaders', { foo: 'bar' }]]), Config);
-        properties.should.eql({ headers: { foo: 'bar', 'x-depth': 1 } });
+        properties.should.eql({ headers: { foo: 'bar', 'x-depth': '1' } });
       });
 
       it('propagates headers from store to properties chaning trace id', function () {
         sandbox.stub(crypto, 'randomUUID').returns('new-uuid' as any);
         const properties = {};
-        const store = new Map([['propagatedHeaders', { foo: 'bar', 'x-depth': 1 }]]);
+        const store = new Map([['propagatedHeaders', { foo: 'bar', 'x-depth': '1' }]]);
         appendHeadersFromStore(properties, store, Config);
-        properties.should.eql({ headers: { foo: 'orka:new-uuid', 'x-parent-id': 'bar', 'x-depth': 2 } });
-        Object.fromEntries(store).should.eql({ propagatedHeaders: { foo: 'bar', 'x-depth': 1 } });
+        properties.should.eql({ headers: { foo: 'orka:new-uuid', 'x-parent-id': 'bar', 'x-depth': '2' } });
+        Object.fromEntries(store).should.eql({ propagatedHeaders: { foo: 'bar', 'x-depth': '1' } });
       });
 
       it('propagates headers from store to properties adding initiator id too', function () {
         sandbox.stub(crypto, 'randomUUID').returns('new-uuid' as any);
         const properties = { headers: { 'x-parent-id': 'irrelevant' } };
 
-        const store = new Map([['propagatedHeaders', { foo: 'parent-id', 'x-depth': 3, 'x-parent-id': 'bar' }]]);
+        const store = new Map([['propagatedHeaders', { foo: 'parent-id', 'x-depth': '3', 'x-parent-id': 'bar' }]]);
 
         appendHeadersFromStore(properties, store, Config);
         properties.should.eql({
-          headers: { foo: 'orka:new-uuid', 'x-parent-id': 'parent-id', 'x-depth': 4, 'x-initiator-id': 'bar' }
+          headers: { foo: 'orka:new-uuid', 'x-parent-id': 'parent-id', 'x-depth': '4', 'x-initiator-id': 'bar' }
         });
         Object.fromEntries(store).should.eql({
-          propagatedHeaders: { foo: 'parent-id', 'x-depth': 3, 'x-parent-id': 'bar' }
+          propagatedHeaders: { foo: 'parent-id', 'x-depth': '3', 'x-parent-id': 'bar' }
         });
       });
     });

@@ -4,6 +4,8 @@ import { flatten } from 'lodash';
 import type * as KafkajsType from 'kafkajs';
 import { runWithContext } from '../../builder';
 import { logMetrics } from '../../helpers';
+import { appendToStore } from '../../utils';
+import type OrkaBuilderType from '../../orka-builder';
 
 export type BaseKafkaHandlerOptions = {
   topic: string | string[];
@@ -13,19 +15,20 @@ export type BaseKafkaHandlerOptions = {
   consumerOptions?: KafkajsType.ConsumerConfig;
   runOptions?: KafkajsType.ConsumerRunConfig;
   jsonParseValue?: boolean;
-  stringifyHeaders?: boolean;
   onConsumerCreated?: (consumer: KafkajsType.Consumer) => any;
 };
 
-export type BaseKafkaHandlerMessage<Input> = KafkajsType.KafkaMessage & {
+export type BaseKafkaHandlerMessage<Input> = Omit<KafkajsType.KafkaMessage, 'key'> & {
   value: Input;
   rawValue?: Buffer;
+  headers?: Record<string, string>;
   rawHeaders?: KafkajsType.IHeaders;
   topic: string;
   partition: number;
+  key: string;
 };
 
-export type BaseKafkaHandlerBatch<Input> = KafkajsType.Batch & {
+export type BaseKafkaHandlerBatch<Input> = Omit<KafkajsType.Batch, 'messages'> & {
   messages: BaseKafkaHandlerMessage<Input>[];
 };
 
@@ -37,7 +40,6 @@ abstract class Base<Input, Output> {
   partitionsConsumedConcurrently: number;
   runOptions: KafkajsType.ConsumerRunConfig;
   jsonParseValue: boolean;
-  stringifyHeaders: boolean;
 
   constructor(kafka: Kafka, options: BaseKafkaHandlerOptions) {
     const { topic, logger, autoOffsetReset, fromBeginning, onConsumerCreated } = options;
@@ -49,7 +51,6 @@ abstract class Base<Input, Output> {
 
     this.topic = topic;
     this.jsonParseValue = options.jsonParseValue ?? true;
-    this.stringifyHeaders = options.stringifyHeaders ?? true;
     this.runOptions = options.runOptions;
     this.logger = logger || getLogger(`kafka.consumer.${this.topic}`);
     kafka.createConsumer(options.consumerOptions).then(c => {
@@ -72,9 +73,10 @@ abstract class Base<Input, Output> {
     return buffer;
   }
 
-  parseHeaders(headers: KafkajsType.IHeaders) {
+  parseHeaders(headers: KafkajsType.IHeaders = {}) {
     return Object.keys(headers).reduce((m, k) => ({ ...m, [k]: headers[k].toString() }), {});
   }
+
   transformToKafkaHandlerMessage(
     message: KafkajsType.KafkaMessage,
     topic: string,
@@ -82,14 +84,14 @@ abstract class Base<Input, Output> {
   ): BaseKafkaHandlerMessage<Input> {
     return {
       ...message,
+      key: message.key.toString(),
       topic,
       partition,
       ...(this.jsonParseValue && message.value
         ? { rawValue: message.value, value: this.parseValue(message.value) }
         : {}),
-      ...(this.stringifyHeaders && message.headers
-        ? { rawHeaders: message.headers, headers: this.parseHeaders(message.headers) }
-        : {})
+      rawHeaders: message.headers,
+      headers: this.parseHeaders(message.headers)
     };
   }
 
@@ -117,14 +119,19 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
         partition,
         message
       }: {
-        message: BaseKafkaHandlerMessage<Input>;
+        message: KafkajsType.KafkaMessage;
         partition: number;
         topic: string;
       }) => {
         const start = logMetrics.start();
-        await runWithContext(new Map([['correlationId', message.key?.toString()]]), () =>
-          this.handle(this.transformToKafkaHandlerMessage(message, topic, partition))
-        );
+        const OrkaBuilder: typeof OrkaBuilderType = require('../../orka-builder').default;
+        const config = OrkaBuilder.INSTANCE?.config;
+        const store = new Map([['correlationId', message.key?.toString()]]);
+        await runWithContext(store, () => {
+          const transformed = this.transformToKafkaHandlerMessage(message, topic, partition);
+          appendToStore(store, transformed, config);
+          return this.handle(transformed);
+        });
         logMetrics.end(start, 'topic-' + topic, 'kafka', message.key?.toString());
       }) as any
     });
