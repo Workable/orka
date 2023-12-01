@@ -301,10 +301,6 @@ eg:
 
 `HONEYBADGER_API_KEY={key} node app.js`
 
-or
-
-`LOG_CATEGORIES_ORKA_KAFKA=warn LOG_JSON=false node app.js`
-
 will connect to honeybadger for error logging without any further configuration needed.
 
 Refer to [Integrations](https://workable.github.io/orka/integrations/index) for the relevant documentation.
