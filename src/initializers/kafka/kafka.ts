@@ -21,14 +21,14 @@ export default class OrkaKafka {
   public async connect(options?: KafkajsType.ProducerConfig) {
     const { producer, clientId, connectionTimeout, authenticationTimeout } = this.options;
     this.healthy = false;
-
+    const kafkaLogger = getLogger('orka.kafka.producer');
     this.produceClient = new Kafka({
       brokers: producer.brokers,
       clientId,
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
-        getLogger('orka.kafka.producer')[level](message, extra);
+        kafkaLogger[level](message, extra);
       },
       ...getAuthOptions(producer),
       connectionTimeout,
@@ -63,13 +63,14 @@ export default class OrkaKafka {
   public async createConsumer({ groupId, ...rest }: KafkajsType.ConsumerConfig = {} as any) {
     groupId ??= this.options.groupId;
     const { brokers, clientId, connectionTimeout, authenticationTimeout } = this.options;
+    const kafkaLogger = getLogger('orka.kafka.consumer');
     this.consumeClient = new Kafka({
       brokers,
       clientId,
       logCreator: (level: number) => entry => {
         const { message, ...extra } = entry.log;
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
-        getLogger('orka.kafka.consumer')[level](message, extra);
+        kafkaLogger[level](message, extra);
       },
       ...getAuthOptions(this.options),
       connectionTimeout,
@@ -83,6 +84,7 @@ export default class OrkaKafka {
 
   public async connectAdmin() {
     const { brokers, clientId, connectionTimeout, authenticationTimeout } = this.options;
+    const kafkaLogger = getLogger('orka.kafka.admin');
     const kafka = new Kafka({
       brokers,
       clientId,
@@ -90,7 +92,7 @@ export default class OrkaKafka {
         const { message, ...extra } = entry.log;
         if (extra.error === 'Topic with this name already exists') return;
         const level = this.decideLogLevel(message, entry.label.toLowerCase());
-        getLogger('orka.kafka.admin')[level](message, extra);
+        kafkaLogger[level](message, extra);
       },
       ...getAuthOptions(this.options),
       connectionTimeout,

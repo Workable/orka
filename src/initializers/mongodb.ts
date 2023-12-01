@@ -1,8 +1,6 @@
 import * as mongoose from 'mongoose';
 import { getLogger } from 'log4js';
 
-const logger = getLogger('orka.mongodb');
-
 let connection: mongoose.Connection;
 
 function mongodbUrl(config) {
@@ -10,6 +8,7 @@ function mongodbUrl(config) {
 }
 
 export default function mongodb(config, mongoOnConnected = () => undefined) {
+  const logger = getLogger('orka.mongodb');
   const dbUrl = mongodbUrl(config);
   if (!dbUrl) {
     return;
@@ -27,7 +26,7 @@ export default function mongodb(config, mongoOnConnected = () => undefined) {
   });
   db.on('disconnected', () => logger.error('Mongodb disconnected'));
   db.on('reconnected', () => logger.info('MongoDB reconnected!'));
-  db.on('error', function(err) {
+  db.on('error', function (err) {
     logger.error('unable to connect to database', err);
     throw err;
   });

@@ -3,10 +3,10 @@ import { getLogger } from 'log4js';
 import type * as PgTypes from 'pg';
 import { isEmpty } from 'lodash';
 
-const logger = getLogger('orka.postgres');
 let pool: PgTypes.Pool;
 
 export default function postgres(config) {
+  const logger = getLogger('orka.postgres');
   if (config.postgres?.url && !pool) {
     const { Pool }: typeof PgTypes = requireInjected('pg');
     const pgConfig = config.postgres;
