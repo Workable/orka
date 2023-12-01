@@ -58,7 +58,15 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     level: 'debug',
     console: '',
     json: false,
-    ...config.log
+    ...config.log,
+    categories: {
+      'orka.kafka.consumer': 'info',
+      'orka.kafka.producer': 'info',
+      orka: 'debug',
+      kafka: 'debug',
+      initializing: 'debug',
+      ...config.log?.categories
+    }
   };
   config.port = config.port || 3000;
   config.allowedOrigins = config.allowedOrigins || ['localhost', 'lvh.me'];
@@ -165,7 +173,6 @@ function addKafkaConfig(config) {
     ssl: true,
     ...config.kafka,
     log: {
-      level: 'info',
       errorToWarn: ['The group is rebalancing, re-joining', 'Response Heartbeat(key: 12, version: 3)'],
       ...config.kafka?.log
     },

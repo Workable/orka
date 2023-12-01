@@ -88,14 +88,10 @@ export default async config => {
         appenders: appendersList,
         level: config.log.level
       },
-      'orka.kafka.consumer': {
-        appenders: appendersList,
-        level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
-      },
-      'orka.kafka.producer': {
-        appenders: appendersList,
-        level: (config.kafka && config.kafka.log && config.kafka.log.level) || config.log.level
-      }
+      ...Object.entries(config.log.categories).reduce((acc, [name, level]) => {
+        acc[name] = { appenders: appendersList, level };
+        return acc;
+      }, {})
     }
   });
 
