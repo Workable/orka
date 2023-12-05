@@ -162,7 +162,14 @@ You can find the default values below:
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
-    "json": false
+    "json": false,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "port": 3000,
   "allowedOrigins": ["localhost", "lvh.me"],
@@ -188,7 +195,7 @@ You can find the default values below:
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info"
+      "errorToWarn": ["The group is rebalancing, re-joining", "Response Heartbeat(key: 12, version: 3)"],
     },
     "certificates": {
       "key": "",

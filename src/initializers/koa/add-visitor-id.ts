@@ -6,8 +6,6 @@ import { URL } from 'url';
 import * as uuid from 'uuid';
 import * as ms from 'ms';
 
-const logger = getLogger('orka.visitor');
-
 export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURIComponent(cookie))) || {};
 export const encode = (cookie: any) => encodeURIComponent(JSON.stringify(cookie || {}));
 export const domain = (hostname: string) => {
@@ -16,6 +14,8 @@ export const domain = (hostname: string) => {
 };
 
 export default function (config): Middleware {
+  const logger = getLogger('orka.visitor');
+
   return async function addVisitorId(ctx: Context, next: () => void) {
     if (ctx.path === '/health' || !config?.visitor?.cookie || config?.visitor?.enabled === false) {
       return next();
@@ -48,7 +48,7 @@ export default function (config): Middleware {
         maxAge: config.visitor.maxAge && ms(config.visitor.maxAge),
         httpOnly: false,
         secure: config.visitor.secure,
-        sameSite: 'none',
+        sameSite: 'none'
       };
       logger.debug(`cookie '${config.visitor.cookie}' missing, generating new uuid '${ctx.state.visitor}' `, options);
       ctx.cookies.set(config.visitor.cookie, encode({ ...(decoded || {}), cookie_id: ctx.state.visitor }), options);

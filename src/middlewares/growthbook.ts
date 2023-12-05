@@ -1,6 +1,6 @@
-import {Context} from 'koa';
-import {createGrowthbook, getRequestContext} from '../index';
-import {getLogger} from '../initializers/log4js';
+import { Context } from 'koa';
+import { createGrowthbook, getRequestContext } from '../index';
+import { getLogger } from '../initializers/log4js';
 
 const logger = getLogger('orka.middlewares.growthbook');
 

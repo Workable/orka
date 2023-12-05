@@ -4,9 +4,9 @@ import { getPrometheus } from '../prometheus';
 import Bull from './bull';
 
 let bull: Bull;
-const logger = getLogger('orka.initializers.bull');
 
 export default async (config, appName: string) => {
+  const logger = getLogger('orka.initializers.bull');
   if (!config.bull || !config.bull.queue?.queues || (!config.bull.redis?.url && !config.redis?.url)) {
     return;
   }

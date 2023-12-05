@@ -1,9 +1,7 @@
 import { getLogger } from './log4js';
 import * as fs from 'fs';
 
-const logger = getLogger('orka.logo');
-
-export default function(config, pathToLogo) {
+export default function (config, pathToLogo) {
   if (config.printLogo) {
     try {
       let file = fs.readFileSync(pathToLogo);
@@ -12,6 +10,7 @@ export default function(config, pathToLogo) {
         console.log(line);
       }
     } catch (e) {
+      const logger = getLogger('orka.logo');
       logger.warn(`No logo found in path ${pathToLogo}`);
     }
   }

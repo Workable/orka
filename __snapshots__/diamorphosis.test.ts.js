@@ -67,7 +67,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
-    "json": false
+    "json": false,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "port": 3000,
   "allowedOrigins": [
@@ -109,7 +116,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -220,7 +226,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
-    "json": true
+    "json": true,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "nodeEnv": "development",
   "app": {
@@ -328,7 +341,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -439,7 +451,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": true,
-    "json": true
+    "json": true,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "nodeEnv": "development",
   "app": {
@@ -547,7 +566,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -658,7 +676,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
-    "json": true
+    "json": true,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "nodeEnv": "development",
   "app": {
@@ -766,7 +791,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -877,7 +901,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "debug",
     "console": false,
-    "json": true
+    "json": true,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "riviere": {
     "enabled": true,
@@ -985,7 +1016,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientId": "",
     "ssl": true,
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -1127,7 +1157,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -1216,7 +1245,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "fatal",
     "console": true,
-    "json": false
+    "json": false,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "port": 3000,
   "allowedOrigins": [
@@ -1351,7 +1387,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "log": {
-      "level": "info",
       "errorToWarn": [
         "The group is rebalancing, re-joining",
         "Response Heartbeat(key: 12, version: 3)"
@@ -1440,7 +1475,14 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "pattern": "%[[%d] [%p] %c%] %x{requestId}%m %x{logTracer}",
     "level": "fatal",
     "console": true,
-    "json": true
+    "json": true,
+    "categories": {
+      "orka.kafka.consumer": "info",
+      "orka.kafka.producer": "info",
+      "orka": "debug",
+      "kafka": "debug",
+      "initializing": "debug"
+    }
   },
   "port": 3000,
   "allowedOrigins": [

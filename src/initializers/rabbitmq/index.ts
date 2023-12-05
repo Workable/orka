@@ -10,13 +10,12 @@ import { runWithContext, getRequestContext } from '../../builder';
 import logMetrics from '../../helpers/log-metrics';
 import { appendHeadersFromStore, appendToStore } from '../../utils';
 
-const logger = getLogger('orka.rabbit');
-
 let connection: RabbitType.Rabbit;
 let shouldReconnect: Boolean = true;
 let healthy: Boolean = true;
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
+  const logger = getLogger('orka.rabbit');
   const { Rabbit, BaseQueueHandler }: typeof RabbitType = require('rabbit-queue');
   if (!config.queue || !config.queue.url) {
     return;
@@ -105,6 +104,7 @@ export const isHealthy = () => {
 
 export const close = async () => {
   if (connection) {
+    const logger = getLogger('orka.rabbit');
     logger.info('Closing rabbit connection');
     shouldReconnect = false;
     await connection.close();

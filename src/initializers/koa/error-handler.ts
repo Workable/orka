@@ -3,13 +3,12 @@ import { getLogger } from '../log4js';
 import { OrkaOptions } from 'orka/typings/orka';
 import { omit } from 'lodash';
 import { levels as Levels } from 'log4js';
-const logger = getLogger('orka.errorHandler');
 
-export const isBlacklisted = (err: { status: number, blacklist: boolean } = {} as any, config) =>
+export const isBlacklisted = (err: { status: number; blacklist: boolean } = {} as any, config) =>
   // tslint:disable-next-line:triple-equals
   err.blacklist || (err.status && config.blacklistedErrorCodes.some(b => err.status == b));
 
-export const getExplicitLogLevel = (err) => {
+export const getExplicitLogLevel = err => {
   const levelStr = err?.logLevel;
   if (typeof levelStr !== 'string') return null;
   const level = Levels[levelStr.toUpperCase()]?.levelStr;
@@ -17,8 +16,10 @@ export const getExplicitLogLevel = (err) => {
   return levelStr.toLowerCase();
 };
 
-export default (config, orkaOptions: Partial<OrkaOptions>) =>
-  async function errorHandler(ctx: Koa.Context, next: () => Promise<any>) {
+export default (config, orkaOptions: Partial<OrkaOptions>) => {
+  const logger = getLogger('orka.errorHandler');
+
+  return async function errorHandler(ctx: Koa.Context, next: () => Promise<any>) {
     try {
       await next();
     } catch (err) {
@@ -53,3 +54,4 @@ export default (config, orkaOptions: Partial<OrkaOptions>) =>
       }
     }
   };
+};
