@@ -64,7 +64,7 @@ e.g.:
 `LOG_CATEGORIES_ORKA_KAFKA=warn LOG_JSON=false node app.js`
 
 Note that log4js supports changing all orka.* log levels not specifically set to a different level by changing 
-the okra level. 
+the orka level. 
 Changing the orka level will not change the orka.kafka.consumer and orka.kafka.producer level as those levels are 
 specifically set to info by default. You need to overwrite those values too in order to change them.
 
