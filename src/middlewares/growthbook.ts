@@ -11,10 +11,7 @@ export default async function growthbook(ctx: Context, next: () => Promise<void>
   if (!config?.clientKey) return next();
   const gb = createGrowthbook(config);
   ctx.state.growthbook = gb;
-  const featuresPromise = gb
-    .loadFeatures({timeout: config.timeout})
-    .catch(e => logger.error(e, 'failed to load growthbook'));
-  if (config.waitForFeatures) await featuresPromise;
+  await gb.loadFeatures({timeout: config.timeout}).catch(e => logger.error(e, 'failed to load growthbook'));
   if (OrkaBuilder.INSTANCE?.options?.growthbookAttributes) {
     gb.setAttributes(OrkaBuilder.INSTANCE.options.growthbookAttributes(ctx));
   }

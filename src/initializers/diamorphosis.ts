@@ -282,7 +282,6 @@ function addGrowthbookConfig(config) {
     apiHost: 'https://cdn.growthbook.io',
     clientKey: '',
     setAttributesCallback: (ctx: Context) => ({}),
-    waitForFeatures: false,
     timeout: 10,
     ...config.growthbook
   };

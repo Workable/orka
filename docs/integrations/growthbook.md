@@ -37,9 +37,7 @@ module.exports = {
   growthbook: {
     clientKey: '1234',
     // The duration that the request will be blocked until features are loaded
-    timeout: 10,
-    // Instructs middleware to block request until features are loaded
-    waitForFeatures: false
+    timeout: 10
   }
 };
 ```
