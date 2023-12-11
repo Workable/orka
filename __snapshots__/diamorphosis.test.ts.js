@@ -191,7 +191,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -416,7 +417,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -641,7 +643,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -866,7 +869,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -1091,7 +1095,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -1321,7 +1326,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
@@ -1553,7 +1559,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   },
   "growthbook": {
     "apiHost": "https://cdn.growthbook.io",
-    "clientKey": ""
+    "clientKey": "",
+    "timeout": 10
   },
   "requestContext": {
     "enabled": true,
