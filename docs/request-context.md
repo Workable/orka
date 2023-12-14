@@ -32,7 +32,10 @@ If the Request Context is enabled, orka by default appends `requestId`, `correla
 Header propagation enabled by default as long as the current nodejs version supports AsyncLocalStorage (async_hooks).
 
 If option `config.requestContext.propagatedHeaders` is enabled, orka propagates some [Istio trace context headers](https://istio.io/latest/docs/tasks/observability/distributed-tracing/overview/#trace-context-propagation) and cloudflare `cf-ray`
-from incoming http requests to any outbound http request.
+from incoming http requests to:
+- outbound http requests
+- rabbitmq messages
+- kafka messages
 
 By default the following headers are propagated:
 - "cf-ray"

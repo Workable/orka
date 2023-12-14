@@ -71,3 +71,8 @@ specifically set to info by default. You need to overwrite those values too in o
 e.g.:
 
 `LOG_CATEGORIES_ORKA_KAFKA=warn LOG_CATEGORIES_ORKA_KAFKA_CONSUMER=error node app.js`
+
+
+## Propagated Header Logging
+
+See: [RequestContext #Header Propagation](https://workable.github.io/orka/request-context.html#header-propagation)
