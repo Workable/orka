@@ -1,13 +1,14 @@
-const { BaseKafkaHandler, getKafka } = require('../../build');
+const { BaseKafkaHandler, getKafka, getLogger } = require('../../build');
 const config = require('./config');
 const axios = require('axios');
 
 module.exports = class KafkaHandler extends BaseKafkaHandler {
   handle(message) {
-    console.log('key', message.key);
-    console.log('headers', message.headers);
-    console.log('message.value', message.value);
+    // console.log('key', message.key);
+    // console.log('headers', message.headers);
+    // console.log('message.value', message.value);
     // console.log('message', message);
+    getLogger('handler').info('Going to call write');
     if (message.headers['x-depth'] >= 5) return;
     this.get('write');
   }

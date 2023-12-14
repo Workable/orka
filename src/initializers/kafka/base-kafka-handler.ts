@@ -130,12 +130,16 @@ export abstract class BaseKafkaHandler<Input, Output> extends Base<Input, Output
         const OrkaBuilder: typeof OrkaBuilderType = require('../../orka-builder').default;
         const config = OrkaBuilder.INSTANCE?.config;
         const store = new Map([['correlationId', message.key?.toString()]]);
-        await runWithContext(store, () => {
+        return await runWithContext(store, async () => {
           const transformed = this.transformToKafkaHandlerMessage(message, topic, partition);
           appendToStore(store, transformed, config);
-          return this.handle(transformed);
+          this.logger.debug(
+            `Consuming partition(${partition}).offset(${message.offset}).key(${message.key}) for topic ${topic}`
+          );
+          let response = await this.handle(transformed);
+          logMetrics.end(start, 'topic-' + topic, 'kafka', message.key?.toString());
+          return response;
         });
-        logMetrics.end(start, 'topic-' + topic, 'kafka', message.key?.toString());
       }) as any
     });
   }

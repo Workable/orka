@@ -45,7 +45,7 @@ function updateSend(kafka: Kafka, config: { traceHeaderName: string }) {
     const sent: KafkajsType.RecordMetadata[] = await originalSend.call(this, record);
     sent.map((recordMetadata, i) =>
       logger.debug(
-        `partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${record.messages[i].key}) produced for topic ${recordMetadata.topicName}`
+        `Produced partition(${recordMetadata.partition}).offset(${recordMetadata.baseOffset}).key(${record.messages[i].key}) produced for topic ${recordMetadata.topicName}`
       )
     );
     return sent;
