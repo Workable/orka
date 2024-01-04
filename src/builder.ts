@@ -57,7 +57,7 @@ export default (defaults: Partial<OrkaOptions> = _defaults) => {
       }
     });
   };
-  checkModulesAreNotInitialized('koa', 'mongoose', 'amqplib', 'pg', 'mongodb');
+  checkModulesAreNotInitialized('koa', 'mongoose', 'amqplib', 'pg');
 
   // Always call newrelic
   newrelic(config, options.appName);

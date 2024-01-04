@@ -41,7 +41,6 @@ describe('examples', function () {
       before(function () {
         delete require.cache[require.resolve(serverPath)];
         delete require.cache[require.resolve('mongoose')];
-        delete require.cache[require.resolve('mongodb')];
         delete require.cache[require.resolve('koa')];
         delete require.cache[require.resolve('amqplib')];
         delete require.cache[require.resolve('../../build/builder.js')];

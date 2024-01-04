@@ -81,7 +81,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
     base: joi.string().meta({baseType: 'string'}),
     messages: {'objectId.invalid': 'Invalid objectId'},
     validate: (value, helpers) => {
-      return require('mongodb').ObjectId.isValid(value)
+      return require('mongoose').isValidObjectId(value)
         ? {value}
         : {
           value,
