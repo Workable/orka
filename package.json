@@ -1,6 +1,6 @@
 {
   "name": "@workablehr/orka",
-  "version": "4.0.0-beta.10",
+  "version": "4.0.0-beta.11",
   "description": "",
   "main": "build/index.js",
   "scripts": {
