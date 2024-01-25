@@ -37,5 +37,15 @@ describe('Star CORS examples', () => {
       .expect(200);
 
     response.headers['access-control-allow-origin'].should.not.eql('http://localhost.foreign.com');
+    response.headers['access-control-allow-origin'].should.eql('localhost');
+  });
+
+  it('/api/example returns access-control-allow-origin that contains the subdomain', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'http://some.deep.subdomain.localhost')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('http://some.deep.subdomain.localhost');
   });
 });
