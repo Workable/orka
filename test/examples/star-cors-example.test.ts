@@ -29,4 +29,13 @@ describe('Star CORS examples', () => {
 
     response.headers['access-control-allow-origin'].should.eql('http://localhost:3000');
   });
+
+  it('/api triggers cors policy', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api')
+      .set('origin', 'http://localhost.foreign.com')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.not.eql('http://localhost.foreign.com');
+  });
 });

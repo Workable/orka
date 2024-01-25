@@ -91,14 +91,14 @@ export default class OrkaBuilder {
     { credentials = undefined, allowedOrigins = this.config.allowedOrigins, publicPrefixes = [] } = this.config.cors ||
       {}
   ) {
-    const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
-
     return this.use(() =>
       cors({
         origin: (ctx: Context) => {
           const origin = ctx.request.headers.origin || ctx.request.origin;
           if (publicPrefixes.some(p => ctx.path.startsWith(p))) return '*';
-          return allowedOrigin.test(origin) ? origin : allowedOrigins[0];
+          const hostname = new URL(origin).hostname;
+          const isAllowedOrigin = allowedOrigins.some(o => hostname.endsWith(o));
+          return isAllowedOrigin ? origin : allowedOrigins[0];
         },
         credentials
       })
