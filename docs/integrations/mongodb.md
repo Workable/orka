@@ -31,8 +31,8 @@ module.exports = {
 //app/models/model.js
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-const ModelScham = new Schema(
+const Shema = mongoose.Schema;
+const Model = new Schema(
   {
     key: { type: String, unique: true },
     ...
@@ -42,7 +42,7 @@ const ModelScham = new Schema(
   }
 );
 
-module.exports = mongoose.model('Model', ModelScham);
+module.exports = mongoose.model('Model', Model);
 ```
 
 You use mongoose as you would without worrying about connection initilization.
