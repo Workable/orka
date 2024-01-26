@@ -33,19 +33,28 @@ describe('Star CORS examples', () => {
   it('/api triggers cors policy', async () => {
     const response = await supertest('localhost:3000')
       .get('/api')
-      .set('origin', 'http://localhost.foreign.com')
+      .set('origin', 'http://lvh.me.foreign.com')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.not.eql('http://localhost.foreign.com');
-    response.headers['access-control-allow-origin'].should.eql('localhost');
+    response.headers['access-control-allow-origin'].should.not.eql('http://lvh.me.foreign.com');
+    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
   });
 
   it('/api/example returns access-control-allow-origin that contains the subdomain', async () => {
     const response = await supertest('localhost:3000')
       .get('/api/example')
-      .set('origin', 'http://some.deep.subdomain.localhost')
+      .set('origin', 'http://some.localhost:3000')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('http://some.deep.subdomain.localhost');
+    response.headers['access-control-allow-origin'].should.eql('http://some.localhost:3000');
+  });
+
+  it('/api/example blocks deep subdomains', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'http://some.very.deep.subdomain.localhost:3000')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
   });
 });
