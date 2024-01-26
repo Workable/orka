@@ -57,4 +57,13 @@ describe('Star CORS examples', () => {
 
     response.headers['access-control-allow-origin'].should.eql('localhost:3000');
   });
+
+  it('/api/example allows deep subdomains when the allowed origin is \'*.lvh.me\'', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'https://some.very.deep.subdomain.lvh.me')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('https://some.very.deep.subdomain.lvh.me');
+  });
 });
