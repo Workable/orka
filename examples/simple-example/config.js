@@ -7,7 +7,8 @@ module.exports = {
     name: 'foo'
   },
   cors: {
-    publicPrefixes: ['/api/allowAll']
+    publicPrefixes: ['/api/allowAll'],
+    allowedOrigins: ['localhost:3000', 'lvh.me', '*.lvh.me'],
   },
   riviere: {
     bodyKeysRegex: '.*'

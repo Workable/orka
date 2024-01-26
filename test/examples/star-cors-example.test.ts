@@ -29,4 +29,41 @@ describe('Star CORS examples', () => {
 
     response.headers['access-control-allow-origin'].should.eql('http://localhost:3000');
   });
+
+  it('/api triggers cors policy', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api')
+      .set('origin', 'http://lvh.me.foreign.com')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.not.eql('http://lvh.me.foreign.com');
+    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
+  });
+
+  it('/api/example returns access-control-allow-origin that contains the subdomain', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'http://some.localhost:3000')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('http://some.localhost:3000');
+  });
+
+  it('/api/example blocks deep subdomains', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'http://some.very.deep.subdomain.localhost:3000')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
+  });
+
+  it('/api/example allows deep subdomains when the allowed origin is \'*.lvh.me\'', async () => {
+    const response = await supertest('localhost:3000')
+      .get('/api/example')
+      .set('origin', 'https://some.very.deep.subdomain.lvh.me')
+      .expect(200);
+
+    response.headers['access-control-allow-origin'].should.eql('https://some.very.deep.subdomain.lvh.me');
+  });
 });

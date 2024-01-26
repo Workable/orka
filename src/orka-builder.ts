@@ -91,7 +91,7 @@ export default class OrkaBuilder {
     { credentials = undefined, allowedOrigins = this.config.allowedOrigins, publicPrefixes = [] } = this.config.cors ||
       {}
   ) {
-    const allowedOrigin = new RegExp('https?://(www\\.)?([^.]+\\.)?(' + allowedOrigins.join(')|(') + ')');
+    const allowedOrigin = new RegExp('^https?://(www\\.)?([^.]+\\.)?((' + allowedOrigins.map(ao => ao.replaceAll('.', '\\.').replaceAll('*', '.*')).join(')|(') + '))$');
 
     return this.use(() =>
       cors({
