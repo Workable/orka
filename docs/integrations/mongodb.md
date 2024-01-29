@@ -31,7 +31,7 @@ module.exports = {
 //app/models/model.js
 const mongoose = require('mongoose');
 
-const Shema = mongoose.Schema;
+const Schema = mongoose.Schema;
 const Model = new Schema(
   {
     key: { type: String, unique: true },
