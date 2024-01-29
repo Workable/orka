@@ -74,3 +74,4 @@ ObjectId using new mongoose.
 - Usage of randomUUID that is not supported in many older versions
 - Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
 - Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
+- Mongoose migrated to v7 which has breaking changes see [here](https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html)

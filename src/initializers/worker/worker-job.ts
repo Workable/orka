@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const Job = new Schema(
+const jobSchema = new Schema(
   {
     name: { type: String, unique: true },
     payload: { type: Schema.Types.Mixed, default: {} },
@@ -11,13 +11,13 @@ const Job = new Schema(
   { timestamps: {} }
 );
 
-export interface JobDocument extends mongoose.Document {
+export interface IJob {
   payload: any;
   name: string;
   initialized: boolean;
   finished: boolean;
 }
 
-export type JobModel = mongoose.Model<JobDocument>;
-
-export default mongoose.model<JobDocument, JobModel>('WorkerJob', Job);
+const Job = mongoose.model<IJob>('WorkerJob', jobSchema);
+export default Job;
+export type JobDocument = ReturnType<typeof Job['hydrate']>;
