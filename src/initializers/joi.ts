@@ -34,6 +34,17 @@ export const isExpiredUrl = (val: string): boolean => {
       if (isNaN(expiresAt)) return false;
       return Math.round(Date.now() / 1000) > expiresAt;
     }
+    if (parsed.searchParams.has('X-Amz-Expires') && parsed.searchParams.has('X-Amz-Date')) {
+      const xAmzExpires = Number(parsed.searchParams.get('X-Amz-Expires'));
+      // If X-Amz-Expires is not a number do not validate
+      if (isNaN(xAmzExpires)) return false;
+      const xAmzDate = parsed.searchParams.get('X-Amz-Date');
+      // The URL contains date in format YYYYMMDDTHHMMSSZ. We format it to ISO (YYYY-MM-DDTHH:MM:SSZ)
+      const formattedDate = `${xAmzDate!.slice(0, 4)}-${xAmzDate!.slice(4, 6)}-${xAmzDate!.slice(6, 8)}T${xAmzDate!.slice(9, 11)}:${xAmzDate!.slice(11, 13)}:${xAmzDate!.slice(13, 15)}Z`;
+      const expirationDate = new Date(formattedDate);
+      expirationDate.setTime(expirationDate.getTime() + xAmzExpires * 1000);
+      return Date.now() > expirationDate.getTime();
+    }
     return false;
   } catch (e) {
     logger.error(`Failed to parse url: ${val}`, e);
