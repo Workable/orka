@@ -1,5 +1,7 @@
 import should = require('should');
 import Joi from '../../src/initializers/joi';
+import { isExpiredUrl } from '../../src/initializers/joi';
+import * as sinon from 'sinon';
 
 describe('joi extensions', function () {
   describe('string', function () {
@@ -229,6 +231,32 @@ describe('joi extensions', function () {
     it('accepts if valid objectid', function () {
       should(Joi.objectId().validate('627b825fb99b51cc16df1b41').error).be.undefined();
       Joi.objectId().validate('627b825fb99b51cc16df1b41').value.should.equal('627b825fb99b51cc16df1b41');
+    });
+  });
+
+  describe('isExpiredUrl', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns true if expired', function () {
+      const expirationDate = new Date('2023-01-08T10:00:00Z');
+      sinon.useFakeTimers(new Date('2023-01-10T10:00:00Z'));
+      const isExpired = [
+        isExpiredUrl(`https://bucket.s3.amazonaws.com?Expires=${(expirationDate.getTime() / 1000)}`),
+        isExpiredUrl('https://bucket.s3.amazonaws.com?X-Amz-Date=20230101T100000Z&X-Amz-Expires=604800')
+      ];
+      isExpired.map((x) => x.should.be.true());
+    });
+
+    it('returns false if not expired', function () {
+      const expirationDate = new Date('2023-01-08T10:00:00Z');
+      sinon.useFakeTimers(new Date('2023-01-05T10:00:00Z'));
+      const isExpired = [
+        isExpiredUrl(`https://bucket.s3.amazonaws.com?Expires=${(expirationDate.getTime() / 1000)}`),
+        isExpiredUrl('https://bucket.s3.amazonaws.com?X-Amz-Date=20230101T100000Z&X-Amz-Expires=604800')
+      ];
+      isExpired.map((x) => x.should.be.false());
     });
   });
 });
