@@ -248,6 +248,7 @@ describe('joi extensions', function () {
       ];
       isExpired.map((x) => x.should.be.true());
     });
+    
     it('returns false if not expired', function () {
       const expirationDate = new Date('2023-01-08T10:00:00Z');
       sinon.useFakeTimers(new Date('2023-01-05T10:00:00Z'));
