@@ -168,8 +168,9 @@ export default class OrkaBuilder {
       if (!gb) return;
 
       const logger = getLogger('orka.growthbook');
-      await gb.loadFeatures().catch(e => logger.error('Unable to load features', e));
-      logger.info('Growthbook features loaded');
+      await gb.loadFeatures()
+        .then(() => logger.info('Growthbook features loaded'))
+        .catch(e => logger.error('Unable to load features', e));
     });
     return this;
   }
