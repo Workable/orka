@@ -52,7 +52,9 @@ describe('Test postgres connection', function () {
           max: undefined,
           ssl: { rejectUnauthorized: false },
           idleTimeoutMillis: undefined,
-          connectionTimeoutMillis: undefined
+          connectionTimeoutMillis: undefined,
+          statement_timeout: undefined,
+          query_timeout: undefined,
         }
       ]
     ]);
@@ -117,7 +119,9 @@ describe('Test postgres connection', function () {
             key: 'key'
           },
           idleTimeoutMillis: 10000,
-          connectionTimeoutMillis: 0
+          connectionTimeoutMillis: 0,
+          statement_timeout: undefined,
+          query_timeout: undefined,
         }
       ]
     ]);
