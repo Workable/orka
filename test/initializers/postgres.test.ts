@@ -70,7 +70,9 @@ describe('Test postgres connection', function () {
           key: ''
         },
         idleTimeoutMillis: 10000,
-        connectionTimeoutMillis: 0
+        connectionTimeoutMillis: 0,
+        statementTimeout: 3000,
+        queryTimeout: 5000
       }
     });
     poolStub.args.should.eql([
@@ -80,7 +82,9 @@ describe('Test postgres connection', function () {
           max: undefined,
           ssl: undefined,
           idleTimeoutMillis: 10000,
-          connectionTimeoutMillis: 0
+          connectionTimeoutMillis: 0,
+          statement_timeout: 3000,
+          query_timeout: 5000,
         }
       ]
     ]);
