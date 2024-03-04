@@ -43,6 +43,8 @@ module.exports = {
     useSsl: true,
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 0,
+    statementTimeout: undefined, // default is no timeout
+    queryTimeout: undefined // default is no timeout
     sslConfig: {
       rejectUnauthorized: false,
       ca: '',

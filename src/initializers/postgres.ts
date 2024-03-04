@@ -20,7 +20,9 @@ export default function postgres(config) {
       max: pgConfig.poolSize,
       ssl: pgConfig.useSsl ? pgConfig.sslConfig : undefined,
       idleTimeoutMillis: pgConfig.idleTimeoutMillis,
-      connectionTimeoutMillis: pgConfig.connectionTimeoutMillis
+      connectionTimeoutMillis: pgConfig.connectionTimeoutMillis,
+      statement_timeout: pgConfig.statementTimeout,
+      query_timeout: pgConfig.queryTimeout,
     });
     logger.info(`Connected to Postgres! (${pgConfig.url.split('@')[1] || pgConfig.url})`);
     pool.on('error', err => {

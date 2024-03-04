@@ -52,7 +52,9 @@ describe('Test postgres connection', function () {
           max: undefined,
           ssl: { rejectUnauthorized: false },
           idleTimeoutMillis: undefined,
-          connectionTimeoutMillis: undefined
+          connectionTimeoutMillis: undefined,
+          statement_timeout: undefined,
+          query_timeout: undefined,
         }
       ]
     ]);
@@ -70,7 +72,9 @@ describe('Test postgres connection', function () {
           key: ''
         },
         idleTimeoutMillis: 10000,
-        connectionTimeoutMillis: 0
+        connectionTimeoutMillis: 0,
+        statementTimeout: 3000,
+        queryTimeout: 5000
       }
     });
     poolStub.args.should.eql([
@@ -80,7 +84,9 @@ describe('Test postgres connection', function () {
           max: undefined,
           ssl: undefined,
           idleTimeoutMillis: 10000,
-          connectionTimeoutMillis: 0
+          connectionTimeoutMillis: 0,
+          statement_timeout: 3000,
+          query_timeout: 5000,
         }
       ]
     ]);
@@ -113,7 +119,9 @@ describe('Test postgres connection', function () {
             key: 'key'
           },
           idleTimeoutMillis: 10000,
-          connectionTimeoutMillis: 0
+          connectionTimeoutMillis: 0,
+          statement_timeout: undefined,
+          query_timeout: undefined,
         }
       ]
     ]);
