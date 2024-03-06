@@ -18,7 +18,11 @@ export const isOwnS3Path = (bucket: string, val: string): boolean => {
       host.startsWith('s3.') &&
       host.endsWith('.amazonaws.com') &&
       pathname.startsWith(`/${bucket}/`);
-    return matchingProtocol && (s3Host || s3HostBucketInPath);
+    const s3HostContainsRegion =
+			host.startsWith(`${bucket}.s3`) &&
+			host.endsWith('.amazonaws.com') &&
+			host.split('.').length === 5;
+    return matchingProtocol && (s3Host || s3HostBucketInPath || s3HostContainsRegion);
   } catch (e) {
     logger.error(`Failed to parse url: ${val}`, e);
     return false;

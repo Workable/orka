@@ -1,6 +1,6 @@
 import should = require('should');
 import Joi from '../../src/initializers/joi';
-import { isExpiredUrl } from '../../src/initializers/joi';
+import { isExpiredUrl, isOwnS3Path } from '../../src/initializers/joi';
 import * as sinon from 'sinon';
 
 describe('joi extensions', function () {
@@ -257,6 +257,28 @@ describe('joi extensions', function () {
         isExpiredUrl('https://bucket.s3.amazonaws.com?X-Amz-Date=20230101T100000Z&X-Amz-Expires=604800')
       ];
       isExpired.map((x) => x.should.be.false());
+    });
+  });
+
+  describe('isOwnS3Path', function () {
+    it('should return true for valid s3 path', function () {
+      const isOwnPath = [
+        isOwnS3Path('some-bucket', 'https://s3.amazonaws.com/some-bucket/some-file-name'),
+        isOwnS3Path('some-bucket', 'https://some-bucket.s3.some-region-1.amazonaws.com/'),
+        isOwnS3Path('some-bucket', 'https://some-bucket.s3.amazonaws.com/'),
+      ];
+      isOwnPath.map((x) => x.should.be.true());
+    });
+
+    it('should return false for invalid s3 path', function () {
+      const isOwnPath = [
+        isOwnS3Path('some-bucket', 'https://s3.amazonaws.com/some-other-bucket/some-file-name'),
+        isOwnS3Path('some-bucket', 'https://some-other-bucket.s3.some-region-1.amazonaws.com/'),
+        isOwnS3Path('some-bucket', 'https://some-other-bucket.s3.amazonaws.com/'),
+        isOwnS3Path('some-bucket', 'https://some-other-bucket.s3.some.deep.nested.subdomain.amazonaws.com/'),
+        isOwnS3Path('some-bucket', 'https://some-bucket.s3.some.deep.nested.subdomain.amazonaws.com/')
+      ];
+      isOwnPath.map((x) => x.should.be.false());
     });
   });
 });
