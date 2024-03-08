@@ -12,6 +12,10 @@ module.exports = {
       getLogger('log').error(new Error('test'), 'this was a test error', { context: 'foo' });
       ctx.throw(new Error('test'), 505);
     },
+    '/logWarning': async (ctx, next) => {
+      getLogger('log').warn(new Error('test'), 'this was a test warning', { context: 'foo' });
+      ctx.throw(new Error('test'), 505);
+    },
     '/api/allowAll/accounts/:subdomain': async (ctx, next) => (ctx.body = 'ok'),
     '/error/:type': async (ctx, next) => {
       throw new Error('new error');
