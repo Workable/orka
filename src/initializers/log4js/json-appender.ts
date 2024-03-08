@@ -3,8 +3,9 @@ import { getRequestContext } from '../../builder';
 
 const jsonAppender = (layout, config) => {
   return logEvent => {
-    let event =
-      logEvent.level.levelStr === 'ERROR'
+    let isLevelError = logEvent.level.levelStr === 'ERROR';
+    let isFirstElemError = logEvent?.data?.[0] instanceof Error;
+    let event = isLevelError || isFirstElemError
         ? createErrorLog(layout, logEvent, config)
         : createValidLog(layout, logEvent, config);
     let json = '';

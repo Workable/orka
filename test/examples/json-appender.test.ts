@@ -110,4 +110,59 @@ describe('json-appender', function () {
         ]
       ]);
   });
+
+  it('should log a message if the log level is WARN and the first element of the logEvent data is an error object', async function () {
+    const logSpy = sandbox.stub(console, 'log');
+    const { text } = await (supertest('localhost:3000') as any)
+      .get('/logWarning')
+      .set('x-orka-request-id', 'test-id')
+      .expect(505);
+    text.should.eql('default body');
+    const cleanStack = msg => {
+      const stack = JSON.parse(msg);
+      stack.stack_trace = stack.stack_trace.substring(0, 31);
+      return stack;
+    };
+    logSpy.args
+      .map(callArg => callArg.map(cleanStack))
+      .should.eql([
+        [
+          {
+            timestamp: '2019-01-01T00:00:00.000Z',
+            severity: 'WARN',
+            categoryName: 'log',
+            message: 'test - this was a test warning',
+            stack_trace: 'Error: test\n    at /logWarning ',
+            context: pickBy({
+            propagatedHeaders: { 'x-orka-request-id': 'test-id' },
+            requestId: 'test-id',
+            context: 'foo'
+            })
+        }
+      ],
+      [
+        {
+          timestamp: '2019-01-01T00:00:00.000Z',
+          severity: 'ERROR',
+          categoryName: 'orka.errorHandler',
+          message: 'test',
+          stack_trace: 'Error: test\n    at /logWarning ',
+          context: pickBy(
+          {
+            expose: false,
+            statusCode: 505,
+            status: 505,
+            component: 'koa',
+            action: '/logWarning',
+            params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
+            propagatedHeaders: { 'x-orka-request-id': 'test-id' },
+            state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
+            requestId: 'test-id'
+          },
+        _ => _ !== undefined
+         )
+        }
+      ]
+    ]);
+  });
 });
