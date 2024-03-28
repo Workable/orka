@@ -13,6 +13,10 @@ describe('Test log-metrics helper', function () {
       const s = Number(start) / 1e9;
       s.should.be.a.Number();
     });
+
+    it('recordMetric', function () {
+      console.log('hello world');
+    });
   });
 
   describe('Test end', function () {
