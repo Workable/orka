@@ -69,6 +69,12 @@ describe('Test log-metrics helper', function () {
         loggerStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
       });
     });
+
+    context('recordMetric', function () {
+      it('recordMetric', function () {
+        console.log('Hello world');
+      });
+    });
   });
 
   describe('Test recordMetric', function () {
