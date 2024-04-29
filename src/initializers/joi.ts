@@ -2,7 +2,7 @@ import * as _Joi from 'joi';
 import {isString} from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
 import {URL} from 'url';
-import { getLogger } from './log4js';
+import {getLogger} from './log4js';
 
 const logger = getLogger('orka.initializers.joi');
 
@@ -11,7 +11,7 @@ export const clearNullByte = (val: string): string => (val && isString(val) ? va
 export const isValidHexColor = (val: string): boolean => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val);
 export const isOwnS3Path = (bucket: string, val: string): boolean => {
   try {
-    const { host, protocol, pathname } = new URL(val);
+    const {host, protocol, pathname} = new URL(val);
     const matchingProtocol = protocol === 'https:';
     const s3Host = host === `${bucket}.s3.amazonaws.com`;
     const s3HostBucketInPath =
@@ -19,9 +19,9 @@ export const isOwnS3Path = (bucket: string, val: string): boolean => {
       host.endsWith('.amazonaws.com') &&
       pathname.startsWith(`/${bucket}/`);
     const s3HostContainsRegion =
-			host.startsWith(`${bucket}.s3`) &&
-			host.endsWith('.amazonaws.com') &&
-			host.split('.').length === 5;
+      host.startsWith(`${bucket}.s3`) &&
+      host.endsWith('.amazonaws.com') &&
+      host.split('.').length === 5;
     return matchingProtocol && (s3Host || s3HostBucketInPath || s3HostContainsRegion);
   } catch (e) {
     logger.error(`Failed to parse url: ${val}`, e);
@@ -57,8 +57,8 @@ export const isExpiredUrl = (val: string): boolean => {
 };
 
 type SafeHtml = _Joi.StringSchema & {
-  allowedTags: (tags: string[]) => SafeHtml;
-  allowedAttributes: (attributes: { [key: string]: string[] }) => SafeHtml;
+  allowedTags: (tags: string[] | false) => SafeHtml;
+  allowedAttributes: (attributes: { [key: string]: string[] } | false) => SafeHtml;
 };
 
 type UrlInOwnS3 = _Joi.StringSchema & {
@@ -283,7 +283,8 @@ const Joi: JoiWithExtensions = _Joi.extend(
       }
     },
     prepare: (value, helpers) => {
-      const allowedTags = helpers.schema.$_getRule('allowedTags')?.args?.allowedTags || [
+      if (value === null || value === undefined || typeof value !== 'string') return { value };
+      const allowedTags = helpers.schema.$_getRule('allowedTags')?.args?.allowedTags ?? [
         'b',
         'i',
         'u',
@@ -293,7 +294,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
         'a',
         'font'
       ];
-      const allowedAttributes = helpers.schema.$_getRule('allowedAttributes')?.args?.allowedAttributes || {
+      const allowedAttributes = helpers.schema.$_getRule('allowedAttributes')?.args?.allowedAttributes ?? {
         a: ['href', 'target', 'rel'],
         font: ['color']
       };
