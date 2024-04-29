@@ -260,7 +260,6 @@ const Joi: JoiWithExtensions = _Joi.extend(
         args: [
           {
             name: 'allowedTags',
-            assert: value => Array.isArray(value) && value.length > 0,
             message: 'must be a non empty array'
           }
         ],
@@ -275,7 +274,6 @@ const Joi: JoiWithExtensions = _Joi.extend(
         args: [
           {
             name: 'allowedAttributes',
-            assert: value => typeof value === 'object' && Object.keys(value).length > 0,
             message: 'must be a non empty object'
           }
         ],

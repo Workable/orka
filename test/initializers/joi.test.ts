@@ -222,6 +222,10 @@ describe('joi extensions', function () {
         .should
         .equal('<a href="http://google.com" class="aclass"></a>foo');
     });
+    it('no html at all', function () {
+      Joi.safeHtml().allowedAttributes({}).allowedTags([])
+        .validate('<p>banana</p>').value.should.equal('banana');
+    });
   });
 
   describe('objectid', function () {
