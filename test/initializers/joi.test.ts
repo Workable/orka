@@ -228,7 +228,7 @@ describe('joi extensions', function () {
     });
     it('allow any attribute', function () {
       Joi.safeHtml().allowedAttributes(false)
-        .validate('<p class="asd" rel="asd">banana</p>').value.should.equal('banana');
+        .validate('<p class="asd" rel="asd">banana</p>').value.should.equal('<p class="asd" rel="asd">banana</p>');
     });
   });
 

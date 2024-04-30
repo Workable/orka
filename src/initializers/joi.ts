@@ -1,8 +1,8 @@
 import * as _Joi from 'joi';
-import {isString} from 'lodash';
+import { isString } from 'lodash';
 import * as sanitizeHtml from 'sanitize-html';
-import {URL} from 'url';
-import {getLogger} from './log4js';
+import { URL } from 'url';
+import { getLogger } from './log4js';
 
 const logger = getLogger('orka.initializers.joi');
 
@@ -11,17 +11,13 @@ export const clearNullByte = (val: string): string => (val && isString(val) ? va
 export const isValidHexColor = (val: string): boolean => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(val);
 export const isOwnS3Path = (bucket: string, val: string): boolean => {
   try {
-    const {host, protocol, pathname} = new URL(val);
+    const { host, protocol, pathname } = new URL(val);
     const matchingProtocol = protocol === 'https:';
     const s3Host = host === `${bucket}.s3.amazonaws.com`;
     const s3HostBucketInPath =
-      host.startsWith('s3.') &&
-      host.endsWith('.amazonaws.com') &&
-      pathname.startsWith(`/${bucket}/`);
+      host.startsWith('s3.') && host.endsWith('.amazonaws.com') && pathname.startsWith(`/${bucket}/`);
     const s3HostContainsRegion =
-      host.startsWith(`${bucket}.s3`) &&
-      host.endsWith('.amazonaws.com') &&
-      host.split('.').length === 5;
+      host.startsWith(`${bucket}.s3`) && host.endsWith('.amazonaws.com') && host.split('.').length === 5;
     return matchingProtocol && (s3Host || s3HostBucketInPath || s3HostContainsRegion);
   } catch (e) {
     logger.error(`Failed to parse url: ${val}`, e);
@@ -44,7 +40,10 @@ export const isExpiredUrl = (val: string): boolean => {
       if (isNaN(xAmzExpires)) return false;
       const xAmzDate = parsed.searchParams.get('X-Amz-Date');
       // The URL contains date in format YYYYMMDDTHHMMSSZ. We format it to ISO (YYYY-MM-DDTHH:MM:SSZ)
-      const formattedDate = `${xAmzDate!.slice(0, 4)}-${xAmzDate!.slice(4, 6)}-${xAmzDate!.slice(6, 8)}T${xAmzDate!.slice(9, 11)}:${xAmzDate!.slice(11, 13)}:${xAmzDate!.slice(13, 15)}Z`;
+      const formattedDate = `${xAmzDate!.slice(0, 4)}-${xAmzDate!.slice(4, 6)}-${xAmzDate!.slice(
+        6,
+        8
+      )}T${xAmzDate!.slice(9, 11)}:${xAmzDate!.slice(11, 13)}:${xAmzDate!.slice(13, 15)}Z`;
       const expirationDate = new Date(formattedDate);
       expirationDate.setTime(expirationDate.getTime() + xAmzExpires * 1000);
       return Date.now() > expirationDate.getTime();
@@ -93,20 +92,20 @@ export interface JoiWithExtensions extends _Joi.Root {
 const Joi: JoiWithExtensions = _Joi.extend(
   joi => ({
     type: 'objectId',
-    base: joi.string().meta({baseType: 'string'}),
-    messages: {'objectId.invalid': 'Invalid objectId'},
+    base: joi.string().meta({ baseType: 'string' }),
+    messages: { 'objectId.invalid': 'Invalid objectId' },
     validate: (value, helpers) => {
       return require('mongoose').isValidObjectId(value)
-        ? {value}
+        ? { value }
         : {
-          value,
-          errors: helpers.error('objectId.invalid')
-        };
+            value,
+            errors: helpers.error('objectId.invalid')
+          };
     }
   }),
   joi => ({
     type: 'string',
-    base: joi.string().meta({baseType: 'string'}),
+    base: joi.string().meta({ baseType: 'string' }),
     prepare: (val, helpers) => {
       let newVal = val === null || val === undefined ? val : clearNullByte(val);
 
@@ -127,7 +126,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
       defaultIfEmpty: {
         convert: true,
         method(v) {
-          return this.$_addRule({name: 'defaultIfEmpty', args: {v}});
+          return this.$_addRule({ name: 'defaultIfEmpty', args: { v } });
         },
         args: [
           {
@@ -144,22 +143,22 @@ const Joi: JoiWithExtensions = _Joi.extend(
     type: 'url',
     base: joi
       .string()
-      .uri({domain: {minDomainSegments: 2}})
-      .meta({baseType: 'string'})
+      .uri({ domain: { minDomainSegments: 2 } })
+      .meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'urlWithEmpty',
     base: joi
       .string()
-      .uri({domain: {minDomainSegments: 2}})
+      .uri({ domain: { minDomainSegments: 2 } })
       .allow('')
       .allow(null)
-      .meta({baseType: 'string'})
+      .meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'phone',
-    base: joi.string().meta({baseType: 'string'}),
-    messages: {'string.phone': 'The provided phone is invalid'},
+    base: joi.string().meta({ baseType: 'string' }),
+    messages: { 'string.phone': 'The provided phone is invalid' },
     rules: {
       stripIfInvalid: {
         method() {
@@ -170,10 +169,10 @@ const Joi: JoiWithExtensions = _Joi.extend(
     validate: (value, helpers) => {
       // From: https://github.com/Workable/workable/blob/master/app/validators/phone_validator.rb#L3
       return isValidPhone(value)
-        ? {value}
+        ? { value }
         : helpers.schema.$_getFlag('stripIfInvalid')
-          ? {value: undefined}
-          : {
+        ? { value: undefined }
+        : {
             value,
             errors: helpers.error('string.phone')
           };
@@ -181,32 +180,32 @@ const Joi: JoiWithExtensions = _Joi.extend(
   }),
   joi => ({
     type: 'hexColor',
-    base: joi.string().meta({baseType: 'string'}),
-    messages: {'string.hexcolor': 'The provided color is invalid'},
+    base: joi.string().meta({ baseType: 'string' }),
+    messages: { 'string.hexcolor': 'The provided color is invalid' },
     validate: (value, helpers) => {
       return isValidHexColor(value)
-        ? {value}
+        ? { value }
         : {
-          value,
-          errors: helpers.error('string.hexcolor')
-        };
+            value,
+            errors: helpers.error('string.hexcolor')
+          };
     }
   }),
   joi => ({
     type: 'stringWithEmpty',
-    base: joi.string().allow('').allow(null).meta({baseType: 'string'})
+    base: joi.string().allow('').allow(null).meta({ baseType: 'string' })
   }),
   joi => ({
     type: 'booleanWithEmpty',
-    base: joi.boolean().allow(null).empty().falsy('').meta({baseType: 'boolean'})
+    base: joi.boolean().allow(null).empty().falsy('').meta({ baseType: 'boolean' })
   }),
   joi => ({
     type: 'dateInThePast',
-    base: joi.date().iso().max(Date.now()).message('Date must be in the past').meta({baseType: 'date'})
+    base: joi.date().iso().max(Date.now()).message('Date must be in the past').meta({ baseType: 'date' })
   }),
   joi => ({
     type: 'urlInOwnS3',
-    base: joi.string().uri().meta({baseType: 'string'}),
+    base: joi.string().uri().meta({ baseType: 'string' }),
     messages: {
       'string.notInS3': 'Invalid path provided',
       'string.bucketRuleMissing': 'You need to provide a bucket rule',
@@ -215,7 +214,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
     rules: {
       bucket: {
         method(bucket: string) {
-          return this.$_addRule({name: 'bucket', args: {bucket}});
+          return this.$_addRule({ name: 'bucket', args: { bucket } });
         },
         args: [
           {
@@ -224,7 +223,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
             message: 'must be a non empty string'
           }
         ],
-        validate(value, helpers, {bucket}) {
+        validate(value, helpers, { bucket }) {
           if (!isOwnS3Path(bucket, value)) {
             return helpers.error('string.notInS3');
           }
@@ -233,7 +232,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
       },
       errorOnExpiredUrl: {
         method() {
-          return this.$_addRule({name: 'errorOnExpiredUrl'});
+          return this.$_addRule({ name: 'errorOnExpiredUrl' });
         },
         args: [],
         validate(value, helpers) {
@@ -244,18 +243,18 @@ const Joi: JoiWithExtensions = _Joi.extend(
     },
     validate(value, helpers) {
       if (!helpers.schema.$_getRule('bucket')) {
-        return {errors: helpers.error('string.bucketRuleMissing')};
+        return { errors: helpers.error('string.bucketRuleMissing') };
       }
-      return {value};
+      return { value };
     }
   }),
   joi => ({
     type: 'safeHtml',
-    base: joi.string().meta({baseType: 'string'}),
+    base: joi.string().meta({ baseType: 'string' }),
     rules: {
       allowedTags: {
         method(allowedTags: string) {
-          return this.$_addRule({name: 'allowedTags', args: {allowedTags}});
+          return this.$_addRule({ name: 'allowedTags', args: { allowedTags } });
         },
         args: [
           {
@@ -269,7 +268,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
       },
       allowedAttributes: {
         method(allowedAttributes: string) {
-          return this.$_addRule({name: 'allowedAttributes', args: {allowedAttributes}});
+          return this.$_addRule({ name: 'allowedAttributes', args: { allowedAttributes } });
         },
         args: [
           {
@@ -299,7 +298,7 @@ const Joi: JoiWithExtensions = _Joi.extend(
         font: ['color']
       };
       return {
-        value: sanitizeHtml(value, {allowedTags, allowedAttributes})
+        value: sanitizeHtml(value, { allowedTags, allowedAttributes })
       };
     }
   })
