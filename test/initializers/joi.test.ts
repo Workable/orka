@@ -226,6 +226,10 @@ describe('joi extensions', function () {
       Joi.safeHtml().allowedAttributes({}).allowedTags([])
         .validate('<p>banana</p>').value.should.equal('banana');
     });
+    it('allow any attribute', function () {
+      Joi.safeHtml().allowedAttributes(false)
+        .validate('<p class="asd" rel="asd">banana</p>').value.should.equal('<p class="asd" rel="asd">banana</p>');
+    });
   });
 
   describe('objectid', function () {
