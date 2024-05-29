@@ -58,6 +58,8 @@ export const isExpiredUrl = (val: string): boolean => {
 type SafeHtml = _Joi.StringSchema & {
   allowedTags: (tags: string[] | false) => SafeHtml;
   allowedAttributes: (attributes: { [key: string]: string[] } | false) => SafeHtml;
+  allowedSchemes: (schemes: string[]) => SafeHtml;
+  allowedSchemesAppliedToAttributes: (schemesAppliedToAttributes: string[]) => SafeHtml;
 };
 
 type UrlInOwnS3 = _Joi.StringSchema & {
@@ -279,6 +281,37 @@ const Joi: JoiWithExtensions = _Joi.extend(
         validate(value) {
           return value;
         }
+      },
+      allowedSchemes: {
+        method(allowedSchemes: string) {
+          return this.$_addRule({ name: 'allowedSchemes', args: { allowedSchemes } });
+        },
+        args: [
+          {
+            name: 'allowedSchemes',
+            message: 'must be a non empty object'
+          }
+        ],
+        validate(value) {
+          return value;
+        }
+      },
+      allowedSchemesAppliedToAttributes: {
+        method(allowedSchemesAppliedToAttributes: string) {
+          return this.$_addRule({
+            name: 'allowedSchemesAppliedToAttributes',
+            args: { allowedSchemesAppliedToAttributes }
+          });
+        },
+        args: [
+          {
+            name: 'allowedSchemesAppliedToAttributes',
+            message: 'must be a non empty object'
+          }
+        ],
+        validate(value) {
+          return value;
+        }
       }
     },
     prepare: (value, helpers) => {
@@ -297,8 +330,18 @@ const Joi: JoiWithExtensions = _Joi.extend(
         a: ['href', 'target', 'rel'],
         font: ['color']
       };
+      const allowedSchemes =
+        helpers.schema.$_getRule('allowedSchemes')?.args?.allowedSchemes ?? sanitizeHtml.defaults.allowedSchemes;
+      const allowedSchemesAppliedToAttributes =
+        helpers.schema.$_getRule('allowedSchemesAppliedToAttributes')?.args?.allowedSchemesAppliedToAttributes ??
+        sanitizeHtml.defaults.allowedSchemesAppliedToAttributes;
       return {
-        value: sanitizeHtml(value, { allowedTags, allowedAttributes })
+        value: sanitizeHtml(value, {
+          allowedTags,
+          allowedAttributes,
+          allowedSchemes,
+          allowedSchemesAppliedToAttributes
+        })
       };
     }
   })
