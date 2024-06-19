@@ -1,4 +1,5 @@
 import * as Honeybadger from '@honeybadger-io/js';
+import { getRequestContext } from '../../builder';
 
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
@@ -31,9 +32,11 @@ function buildContext(rest: any[]) {
 function buildPayload(categoryName, error, context) {
   let actionFallback = context.action;
   let componentFallback = context.component || categoryName;
+  let tags: string[] = context.tags || [];
 
   delete context.action;
   delete context.component;
+  delete context.tags;
 
   let { headers = {}, params = {} } = error;
   error.action ||= actionFallback;
@@ -42,6 +45,8 @@ function buildPayload(categoryName, error, context) {
   Object.assign(context, error.context);
   Object.assign(headers, context.headers);
   Object.assign(params, context.params);
+  tags = tags.concat(error.tags || []);
+  tags = tags.concat(getRequestContext()?.get('honeybadgerTags') || []);
 
   const fingerprint = generateFingerprint(categoryName, error, context);
   delete context.fingerprint;
@@ -55,6 +60,7 @@ function buildPayload(categoryName, error, context) {
     action: error.action,
     component: error.component,
     params,
+    tags,
     fingerprint
   };
 }
