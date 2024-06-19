@@ -135,7 +135,7 @@ describe('log4js_honeybadger_appender', () => {
         level: 40000
       },
       categoryName: 'testCategoryName',
-      data: [err, {fingerprint: 'CustomError'}]
+      data: [err, { fingerprint: 'CustomError' }]
     });
     notifySpy.callCount.should.equal(1);
     notifySpy.args[0][1].fingerprint.should.equal('CustomError');

@@ -4,59 +4,68 @@ const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
 
 function notifyHoneybadger(categoryName, error, ...rest) {
+  if (!error) return;
+  error = buildError(error, rest);
+
+  let context = buildContext(rest);
+  let payload = buildPayload(categoryName, error, context);
+
+  Honeybadger.notify(error, payload);
+}
+
+function buildError(error: Error | string, rest: any[]) {
   if (typeof error === 'string') {
     error = new Error(error);
   }
 
-  if (!error) {
-    return;
-  }
+  const message = rest.filter(r => typeof r === 'string').join('. ');
+  if (message) error.message = `${error.message}. ${message}`;
 
-  let context = {} as any;
-  let message = error.message;
-  rest.forEach(r => {
-    if (typeof r === 'string') {
-      message += `. ${r}`;
-    } else {
-      Object.assign(context, r);
-    }
-  });
+  return error;
+}
 
+function buildContext(rest: any[]) {
+  return rest.filter(r => typeof r !== 'string').reduce((acc, r) => Object.assign(acc, r), {});
+}
+
+function buildPayload(categoryName, error, context) {
   let actionFallback = context.action;
-  let componentFallback = context.component;
+  let componentFallback = context.component || categoryName;
 
   delete context.action;
   delete context.component;
 
-  let { headers = {}, action = actionFallback, component = componentFallback, params = {}, name } = error;
+  let { headers = {}, params = {} } = error;
+  error.action ||= actionFallback;
+  error.component ||= componentFallback;
 
   Object.assign(context, error.context);
+  Object.assign(headers, context.headers);
+  Object.assign(params, context.params);
 
-  const computedComponent = component || categoryName;
-
-  const fingerprint = context.fingerprint || generateFingerprint(name, computedComponent, action) || categoryName;
+  const fingerprint = generateFingerprint(categoryName, error, context);
   delete context.fingerprint;
 
-  Honeybadger.notify(
-    { stack: error.stack, message, name },
-    {
-      context,
-      headers,
-      cgiData: {
-        'server-software': `Node ${process.version}`
-      },
-      action,
-      component: computedComponent,
-      params,
-      fingerprint
-    }
-  );
+  return {
+    context,
+    headers,
+    cgiData: {
+      'server-software': `Node ${process.version}`
+    },
+    action: error.action,
+    component: error.component,
+    params,
+    fingerprint
+  };
 }
 
-const generateFingerprint = (name, component, action) => {
-  if (!action || !component) {
-    return;
-  }
+const generateFingerprint = (categoryName, error, context) => {
+  if (context.fingerprint) return context.fingerprint;
+  const action = error.action;
+  const component = error.component;
+  const name = error.name;
+
+  if (!action || !component) return categoryName;
 
   if (name && name !== 'Error') {
     return `${name}_${component}_${action}`;
