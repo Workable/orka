@@ -39,7 +39,7 @@ function updateSend(kafka: Kafka, config: { traceHeaderName: string }) {
       const traceHeaderName = config.traceHeaderName.toLowerCase();
       appendHeadersFromStore(message, getRequestContext(), config);
       if (!message.key && message.headers[traceHeaderName]) {
-        message.key = message.headers[traceHeaderName];
+        message.key = message.headers[traceHeaderName] as Buffer | string | null;
       }
     });
     const sent: KafkajsType.RecordMetadata[] = await originalSend.call(this, record);

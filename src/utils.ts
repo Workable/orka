@@ -25,7 +25,7 @@ export const nodeVersionGreaterThanEqual = (requestedVersion: string, version = 
 };
 
 export function appendHeadersFromStore(
-  properties: { headers?: Record<string, string | Buffer | undefined> },
+  properties: { headers?: { [key: string]: Buffer | string | (Buffer | string)[] | undefined } },
   store: Map<string, string | Record<string, string>>,
   config: Record<string, any>
 ) {
