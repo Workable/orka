@@ -120,7 +120,7 @@ describe('json-appender', function () {
     text.should.eql('default body');
     const cleanStack = msg => {
       const stack = JSON.parse(msg);
-      stack.stack_trace = stack.stack_trace.substring(0, 31);
+      stack.stack_trace = stack.stack_trace?.substring(0, 31);
       return stack;
     };
     logSpy.args
@@ -134,35 +134,35 @@ describe('json-appender', function () {
             message: 'test - this was a test warning',
             stack_trace: 'Error: test\n    at /logWarning ',
             context: pickBy({
-            propagatedHeaders: { 'x-orka-request-id': 'test-id' },
-            requestId: 'test-id',
-            context: 'foo'
+              propagatedHeaders: { 'x-orka-request-id': 'test-id' },
+              requestId: 'test-id',
+              context: 'foo'
             })
-        }
-      ],
-      [
-        {
-          timestamp: '2019-01-01T00:00:00.000Z',
-          severity: 'ERROR',
-          categoryName: 'orka.errorHandler',
-          message: 'test',
-          stack_trace: 'Error: test\n    at /logWarning ',
-          context: pickBy(
+          }
+        ],
+        [
           {
-            expose: false,
-            statusCode: 505,
-            status: 505,
-            component: 'koa',
-            action: '/logWarning',
-            params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
-            propagatedHeaders: { 'x-orka-request-id': 'test-id' },
-            state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
-            requestId: 'test-id'
-          },
-        _ => _ !== undefined
-         )
-        }
-      ]
-    ]);
+            timestamp: '2019-01-01T00:00:00.000Z',
+            severity: 'ERROR',
+            categoryName: 'orka.errorHandler',
+            message: 'test',
+            stack_trace: 'Error: test\n    at /logWarning ',
+            context: pickBy(
+              {
+                expose: false,
+                statusCode: 505,
+                status: 505,
+                component: 'koa',
+                action: '/logWarning',
+                params: { path: {}, query: {}, body: {}, requestId: 'test-id' },
+                propagatedHeaders: { 'x-orka-request-id': 'test-id' },
+                state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
+                requestId: 'test-id'
+              },
+              _ => _ !== undefined
+            )
+          }
+        ]
+      ]);
   });
 });

@@ -2,6 +2,7 @@ import * as appender from '../../../src/initializers/log4js/honeybadger-appender
 import 'should';
 import * as Honeybadger from '@honeybadger-io/js';
 import * as sinon from 'sinon';
+import { runWithContext } from '../../../src/builder';
 
 const sandbox = sinon.createSandbox();
 
@@ -46,6 +47,7 @@ describe('log4js_honeybadger_appender', () => {
       action: undefined,
       component: 'testCategoryName',
       params: {},
+      tags: [],
       fingerprint: 'testCategoryName'
     });
   });
@@ -82,6 +84,7 @@ describe('log4js_honeybadger_appender', () => {
       action: '/test/endpoint',
       component: 'testCategoryName',
       params: {},
+      tags: [],
       fingerprint: 'testCategoryName_/test/endpoint'
     });
   });
@@ -135,7 +138,7 @@ describe('log4js_honeybadger_appender', () => {
         level: 40000
       },
       categoryName: 'testCategoryName',
-      data: [err, {fingerprint: 'CustomError'}]
+      data: [err, { fingerprint: 'CustomError' }]
     });
     notifySpy.callCount.should.equal(1);
     notifySpy.args[0][1].fingerprint.should.equal('CustomError');
@@ -161,44 +164,49 @@ describe('log4js_honeybadger_appender', () => {
 
   it('should assign any additional json values to the context', () => {
     const err = new Error('omg') as any;
-    err.status = 200;
-    err.component = 'testController';
-    err.action = '/test/endpoint';
-    err.context = {
-      something: 'ok'
-    };
-    appender.configure()({
-      level: {
-        level: 40000
-      },
-      categoryName: 'testCategoryName',
-      data: [
-        err,
-        {
-          a: 'aOK',
-          b: 'bOK'
-        },
-        {
-          c: 'cOK'
-        }
-      ]
-    });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][1].should.eql({
-      context: {
-        a: 'aOK',
-        b: 'bOK',
-        c: 'cOK',
+    runWithContext(new Map([['honeybadgerTags', ['context-tag']]]), () => {
+      err.status = 200;
+      err.tags = ['error-tag'];
+      err.component = 'testController';
+      err.action = '/test/endpoint';
+      err.context = {
         something: 'ok'
-      },
-      headers: {},
-      cgiData: {
-        'server-software': `Node ${process.version}`
-      },
-      action: '/test/endpoint',
-      component: 'testController',
-      params: {},
-      fingerprint: 'testController_/test/endpoint'
+      };
+      appender.configure()({
+        level: {
+          level: 40000
+        },
+        categoryName: 'testCategoryName',
+        data: [
+          err,
+          {
+            a: 'aOK',
+            b: 'bOK'
+          },
+          {
+            c: 'cOK'
+          },
+          { tags: ['tag3'] }
+        ]
+      });
+      notifySpy.callCount.should.equal(1);
+      notifySpy.args[0][1].should.eql({
+        context: {
+          a: 'aOK',
+          b: 'bOK',
+          c: 'cOK',
+          something: 'ok'
+        },
+        headers: {},
+        cgiData: {
+          'server-software': `Node ${process.version}`
+        },
+        action: '/test/endpoint',
+        component: 'testController',
+        params: {},
+        tags: ['tag3', 'error-tag', 'context-tag'],
+        fingerprint: 'testController_/test/endpoint'
+      });
     });
   });
 });
