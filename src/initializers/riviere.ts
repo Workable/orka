@@ -48,6 +48,7 @@ const init = (config, orkaOptions) => {
     bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
     bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
+    hostFieldName: config.riviere.hostFieldName,
     context: (ctx: Koa.Context) => {
       return {
         visitor: ctx.state.visitor,
