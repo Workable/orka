@@ -25,4 +25,4 @@ any custom keys given will be added to context sent to HB.
 You can add tags in 3 ways:
   - The error has a tags property
   - You pass tags like above
-  - You add honeybadgerTags key with array of tags in (requestContext)[https://github.com/Workable/orka/blob/b76ca8da9fbc87aa2368f8fe3338d7cfdccac64d/docs/request-context.md?plain=1#L135] 
+  - You add honeybadgerTags key with array of tags in [requestContext](https://github.com/Workable/orka/blob/b76ca8da9fbc87aa2368f8fe3338d7cfdccac64d/docs/request-context.md?plain=1#L135) 
