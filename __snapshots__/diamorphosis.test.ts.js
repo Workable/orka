@@ -100,7 +100,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     },
     "color": true,
     "styles": [],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "healthCheck": {
     "kafka": false,
@@ -326,7 +327,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "healthCheck": {
     "kafka": false,
@@ -552,7 +554,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "healthCheck": {
     "kafka": false,
@@ -778,7 +781,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "healthCheck": {
     "kafka": false,
@@ -931,7 +935,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "simple"
     ],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "nodeEnv": "development",
   "app": {
@@ -1283,7 +1288,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     },
     "color": true,
     "styles": [],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "queue": {
     "url": "",
@@ -1516,7 +1522,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "styles": [
       "json"
     ],
-    "headersRegex": "(^X-.*)|cf-ray"
+    "headersRegex": "(^X-.*)|cf-ray",
+    "hostFieldName": "host"
   },
   "queue": {
     "url": "",

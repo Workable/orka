@@ -93,6 +93,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
     styles: [],
     headersRegex: '(^X-.*)|cf-ray',
     maxBodyValueChars: undefined,
+    hostFieldName: 'host',
     ...config.riviere
   };
 
