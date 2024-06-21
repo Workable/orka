@@ -54,7 +54,7 @@
   "dependencies": {
     "@google-cloud/debug-agent": "^5.2.8",
     "@honeybadger-io/js": "^6.5.3",
-    "@workablehr/riviere": "github:Workable/riviere#host",
+    "@workablehr/riviere": "*",
     "chalk": "^2.4.2",
     "codependency": "^2.1.0",
     "diamorphosis": "^1.0.0",
