@@ -109,10 +109,10 @@ export default class OrkaKafka {
     const renamings = await Promise.all(
       groupIds
         .map(async ({ groupId, topic, oldGroupId }) => {
-          const offsets = (await admin.fetchOffsets({ groupId, topics: [topic], resolveOffsets: false }))[0];
+          const [offsets] = await admin.fetchOffsets({ groupId, topics: [topic], resolveOffsets: false });
           if (offsets.partitions.every(({ offset }) => offset === '-1')) {
             // groupId is not configured
-            const oldOffsets = (await admin.fetchOffsets({ groupId: oldGroupId, topics: [topic], resolveOffsets: false }))[0];
+            const [oldOffsets] = (await admin.fetchOffsets({ groupId: oldGroupId, topics: [topic], resolveOffsets: false }));
             const knownOffsets = oldOffsets.partitions.filter(o => o.offset !== '-1');
             if (!isEmpty(knownOffsets)) await admin.setOffsets({ groupId, topic, partitions: knownOffsets });
             return { groupId, renamedFrom: oldGroupId, topic, oldOffsets: knownOffsets };
@@ -180,5 +180,5 @@ function getAuthOptions(options: {
   const { key, cert, ca } = options.certificates || {};
   if (key && cert && ca) return { ssl: { ...options.certificates, ca: flatten([ca]) } };
   const { username, password } = options.sasl || {};
-  if (username && password) return { sasl: {...options.sasl }, ssl: options.ssl };
+  if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }
