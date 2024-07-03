@@ -242,3 +242,24 @@ You also need to specify the new group ids in your consumers while previously yo
 Once the new group ids are created you can remove the code that copies their offsets from old group ids. This is causing no issues thought as it doesn't do anything if the new group ids are found with offsets set.
 
 If you are using the renameGroupIds (before creating your consumers) your consumers will continue reading messages from the offset specified from the old groupId regardless if you set the fromBeginning configuration. FromBeginning configuration will be used if the groupId, topic is not found in kafka.
+
+## Migrating from orka < 5.x.x
+
+Since Orka 5.x.x, the required KafkaJS version is ^2.x.x
+(more info on the KafkaJS changes [here](https://kafka.js.org/docs/migration-guide-v2.0.0))
+
+The only possible implication is the update of the DefaultPartitioner (https://kafka.js.org/docs/migration-guide-v2.0.0#producer-new-default-partitioner). This may case
+issues in partition-aware environments, since some messages may be produced in different partitions than they would with the previous default partitioner.
+
+By default, Orka ^5.x.x will use the new DefaultPartitioner (previously named JavaCompatiblePartitioner).
+You can use the previous DefaultPartitioner (now renamed to LegacyPartitioner) with:
+
+```js
+import { Partitioners } from 'kafkajs';
+
+builder({…some static options here…})
+  ...
+  .withKafka({ createPartitioner: Partitioners.LegacyPartitioner })
+  .start(8080);
+```
+
