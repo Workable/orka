@@ -75,8 +75,4 @@ ObjectId using new mongoose.
 - Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
 - Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
 - Mongoose migrated to v7 which has breaking changes see [here](https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html)
-
-### Migrating from orka  4.x to 5.x
-- KafkaJS version is specified to 2.x.x. KafkaJS 2.x.x will use the JavaCompatiblePartitioner as the DefaultPartitioner
-- Additional information about breaking changes when migrating to KafkaJS 2.x.x can be found at https://kafka.js.org/docs/migration-guide-v2.0.0#producer-new-default-partitioner
-- If needed, you can specify the old Default Partitioner by passing it as an option when instantiating Orka (more info [here](https://workable.github.io/orka/integrations/kafka.html#migrating-from-orka--5xx))
+- KafkaJS version is specified to 2.x.x. Additional information about breaking changes when migrating to KafkaJS 2.x.x can be found at https://kafka.js.org/docs/migration-guide-v2.0.0
