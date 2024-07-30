@@ -3,8 +3,7 @@ import requireInjected from '../../require-injected';
 import { KafkaConfig } from '../../typings/kafka';
 import type * as KafkajsType from 'kafkajs';
 import { flatten, isEmpty } from 'lodash';
-
-const { Kafka }: typeof KafkajsType = requireInjected('kafkajs');
+const { Kafka, Partitioners }: typeof KafkajsType = requireInjected('kafkajs');
 const logger = getLogger('orka.kafka');
 
 export default class OrkaKafka {
@@ -35,6 +34,7 @@ export default class OrkaKafka {
       authenticationTimeout
     });
 
+    if (options && !options.createPartitioner) options.createPartitioner = Partitioners.DefaultPartitioner;
     this.producer = this.produceClient.producer(options);
 
     const { CONNECT, DISCONNECT } = this.producer.events;
@@ -109,11 +109,11 @@ export default class OrkaKafka {
     const renamings = await Promise.all(
       groupIds
         .map(async ({ groupId, topic, oldGroupId }) => {
-          const offsets = await admin.fetchOffsets({ groupId, topic, resolveOffsets: false });
-          if (offsets.every(({ offset }) => offset === '-1')) {
+          const [offsets] = await admin.fetchOffsets({ groupId, topics: [topic], resolveOffsets: false });
+          if (offsets.partitions.every(({ offset }) => offset === '-1')) {
             // groupId is not configured
-            const oldOffsets = await admin.fetchOffsets({ groupId: oldGroupId, topic, resolveOffsets: false });
-            const knownOffsets = oldOffsets?.filter(o => o.offset !== '-1');
+            const [oldOffsets] = (await admin.fetchOffsets({ groupId: oldGroupId, topics: [topic], resolveOffsets: false }));
+            const knownOffsets = oldOffsets.partitions.filter(o => o.offset !== '-1');
             if (!isEmpty(knownOffsets)) await admin.setOffsets({ groupId, topic, partitions: knownOffsets });
             return { groupId, renamedFrom: oldGroupId, topic, oldOffsets: knownOffsets };
           } else {
@@ -179,7 +179,6 @@ function getAuthOptions(options: {
 }) {
   const { key, cert, ca } = options.certificates || {};
   if (key && cert && ca) return { ssl: { ...options.certificates, ca: flatten([ca]) } };
-
   const { username, password } = options.sasl || {};
   if (username && password) return { sasl: options.sasl, ssl: options.ssl };
 }

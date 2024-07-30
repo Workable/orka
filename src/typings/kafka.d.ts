@@ -6,7 +6,15 @@ export interface KafkaConfig {
     rejectUnauthorized: boolean;
   };
   sasl?: {
-    mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
+    mechanism: 'plain';
+    username: string;
+    password: string;
+  } | {
+    mechanism: 'scram-sha-256';
+    username: string;
+    password: string;
+  } | {
+    mechanism: 'scram-sha-512';
     username: string;
     password: string;
   };
@@ -24,7 +32,15 @@ export interface KafkaConfig {
     };
     ssl?: boolean;
     sasl?: {
-      mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
+      mechanism: 'plain';
+      username: string;
+      password: string;
+    } | {
+      mechanism: 'scram-sha-256';
+      username: string;
+      password: string;
+    } | {
+      mechanism: 'scram-sha-512';
       username: string;
       password: string;
     };

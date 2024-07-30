@@ -75,3 +75,4 @@ ObjectId using new mongoose.
 - Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
 - Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
 - Mongoose migrated to v7 which has breaking changes see [here](https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html)
+- KafkaJS version is specified to 2.x.x. Additional information about breaking changes when migrating to KafkaJS 2.x.x can be found at https://kafka.js.org/docs/migration-guide-v2.0.0
