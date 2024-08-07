@@ -1,15 +1,18 @@
 import * as lodash from 'lodash';
 import { getRequestContext } from '../../builder';
+import { injectTrace } from '../datadog';
 
 const jsonAppender = (layout, config) => {
   return logEvent => {
     let isLevelError = logEvent.level.levelStr === 'ERROR';
     let isFirstElemError = logEvent?.data?.[0] instanceof Error;
-    let event = isLevelError || isFirstElemError
+    let event =
+      isLevelError || isFirstElemError
         ? createErrorLog(layout, logEvent, config)
         : createValidLog(layout, logEvent, config);
     let json = '';
     try {
+      injectTrace(event);
       json = JSON.stringify(event);
     } catch (error) {
       let seen = new WeakSet();
