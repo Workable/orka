@@ -1,15 +1,23 @@
 import * as lodash from 'lodash';
 import { getRequestContext } from '../../builder';
+import { formats } from 'dd-trace/ext';
+import { isDatadogEnabled, getDatadogTracer } from '../datadog';
 
 const jsonAppender = (layout, config) => {
   return logEvent => {
     let isLevelError = logEvent.level.levelStr === 'ERROR';
     let isFirstElemError = logEvent?.data?.[0] instanceof Error;
-    let event = isLevelError || isFirstElemError
+    let event =
+      isLevelError || isFirstElemError
         ? createErrorLog(layout, logEvent, config)
         : createValidLog(layout, logEvent, config);
     let json = '';
     try {
+      const tracer = isDatadogEnabled() && getDatadogTracer();
+      const span = tracer?.scope()?.active();
+      if (span) {
+        tracer.inject(span.context(), formats.LOG, event);
+      }
       json = JSON.stringify(event);
     } catch (error) {
       let seen = new WeakSet();
