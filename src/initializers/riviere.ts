@@ -4,6 +4,7 @@ import * as Koa from 'koa';
 import { getRequestContext } from '../builder';
 import { getLogger } from './log4js';
 import { appendHeadersFromStore } from '../utils';
+import { injectTrace } from '../initializers/datadog';
 const http = require('http');
 const https = require('https');
 
@@ -49,6 +50,7 @@ const init = (config, orkaOptions) => {
     bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
     hostFieldName: config.riviere.hostFieldName,
+    loggerCallback: injectTrace,
     context: (ctx: Koa.Context) => {
       return {
         visitor: ctx.state.visitor,
