@@ -1,5 +1,6 @@
 import requireInjected from '../../require-injected';
 import { getLogger } from '../log4js';
+import { formats } from 'dd-trace/ext';
 
 let tracer;
 export default config => {
@@ -22,4 +23,12 @@ export const getDatadogTracer = () => {
 
 export const isDatadogEnabled = () => {
   return process.env.DD_SERVICE && process.env.DD_ENV;
+};
+
+export const injectTrace = (event: any) => {
+  if (!isDatadogEnabled()) return;
+  const span = tracer?.scope()?.active();
+  if (span) {
+    tracer.inject(span.context(), formats.LOG, event);
+  }
 };
