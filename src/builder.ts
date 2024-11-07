@@ -12,7 +12,7 @@ let als: AsyncLocalStorage<Map<string, any>> = new AsyncLocalStorage<Map<string,
 
 export const getRequestContext = () => als?.getStore();
 
-export const runWithContext = (store: Map<string, any>, callback: (args: any[]) => void, ...args: any[]) => {
+export const runWithContext = <T>(store: Map<string, any>, callback: (args: any[]) => T, ...args: any[]) => {
   if (!als) {
     throw new Error('AsyncLocalStorage is not supported');
   }
