@@ -76,4 +76,5 @@ ObjectId using new mongoose.
 - Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
 - Mongoose migrated to v7 which has breaking changes see [here](https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html)
 - KafkaJS version is specified to 2.x.x. Additional information about breaking changes when migrating to KafkaJS 2.x.x can be found at https://kafka.js.org/docs/migration-guide-v2.0.0
-- Mongoose migrated to v8 which has breaking changes see [here](https://mongoosejs.com/docs/migrating_to_8.html)
+- Mongoose migrated to `^8.7.0` which has breaking changes see [here](https://mongoosejs.com/docs/migrating_to_8.html)
+- DD-trace optional dependency migrated to `^4.30.0` to support the newer versions of the MongoDB driver (^v6.4) [reference](https://github.com/DataDog/dd-trace-js/releases/tag/v4.30.0).
