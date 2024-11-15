@@ -92,7 +92,7 @@
     "@types/sinon": "^7.5.0",
     "axios": "*",
     "bull": "*",
-    "dd-trace": "^4.30.0",
+    "dd-trace": ">=4.30.0",
     "growthbook": "npm:@growthbook/growthbook@*",
     "husky": "^3.0.9",
     "kafkajs": "^2.0.0",
@@ -116,7 +116,7 @@
   },
   "optionalPeerDependencies": {
     "bull": "*",
-    "dd-trace": "^4.30.0",
+    "dd-trace": ">=4.30.0",
     "newrelic": "*",
     "prom-client": "*",
     "pg": "*",
