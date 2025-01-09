@@ -48,6 +48,7 @@ describe('examples', function () {
     let server;
     describe('Example:' + name, function () {
       after(function () {
+        deleteEnv();
         if (server) server.stop();
       });
 
