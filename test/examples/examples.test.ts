@@ -25,7 +25,7 @@ const ws: [string, string, Function?][] = [
     '../../examples/simple-example/app',
     'simple-example datadog',
     () => {
-      process.env.DD_SERVICE = 'serivce';
+      process.env.DD_SERVICE = 'service';
       process.env.DD_ENV = 'env';
     }
   ]
