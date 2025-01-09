@@ -48,7 +48,8 @@ describe('Datadog match routes middleware', function () {
       next.called.should.be.true();
       stub.args.should.eql([
         ['resource.name', 'GET /api/foo/bar'],
-        ['matchedRoute', '/api/foo/bar']
+        ['matchedRoute', '/api/foo/bar'],
+        ['params', undefined]
       ]);
     });
 
@@ -77,7 +78,8 @@ describe('Datadog match routes middleware', function () {
       next.called.should.be.true();
       stub.args.should.eql([
         ['resource.name', 'GET /api/foo/bar'],
-        ['matchedRoute', '/api/foo/bar']
+        ['matchedRoute', '/api/foo/bar'],
+        ['params', undefined]
       ]);
     });
   });

@@ -5,16 +5,29 @@ import { getLogger } from '../../build/initializers/log4js';
 import * as sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
+function deleteEnv() {
+  delete process.env.NEW_RELIC_LICENSE_KEY;
+  delete process.env.DD_SERVICE;
+  delete process.env.DD_ENV;
+}
 const ws: [string, string, Function?][] = [
-  ['../../examples/simple-example/app', 'simple-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
-  ['../../examples/builder-example/app', 'builder-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
+  ['../../examples/simple-example/app', 'simple-example'],
+  ['../../examples/builder-example/app', 'builder-example'],
   ['../../examples/simple-example/app', 'simple-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
   ['../../examples/builder-example/app', 'builder-example newrelic', () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')],
-  ['../../examples/two-steps-example/app', 'two-steps-example', () => delete process.env.NEW_RELIC_LICENSE_KEY],
+  ['../../examples/two-steps-example/app', 'two-steps-example'],
   [
     '../../examples/callback-example/app',
     'callback-example newrelic',
     () => (process.env.NEW_RELIC_LICENSE_KEY = 'foo')
+  ],
+  [
+    '../../examples/simple-example/app',
+    'simple-example datadog',
+    () => {
+      process.env.DD_SERVICE = 'serivce';
+      process.env.DD_ENV = 'env';
+    }
   ]
 ];
 
@@ -45,6 +58,7 @@ describe('examples', function () {
         delete require.cache[require.resolve('amqplib')];
         delete require.cache[require.resolve('../../build/builder.js')];
         delete require.cache[require.resolve('../../build/index.js')];
+        deleteEnv();
         if (setEnv) setEnv();
         server = require(serverPath);
         return server.start();

@@ -1,7 +1,8 @@
 import requireInjected from '../../require-injected';
 import { getLogger } from '../log4js';
+import { Tracer } from 'dd-trace';
 
-let tracer;
+let tracer: Tracer;
 export default config => {
   if (isDatadogEnabled()) {
     tracer = requireInjected('dd-trace').init();
@@ -33,3 +34,23 @@ export const injectTrace = (event: any) => {
     tracer.inject(span.context(), formats.LOG, event);
   }
 };
+
+export async function traceFastKoaRouter(routes: { [key: string]: any }) {
+  if (!tracer) return;
+
+  const datadogMatchRoutes = await import('../../middlewares/datadog-match-routes');
+  for (const key of Object.keys(routes)) {
+    const route = routes[key];
+    if (key === 'middleware') {
+      routes[key] = [datadogMatchRoutes.default, ...route].map(m => {
+        const trace = (ctx, next) => {
+          return tracer.trace(m.name, {}, () => m(ctx, next));
+        };
+        Object.defineProperty(trace, 'name', { value: m.name, configurable: true });
+        return trace;
+      });
+    } else if (typeof route === 'object') {
+      traceFastKoaRouter(route);
+    }
+  }
+}

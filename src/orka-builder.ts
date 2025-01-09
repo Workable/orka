@@ -28,6 +28,7 @@ import postgres from './initializers/postgres';
 import * as Koa from 'koa';
 import { AsyncLocalStorage } from 'async_hooks';
 import type WorkerType from './initializers/worker';
+import { traceFastKoaRouter } from './initializers/datadog';
 
 export default class OrkaBuilder {
   public static INSTANCE: OrkaBuilder;
@@ -91,7 +92,11 @@ export default class OrkaBuilder {
     { credentials = undefined, allowedOrigins = this.config.allowedOrigins, publicPrefixes = [] } = this.config.cors ||
       {}
   ) {
-    const allowedOrigin = new RegExp('^https?://(www\\.)?([^.]+\\.)?((' + allowedOrigins.map(ao => ao.replaceAll('.', '\\.').replaceAll('*', '.*')).join(')|(') + '))$');
+    const allowedOrigin = new RegExp(
+      '^https?://(www\\.)?([^.]+\\.)?((' +
+        allowedOrigins.map(ao => ao.replaceAll('.', '\\.').replaceAll('*', '.*')).join(')|(') +
+        '))$'
+    );
 
     return this.use(() =>
       cors({
@@ -168,7 +173,8 @@ export default class OrkaBuilder {
       if (!gb) return;
 
       const logger = getLogger('orka.growthbook');
-      await gb.loadFeatures()
+      await gb
+        .loadFeatures()
         .then(() => logger.info('Growthbook features loaded'))
         .catch(e => logger.error('Unable to load features', e));
     });
@@ -196,6 +202,7 @@ export default class OrkaBuilder {
       let routes = require(path.resolve(m));
       routes = routes.default && Object.keys(routes).length === 1 ? routes.default : routes;
       this.defaultRouter = router(routes);
+      traceFastKoaRouter(this.defaultRouter.routes);
       return this.defaultRouter;
     });
   }
