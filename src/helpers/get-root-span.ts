@@ -8,7 +8,8 @@ export default function getRootSpan(ctx) {
   if (!ddSpan) {
     try {
       const activeSpan = getDatadogTracer()?.scope()?.active();
-      if (activeSpan?.context()?._trace?.started.length > 0) ddSpan = activeSpan?.context()?._trace?.started[0];
+      const internalTrace = (activeSpan?.context() as any)?._trace;
+      if (internalTrace?.started.length > 0) ddSpan = internalTrace?.started[0];
     } catch (e) {
       const logger = getLogger('orka.helpers.get-root-span');
       logger.error(e, 'dd-trace error trying to find root span');
