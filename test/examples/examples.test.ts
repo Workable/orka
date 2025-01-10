@@ -35,12 +35,19 @@ describe('examples', function () {
   let loggerSpy;
   before(function () {
     mockRequire('newrelic', () => console.log('initialized newrelic'));
-    mockRequire('tracer', () => console.log('initialized datadog tracer'));
+    mockRequire('dd-trace', {
+      init: () => ({
+        use: () => ({}),
+        trace: (name, options, fn) => fn(),
+        scope: () => ({ active: () => ({ context: () => ({ _trace: { started: [{ setTag: sandbox.stub() }] } }) }) })
+      })
+    });
     const logger = getLogger('orka');
     loggerSpy = sandbox.stub(logger, 'warn');
   });
 
   after(function () {
+    deleteEnv();
     sandbox.restore();
   });
 
@@ -48,7 +55,6 @@ describe('examples', function () {
     let server;
     describe('Example:' + name, function () {
       after(function () {
-        deleteEnv();
         if (server) server.stop();
       });
 
