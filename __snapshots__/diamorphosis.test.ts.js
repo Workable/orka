@@ -149,7 +149,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       }
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "queue": {
     "url": "",
@@ -376,7 +376,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "queue": {
     "url": "",
@@ -603,7 +603,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "queue": {
     "url": "",
@@ -830,7 +830,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "queue": {
     "url": "",
@@ -1057,7 +1057,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "queue": {
     "url": "",
@@ -1178,7 +1178,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "password": ""
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "healthCheck": {
     "kafka": true,
@@ -1410,7 +1410,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "password": ""
     },
     "connectionTimeout": 1000,
-    "authenticationTimeout": 1000
+    "authenticationTimeout": 10000
   },
   "healthCheck": {
     "kafka": true,
