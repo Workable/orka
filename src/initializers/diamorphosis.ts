@@ -209,7 +209,7 @@ function addKafkaConfig(config) {
       }
     },
     connectionTimeout: 1000,
-    authenticationTimeout: 1000
+    authenticationTimeout: 10000
   };
 }
 

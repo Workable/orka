@@ -74,7 +74,7 @@ describe('kafka class', () => {
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
@@ -103,7 +103,7 @@ describe('kafka class', () => {
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.connect();
         producerStub.connect.calledOnce.should.eql(true);
@@ -133,7 +133,7 @@ describe('kafka class', () => {
             ssl: true
           },
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         const producerConfig = { maxInFlightRequests: 10 };
         const producerSpy = sandbox.spy(kafkaStubReturn, 'producer');
@@ -168,7 +168,7 @@ describe('kafka class', () => {
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.createConsumer();
         consumerStub.args.should.eql([[{ groupId: 'groupId' }]]);
@@ -197,7 +197,7 @@ describe('kafka class', () => {
           },
           ssl: true,
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.createConsumer({ groupId: 'foo' });
         consumerStub.args.should.eql([[{ groupId: 'foo' }]]);
@@ -229,7 +229,7 @@ describe('kafka class', () => {
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.connectAdmin();
         adminStub.args.should.eql([[]]);
@@ -258,7 +258,7 @@ describe('kafka class', () => {
           },
           ssl: true,
           connectionTimeout: 1000,
-          authenticationTimeout: 1000
+          authenticationTimeout: 10000
         });
         await kafka.connectAdmin();
         adminStub.args.should.eql([[]]);
