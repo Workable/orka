@@ -24,11 +24,11 @@ const init = (config, orkaOptions) => {
       https: true,
       level: 'info',
       maxBodyValueChars: config.riviere.maxBodyValueChars,
-      blacklistedPathRegex: config.riviere.outbound && config.riviere.outbound.blacklistedPathRegex,
       request: {
         enabled: config.riviere.outbound && config.riviere.outbound.request.enabled
       },
-      ...config.riviere.outbound
+      ...config.riviere.outbound,
+      blacklistedPathRegex: config.riviere.outbound && new RegExp(config.riviere.outbound.blacklistedPathRegex, 'i')
     },
     inbound: {
       level: 'info',
