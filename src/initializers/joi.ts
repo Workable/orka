@@ -55,43 +55,47 @@ export const isExpiredUrl = (val: string): boolean => {
   }
 };
 
-type SafeHtml = _Joi.StringSchema & {
-  allowedTags: (tags: string[] | false) => SafeHtml;
-  allowedAttributes: (attributes: { [key: string]: string[] } | false) => SafeHtml;
-  allowedSchemes: (schemes: string[]) => SafeHtml;
-  allowedSchemesAppliedToAttributes: (schemesAppliedToAttributes: string[]) => SafeHtml;
-};
+declare module 'joi' {
+  type SafeHtml = _Joi.StringSchema & {
+    allowedTags: (tags: string[] | false) => SafeHtml;
+    allowedAttributes: (attributes: { [key: string]: string[] } | false) => SafeHtml;
+    allowedSchemes: (schemes: string[]) => SafeHtml;
+    allowedSchemesAppliedToAttributes: (schemesAppliedToAttributes: string[]) => SafeHtml;
+  };
 
-type UrlInOwnS3 = _Joi.StringSchema & {
-  bucket: (name: string) => UrlInOwnS3;
-  errorOnExpiredUrl: () => UrlInOwnS3;
-};
+  type UrlInOwnS3 = _Joi.StringSchema & {
+    bucket: (name: string) => UrlInOwnS3;
+    errorOnExpiredUrl: () => UrlInOwnS3;
+  };
 
-export interface JoiWithExtensions extends _Joi.Root {
-  booleanWithEmpty(): _Joi.BooleanSchema;
+  interface Root {
+    booleanWithEmpty(): _Joi.BooleanSchema;
 
-  dateInThePast(): _Joi.DateSchema;
+    dateInThePast(): _Joi.DateSchema;
 
-  hexColor(): _Joi.StringSchema;
+    hexColor(): _Joi.StringSchema;
 
-  objectId(): _Joi.StringSchema;
+    objectId(): _Joi.StringSchema;
 
-  phone(): _Joi.StringSchema & { stripIfInvalid: () => _Joi.StringSchema };
+    phone(): _Joi.StringSchema & { stripIfInvalid: () => _Joi.StringSchema };
 
-  safeHtml(): SafeHtml;
+    safeHtml(): SafeHtml;
 
-  stringWithEmpty(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
+    stringWithEmpty(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
 
-  string(): _Joi.StringSchema & { defaultIfEmpty: (v: string) => _Joi.StringSchema };
+    urlInOwnS3(): UrlInOwnS3;
 
-  urlInOwnS3(): UrlInOwnS3;
+    url(): _Joi.StringSchema;
 
-  url(): _Joi.StringSchema;
+    urlWithEmpty(): _Joi.StringSchema;
+  }
 
-  urlWithEmpty(): _Joi.StringSchema;
+  interface StringSchema {
+    defaultIfEmpty: (v: string) => _Joi.StringSchema;
+  }
 }
 
-const Joi: JoiWithExtensions = _Joi.extend(
+const Joi = _Joi.extend(
   joi => ({
     type: 'objectId',
     base: joi.string().meta({ baseType: 'string' }),
@@ -345,6 +349,6 @@ const Joi: JoiWithExtensions = _Joi.extend(
       };
     }
   })
-);
+) as typeof _Joi;
 
 export default Joi;
