@@ -28,7 +28,7 @@ const init = (config, orkaOptions) => {
         enabled: config.riviere.outbound && config.riviere.outbound.request.enabled
       },
       ...config.riviere.outbound,
-      blacklistedPathRegex: config.riviere.outbound && new RegExp(config.riviere.outbound.blacklistedPathRegex, 'i')
+      blacklistedPathRegex: config.riviere.outbound && RegExp(config.riviere.outbound.blacklistedPathRegex)
     },
     inbound: {
       level: 'info',
@@ -42,11 +42,11 @@ const init = (config, orkaOptions) => {
     errors: {
       enabled: config.riviere.enabled
     } as any,
-    headersRegex: new RegExp(config.riviere.headersRegex, 'i'),
+    headersRegex: RegExp(config.riviere.headersRegex),
     traceHeaderName: config.traceHeaderName,
     styles: config.riviere.styles,
     bodyKeys: config.riviere.bodyKeys,
-    bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
+    bodyKeysRegex: config.riviere.bodyKeysRegex && RegExp(config.riviere.bodyKeysRegex),
     bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
     hostFieldName: config.riviere.hostFieldName,
