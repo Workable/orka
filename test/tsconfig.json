@@ -14,5 +14,5 @@
   "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"],
   "exclude": ["node_modules"],
   "ts-node": { "files": true },
-  "files": ["../src/typings/koa.d.ts"]
+  "files": ["../src/typings/koa.d.ts", "../src/typings/joi.d.ts"]
 }
