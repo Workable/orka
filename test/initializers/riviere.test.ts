@@ -1,26 +1,30 @@
 import * as riviere from '@workablehr/riviere';
 import * as sinon from 'sinon';
-import orkaRiviereInitializer from '../../src/initializers/riviere';
 
 const sandbox = sinon.createSandbox();
 
 describe('riviere', () => {
   let orkaOptions;
   let riviereStub;
+  let orkaRiviereInitializer;
 
-  beforeEach(() => {
+  beforeEach(async function () {
+    delete require.cache[require.resolve('../../src/initializers/riviere')];
+    orkaRiviereInitializer = await import('../../src/initializers/riviere');
+
     orkaOptions = {
       riviereContext: () => ({})
     };
+    sandbox.restore();
 
-    riviereStub = sandbox.stub(riviere, 'riviere').returns({});
+    riviereStub = sandbox.spy(riviere, 'riviere');
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  it('should respect regex flags from config', () => {
+  it('should keep regex flags from config', () => {
     const config = {
       riviere: {
         enabled: true,
@@ -40,7 +44,7 @@ describe('riviere', () => {
       }
     };
 
-    orkaRiviereInitializer(config, orkaOptions);
+    orkaRiviereInitializer.default(config, orkaOptions);
     riviereStub.args[0][0].headersRegex.should.eql(/some-regex/gi);
     riviereStub.args[0][0].outbound.blacklistedPathRegex.should.eql(/some-regex/gim);
   });

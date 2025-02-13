@@ -27,8 +27,7 @@ const init = (config, orkaOptions) => {
       request: {
         enabled: config.riviere.outbound && config.riviere.outbound.request.enabled
       },
-      ...config.riviere.outbound,
-      blacklistedPathRegex: config.riviere.outbound && RegExp(config.riviere.outbound.blacklistedPathRegex)
+      ...config.riviere.outbound
     },
     inbound: {
       level: 'info',
