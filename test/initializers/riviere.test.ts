@@ -84,14 +84,14 @@ describe('riviere', () => {
 
       loggerStub.callCount.should.equal(3);
       loggerStub.args[0][0].should.equal(
-        'You are using a string for regex key headersRegex in riviere config. This will not supported after Orka v5.x.x. Please use a RegExp object.'
+        'You are using a string for regex key headersRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
       loggerStub.args[1][0].should.equal(
-        'You are using a string for regex key bodyKeysRegex in riviere config. This will not supported after Orka v5.x.x. Please use a RegExp object.'
+        'You are using a string for regex key bodyKeysRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
 
       loggerStub.args[2][0].should.equal(
-        'You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not supported after Orka v5.x.x. Please use a RegExp object.'
+        'You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
     });
   });

@@ -17,7 +17,7 @@ const init = (config, orkaOptions) => {
   regexKeys.forEach(key => {
     if (typeof config?.riviere[key] === 'string') {
       logger.warn(
-        `You are using a string for regex key ${key} in riviere config. This will not supported after Orka v5.x.x. Please use a RegExp object.`
+        `You are using a string for regex key ${key} in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.`
       );
       config.riviere[key] = new RegExp(config.riviere[key], 'i');
     }
@@ -25,7 +25,7 @@ const init = (config, orkaOptions) => {
 
   if (typeof config?.riviere?.outbound?.blacklistedPathRegex === 'string') {
     logger.warn(
-      `You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not supported after Orka v5.x.x. Please use a RegExp object.`
+      `You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.`
     );
     config.riviere.outbound.blacklistedPathRegex = new RegExp(config.riviere.outbound.blacklistedPathRegex, 'i');
   }
