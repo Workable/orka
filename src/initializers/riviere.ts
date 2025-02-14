@@ -41,11 +41,11 @@ const init = (config, orkaOptions) => {
     errors: {
       enabled: config.riviere.enabled
     } as any,
-    headersRegex: RegExp(config.riviere.headersRegex),
+    headersRegex: config.riviere.headersRegex,
     traceHeaderName: config.traceHeaderName,
     styles: config.riviere.styles,
     bodyKeys: config.riviere.bodyKeys,
-    bodyKeysRegex: config.riviere.bodyKeysRegex && RegExp(config.riviere.bodyKeysRegex),
+    bodyKeysRegex: config.riviere.bodyKeysRegex,
     bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
     hostFieldName: config.riviere.hostFieldName,

@@ -36,6 +36,7 @@ describe('riviere', () => {
           }
         },
         headersRegex: /some-regex/gi,
+        bodyKeysRegex: /some-regex/m,
         inbound: {
           request: {
             enabled: true
@@ -46,6 +47,7 @@ describe('riviere', () => {
 
     orkaRiviereInitializer.default(config, orkaOptions);
     riviereStub.args[0][0].headersRegex.should.eql(/some-regex/gi);
+    riviereStub.args[0][0].bodyKeysRegex.should.eql(/some-regex/m);
     riviereStub.args[0][0].outbound.blacklistedPathRegex.should.eql(/some-regex/gim);
   });
 });
