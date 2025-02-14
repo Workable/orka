@@ -11,6 +11,25 @@ const https = require('https');
 let middleware;
 
 const init = (config, orkaOptions) => {
+  // TODO: Remove this conversion logic after v5.x.x release
+  const logger = getLogger('orka.riviere');
+  const regexKeys = ['headersRegex', 'bodyKeysRegex'];
+  regexKeys.forEach(key => {
+    if (typeof config?.riviere[key] === 'string') {
+      logger.warn(
+        `You are using a string for regex key ${key} in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.`
+      );
+      config.riviere[key] = new RegExp(config.riviere[key], 'i');
+    }
+  });
+
+  if (typeof config?.riviere?.outbound?.blacklistedPathRegex === 'string') {
+    logger.warn(
+      `You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.`
+    );
+    config.riviere.outbound.blacklistedPathRegex = new RegExp(config.riviere.outbound.blacklistedPathRegex, 'i');
+  }
+
   middleware = riviere({
     forceIds: true,
     health: [
@@ -27,8 +46,7 @@ const init = (config, orkaOptions) => {
       request: {
         enabled: config.riviere.outbound && config.riviere.outbound.request.enabled
       },
-      ...config.riviere.outbound,
-      blacklistedPathRegex: config.riviere.outbound && new RegExp(config.riviere.outbound.blacklistedPathRegex, 'i')
+      ...config.riviere.outbound
     },
     inbound: {
       level: 'info',
@@ -42,11 +60,11 @@ const init = (config, orkaOptions) => {
     errors: {
       enabled: config.riviere.enabled
     } as any,
-    headersRegex: new RegExp(config.riviere.headersRegex, 'i'),
+    headersRegex: config.riviere.headersRegex,
     traceHeaderName: config.traceHeaderName,
     styles: config.riviere.styles,
     bodyKeys: config.riviere.bodyKeys,
-    bodyKeysRegex: config.riviere.bodyKeysRegex && new RegExp(config.riviere.bodyKeysRegex, 'i'),
+    bodyKeysRegex: config.riviere.bodyKeysRegex,
     bodyKeysCallback: config.riviere.bodyKeysCallback,
     color: config.riviere.color,
     hostFieldName: config.riviere.hostFieldName,
