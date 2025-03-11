@@ -6,9 +6,7 @@ import * as interceptor from '../../../src/helpers/interceptors/axios-error-inte
 describe('axios error interceptor', () => {
   it('should add context in error object for failed get request', async function () {
     interceptor.default();
-    nock('http://test.com')
-      .get('/test')
-      .reply(404);
+    nock('http://test.com').get('/test').reply(404);
     try {
       await axios.get('http://test.com/test', { headers: { key: 'key' } });
     } catch (e) {

@@ -27,7 +27,7 @@ export class AxiosError extends CustomError {
     this.context = {
       response: omit(err.response, ['request', 'config']),
       requestData: err.response?.config?.data,
-      method: err.config?.method,
+      method: err.config?.method
     };
   }
 

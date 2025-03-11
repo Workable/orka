@@ -1,5 +1,6 @@
 exports['axios error interceptor should add context in error object for failed get request 1'] = {
   "name": "AxiosError",
+  "code": "ERR_BAD_REQUEST",
   "status": 404,
   "context": {
     "response": {
