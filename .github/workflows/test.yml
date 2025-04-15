@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x,  20.x]
+        node-version: [18.x, 20.x, 22.x]
         mongodb-version: [5.0, 6.0]
         rabbit-version: [3.12.5]
         redis-version: [7.0]
