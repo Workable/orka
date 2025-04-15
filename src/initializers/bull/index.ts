@@ -17,6 +17,7 @@ export default async (config, appName: string) => {
   const redis = config.bull.redis || config.redis;
   const options = { enableReadyCheck: false, ...omit(config.bull.redis || config.redis.options, ['url', 'tls']) };
   const queues = config.bull.queue.queues;
+  const reuseConnections = config.bull.reuseConnections;
 
   if (config.bull.redis?.tls) {
     ['key', 'ca', 'cert'].forEach(prop => {
@@ -32,7 +33,7 @@ export default async (config, appName: string) => {
   };
 
   const Bull = (await import('./bull')).default;
-  bull = new Bull(prefix, queues, defaultOptions, redisOpts, getPrometheus());
+  bull = new Bull(prefix, queues, defaultOptions, redisOpts, getPrometheus(), reuseConnections);
   logger.info(`Bull initialized with redis: ${redisOpts.host}:${redisOpts.port} (tls: ${!isEmpty(redisOpts.tls)})`);
   logger.info(`Bull configured queues: ${queues.map(q => q.name).join(', ')} (namespace: ${prefix})`);
 };

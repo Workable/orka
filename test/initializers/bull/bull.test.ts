@@ -14,12 +14,18 @@ describe('bull class', () => {
   const defaultOptions = { removeOnComplete: true };
   const redisOptions = { url: 'redis://localhost:6379/' };
   let bull;
+  let bullReuse;
 
   afterEach(() => {
     sandbox.restore();
   });
 
   beforeEach(async () => {
+    mock('ioredis',
+        class IoredisMock {
+          public setMaxListeners(){}
+        }
+    );
     mock(
       'bull',
       class QueMock {
@@ -53,6 +59,7 @@ describe('bull class', () => {
     );
     const Bull = (await import('../../../src/initializers/bull/bull')).default;
     bull = new Bull(prefix, queues, defaultOptions, redisOptions);
+    bullReuse = new Bull(prefix, queues, defaultOptions, redisOptions, undefined, true);
   });
 
   describe('getQueue', () => {
@@ -68,6 +75,14 @@ describe('bull class', () => {
         q.should.not.be.undefined();
         q.name.should.be.equal(`${prefix}:${name}`);
         q.opts.should.be.eql({ redis: redisOptions, defaultJobOptions: { delay: 1000, removeOnComplete: true } });
+        q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
+      });
+      it('should create the queue and return its instance', () => {
+        const name = 'test_one';
+        const q = bullReuse.getQueue(name);
+        q.should.not.be.undefined();
+        q.name.should.be.equal(`${prefix}:${name}`);
+        q.opts.createClient.should.be.Function();
         q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
       });
       describe('when limiter options are configured', () => {

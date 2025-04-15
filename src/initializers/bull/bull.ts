@@ -3,6 +3,7 @@ import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 import Prometheus from '../prometheus/prometheus';
 import { JobCounts } from 'bull';
+import IORedis = require('ioredis');
 
 const Queue = requireInjected('bull');
 export default class Bull {
@@ -15,8 +16,11 @@ export default class Bull {
   private instances = {};
   private metrics;
   private prometheus: Prometheus;
+  private reuseClients: boolean;
+  private sharedRedisClient;
+  private sharedRedisSubscriber;
 
-  constructor(prefix, queueOpts, defaultOptions, redisOpts, prometheus?: Prometheus) {
+  constructor(prefix, queueOpts, defaultOptions, redisOpts, prometheus?: Prometheus, reuseClients = false) {
     this.prefix = prefix;
     this.defaultOptions = defaultOptions;
     this.queueOpts = _.keyBy(queueOpts, 'name');
@@ -24,6 +28,17 @@ export default class Bull {
     this.redisOpts = redisOpts;
     this.prometheus = prometheus;
     this.registerMetrics();
+    this.reuseClients = reuseClients;
+    if (reuseClients) {
+      this.sharedRedisClient = new IORedis(redisOpts);
+      this.sharedRedisClient.setMaxListeners(50);
+      this.sharedRedisSubscriber = new IORedis({
+        ...redisOpts,
+        enableReadyCheck: false,
+        maxRetriesPerRequest: null,
+      });
+      this.sharedRedisSubscriber.setMaxListeners(50);
+    }
   }
 
   private createQueue(name: string) {
@@ -31,9 +46,29 @@ export default class Bull {
     const options = this.queueOpts[name].options;
     const limiter = this.queueOpts[name].limiter;
     const defaultJobOptions = _.defaultsDeep({}, options, this.defaultOptions);
+    const sharedRedisClient = this.sharedRedisClient;
+    const sharedRedisSubscriber = this.sharedRedisSubscriber;
+    const reuseOptions = {
+      createClient: function (type, redisOpts) {
+        switch (type) {
+          case 'client':
+            return sharedRedisClient;
+          case 'subscriber':
+            return sharedRedisSubscriber;
+          case 'bclient':
+            return new IORedis({
+              ...redisOpts,
+              enableReadyCheck: false,
+              maxRetriesPerRequest: null,
+            });
+          default:
+            throw new Error('Unexpected connection type: ' + type);
+        }
+      }
+    };
     const queueOptions = { redis: this.redisOpts, defaultJobOptions, ...(limiter && { limiter }) };
     this.logger.info(`Creating Queue: ${fullName}`);
-    const queue = new Queue(fullName, queueOptions);
+    const queue = new Queue(fullName, this.reuseClients ? _.defaultsDeep(queueOptions, reuseOptions) : queueOptions);
     queue
       .on('drained', () => {
         getLogger(fullName).info(`Queue drained`);

@@ -29,6 +29,19 @@ describe('bull init', () => {
       }
     }
   };
+  const bullRedisReuseConnectionsConfig = {
+    bull: {
+      reuseConnections: true,
+      redis: {
+        url: 'redis://bull:6379/',
+        tls: {
+          ca: ['bull-ca'],
+          cert: 'bull-cert',
+          key: 'bull-key'
+        }
+      }
+    }
+  };
   const baseConfig = {
     bull: {
       queue: {
@@ -124,5 +137,11 @@ describe('bull init', () => {
       queue_two: { name: 'queue_two', options: { delay: 15000 } }
     };
     bull['queueOpts'].should.be.eql(expectedQueues);
+  });
+  it('should initialize bull with reuseConnections options from configuration', async () => {
+    const config = merge({}, baseConfig, bullRedisReuseConnectionsConfig, queueConfig);
+    await init(config as any, appName);
+    const bull = getBull();
+    bull['reuseClients'].should.be.true();
   });
 });
