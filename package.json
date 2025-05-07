@@ -79,7 +79,6 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",
-    "@types/bull": "^3.14.0",
     "@types/joi": "^17.2.3",
     "@types/koa": "^2.13.9",
     "@types/koa-bodyparser": "^4.3.0",
@@ -91,10 +90,11 @@
     "@types/redis": "^2.8.14",
     "@types/sinon": "^7.5.0",
     "axios": "*",
-    "bull": "*",
+    "bullmq": "*",
     "dd-trace": ">=4.30.0",
     "growthbook": "npm:@growthbook/growthbook@*",
     "husky": "^3.0.9",
+    "ioredis": "*",
     "kafkajs": "^2.0.0",
     "lint-staged": "^9.4.3",
     "mocha": "^11.0.1",
@@ -115,7 +115,7 @@
     "typescript": "^5.2.2"
   },
   "optionalPeerDependencies": {
-    "bull": "*",
+    "bullmq": "*",
     "dd-trace": ">=4.30.0",
     "newrelic": "*",
     "prom-client": "*",

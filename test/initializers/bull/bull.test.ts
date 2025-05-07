@@ -1,7 +1,7 @@
 import should = require('should');
-const mock = require('mock-require');
 import * as sinon from 'sinon';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
+import { Queue } from 'bullmq';
 
 const sandbox = sinon.createSandbox();
 
@@ -21,42 +21,15 @@ describe('bull class', () => {
   });
 
   beforeEach(async () => {
-    mock('ioredis',
-        class IoredisMock {
-          public setMaxListeners(){}
-        }
-    );
-    mock(
-      'bull',
-      class QueMock {
-        public name: string;
-        public opts: any;
-        public eventListeners: string[] = [];
-        constructor(name: string, opts: any) {
-          this.name = name;
-          this.opts = opts;
-        }
-        public on(event: string, cb: any) {
-          this.eventListeners.push(event);
-          return this;
-        }
-        public async count() {
-          return 10;
-        }
-        public async getJobCounts() {
-          return {
-            active: 2,
-            completed: 3,
-            failed: 1,
-            delayed: 4,
-            waiting: 6
-          };
-        }
-        public async getFailedCount() {
-          return 3;
-        }
-      }
-    );
+    sandbox.stub(Queue.prototype, 'count').resolves(10);
+    sandbox.stub(Queue.prototype, 'getJobCounts').resolves({
+      active: 2,
+      completed: 3,
+      failed: 1,
+      delayed: 4,
+      waiting: 6
+    });
+
     const Bull = (await import('../../../src/initializers/bull/bull')).default;
     bull = new Bull(prefix, queues, defaultOptions, redisOptions);
     bullReuse = new Bull(prefix, queues, defaultOptions, redisOptions, undefined, true);
@@ -73,30 +46,40 @@ describe('bull class', () => {
         const name = 'test_one';
         const q = bull.getQueue(name);
         q.should.not.be.undefined();
-        q.name.should.be.equal(`${prefix}:${name}`);
-        q.opts.should.be.eql({ redis: redisOptions, defaultJobOptions: { delay: 1000, removeOnComplete: true } });
-        q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
+        q.qualifiedName.should.be.equal(`${prefix}:${name}`);
+        q.opts.should.be.eql({
+          connection: {
+            url: 'redis://localhost:6379/',
+          },
+          defaultJobOptions: {
+            delay: 1000,
+            removeOnComplete: true,
+          },
+          prefix: 'test',
+        });
       });
-      it('should create the queue and return its instance', () => {
+      it('should create the queue and return its instance with client reuse', () => {
         const name = 'test_one';
         const q = bullReuse.getQueue(name);
         q.should.not.be.undefined();
-        q.name.should.be.equal(`${prefix}:${name}`);
+        q.qualifiedName.should.be.equal(`${prefix}:${name}`);
         q.opts.createClient.should.be.Function();
-        q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
       });
       describe('when limiter options are configured', () => {
         it('should create a rate limited queue', () => {
           const name = 'rate_limited';
           const q = bull.getQueue(name);
           q.should.not.be.undefined();
-          q.name.should.be.equal(`${prefix}:${name}`);
+          q.qualifiedName.should.be.equal(`${prefix}:${name}`);
           q.opts.should.be.eql({
-            redis: redisOptions,
-            defaultJobOptions: { removeOnComplete: true },
-            limiter: { max: 10, duration: 1000 }
+            connection: {
+              url: 'redis://localhost:6379/',
+            },
+            defaultJobOptions: {
+              removeOnComplete: true,
+            },
+            prefix: 'test',
           });
-          q.eventListeners.should.be.eql(['drained', 'error', 'failed']);
         });
       });
     });
@@ -111,6 +94,72 @@ describe('bull class', () => {
       });
     });
   });
+
+  describe('createWorker', () => {
+    const jobHandler = () => Promise.resolve();
+
+    describe('when worker queue is not configured', () => {
+      it('should throw no such worker error', () => {
+        should.throws(() => bull.createWorker('unknown', jobHandler), 'no such worker');
+      });
+    });
+
+    describe('when worker is created for the first time', () => {
+      it('should create and return a worker instance', () => {
+        const name = 'test_one';
+        const worker = bull.createWorker(name, jobHandler);
+        worker.should.not.be.undefined();
+        Object.keys(worker._events).should.be.eql(['drained', 'error', 'failed']);
+      });
+    });
+
+    describe('when worker already exists', () => {
+      it('should return the same worker instance and log a warning', () => {
+        const name = 'test_one';
+        const warnStub = sandbox.stub();
+        sandbox.stub(bull, 'logger').value({ warn: warnStub, info: sandbox.stub(), error: sandbox.stub() });
+
+        const worker1 = bull.createWorker(name, jobHandler);
+        const worker2 = bull.createWorker(name, jobHandler);
+
+        worker1.should.not.be.undefined();
+        worker2.should.not.be.undefined();
+        worker1.should.be.equal(worker2);
+
+        sandbox.assert.calledOnce(warnStub);
+        sandbox.assert.calledWith(warnStub, `Worker ${name} already exists`);
+      });
+    });
+  });
+
+  describe('getWorker', () => {
+    const jobHandler = () => Promise.resolve();
+
+    describe('when worker queue is not configured', () => {
+      it('should throw no such worker error', () => {
+        should.throws(() => bull.getWorker('unknown', jobHandler), 'no such worker');
+      });
+    });
+
+    describe('when worker does not exist', () => {
+      it('should throw no such worker error', () => {
+        should.throws(() => bull.getWorker('test_one', jobHandler), 'no such worker');
+      });
+    });
+
+    describe('when worker exists', () => {
+      it('should return the worker instance', () => {
+        const name = 'test_one';
+        const worker1 = bull.createWorker(name, jobHandler);
+        const worker2 = bull.getWorker(name, jobHandler);
+
+        worker1.should.not.be.undefined();
+        worker2.should.not.be.undefined();
+        worker1.should.be.equal(worker2);
+      });
+    });
+  });
+
   describe('getStats', () => {
     it('should retrieve the stats from each queue configured', async () => {
       const stats = await bull.getStats();

@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Bull
+title: BullMQ
 parent: Integrations
 nav_order: 9
 ---
-# Bull
-## Bull Queues
+# BullMQ
+## BullMQ Queues
 
-Bull is an optional dependency. Should you want to use it in your project with Orka, install it first
+BullMQ is an optional dependency. Should you want to use it in your project with Orka, install it first
 
 ```
-npm i bull
+npm i bullmq
 ```
 
-Bull uses `Redis` as a backend, in order to configure redis with bull, you have 2 options:
+BullMQ uses `Redis` as a backend, in order to configure redis with BullMQ, you have 2 options:
 
 1. Reuse the connection properties of your existing redis configuration ( `config.redis...` )
-2. Configure bull specific connection options like so:
+2. Configure BullMQ specific connection options like so:
 
 ```js
 {
@@ -61,6 +61,6 @@ To configure your application queues, use the following configuration:
 }
 ```
 
-The `options` in both cases can be any of [JobOptions](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b4330da8ebd802197809ca6f349961a506679d3d/types/bull/index.d.ts#L369).
+The `options` in both cases can be any of [BaseJobOptions](https://api.docs.bullmq.io/interfaces/v5.BaseJobOptions.html).
 
-The `limiter` can be configured according to [RateLimiter](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/4ca04a72c942754a0368a343a7a7e64a9215da93/types/bull/index.d.ts#L42).
+The `limiter` can be configured according to [limiter](https://api.docs.bullmq.io/classes/v1.Queue.html#limiter).

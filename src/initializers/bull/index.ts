@@ -27,7 +27,7 @@ export default async (config, appName: string) => {
   }
 
   const redisOpts = {
-    ...parseURL(redis.url),
+    ...(parseURL(redis.url) as { host: string; port: number }),
     ...options,
     tls: redis.tls || redis.options?.tls
   };
