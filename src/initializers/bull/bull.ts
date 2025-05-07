@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import { getLogger } from '../log4js';
 import requireInjected from '../../require-injected';
 import Prometheus from '../prometheus/prometheus';
-import { JobCounts } from 'bull';
-import IORedis = require('ioredis');
+const Redis = require('ioredis');
 
-const Queue = requireInjected('bull');
+const { Queue, Worker } = requireInjected('bullmq');
+
 export default class Bull {
   private logger = getLogger('orka.bull');
   private prefix: string;
@@ -30,9 +30,9 @@ export default class Bull {
     this.registerMetrics();
     this.reuseClients = reuseClients;
     if (reuseClients) {
-      this.sharedRedisClient = new IORedis(redisOpts);
+      this.sharedRedisClient = new Redis(redisOpts);
       this.sharedRedisClient.setMaxListeners(50);
-      this.sharedRedisSubscriber = new IORedis({
+      this.sharedRedisSubscriber = new Redis({
         ...redisOpts,
         enableReadyCheck: false,
         maxRetriesPerRequest: null,
@@ -42,10 +42,51 @@ export default class Bull {
   }
 
   private createQueue(name: string) {
-    const fullName = `${this.prefix}:${name}`;
-    const options = this.queueOpts[name].options;
+    const options = this.createOptions(name);
+    const defaultJobOptions = _.defaultsDeep({}, this.queueOpts[name].options, this.defaultOptions);
+
+    this.logger.info(`Creating Queue: ${name}`);
+
+    const queue = new Queue(name, {
+      ...options,
+      defaultJobOptions,
+    });
+
+    this.instances[name] = { queue };
+  }
+
+  public createWorker(name: string, handler: any) {
+    if (!_.has(this.queueOpts, name)) {
+      throw new Error('no such worker');
+    }
+    if (_.has(this.instances, [name, 'worker'])) {
+      this.logger.warn(`Worker ${name} already exists`);
+
+      return this.instances[name].worker;
+    }
+
     const limiter = this.queueOpts[name].limiter;
-    const defaultJobOptions = _.defaultsDeep({}, options, this.defaultOptions);
+    const options = this.createOptions(name);
+
+    this.logger.info(`Creating Worker: ${name}`);
+    const worker = new Worker(name, handler, { ...options, ...(limiter && { limiter })});
+    worker
+    .on('drained', () => {
+      getLogger(name).info(`Queue drained`);
+    })
+    .on('error', err => {
+      handleError(name, err);
+    })
+    .on('failed', (job, err) => {
+      handleFailure(name, job, err);
+    });
+
+    this.instances[name] = { worker };
+
+    return worker;
+  }
+
+  private createOptions(name: string) {
     const sharedRedisClient = this.sharedRedisClient;
     const sharedRedisSubscriber = this.sharedRedisSubscriber;
     const reuseOptions = {
@@ -56,7 +97,7 @@ export default class Bull {
           case 'subscriber':
             return sharedRedisSubscriber;
           case 'bclient':
-            return new IORedis({
+            return new Redis({
               ...redisOpts,
               enableReadyCheck: false,
               maxRetriesPerRequest: null,
@@ -64,23 +105,14 @@ export default class Bull {
           default:
             throw new Error('Unexpected connection type: ' + type);
         }
-      }
+      },
     };
-    const queueOptions = { redis: this.redisOpts, defaultJobOptions, ...(limiter && { limiter }) };
-    this.logger.info(`Creating Queue: ${fullName}`);
-    const queue = new Queue(fullName, this.reuseClients ? _.defaultsDeep(queueOptions, reuseOptions) : queueOptions);
-    queue
-      .on('drained', () => {
-        getLogger(fullName).info(`Queue drained`);
-      })
-      .on('error', err => {
-        handleError(fullName, err);
-      })
-      .on('failed', (job, err) => {
-        handleFailure(fullName, job, err);
-      });
-    // Cache the instance
-    this.instances[name] = queue;
+    const queueOptions = {
+      connection: this.redisOpts,
+      prefix: this.prefix,
+    };
+
+    return this.reuseClients ? _.defaultsDeep(queueOptions, reuseOptions) : queueOptions;
   }
 
   // Register prometheus metrics, if prometheus is available
@@ -128,15 +160,23 @@ export default class Bull {
     if (!_.has(this.queueOpts, name)) {
       throw new Error('no such queue');
     }
-    if (!_.has(this.instances, name)) {
+    if (!_.has(this.instances, [name, 'queue'])) {
       this.createQueue(name);
     }
-    return this.instances[name];
+    return this.instances[name].queue;
+  }
+
+  public getWorker(name: string, handler: any) {
+    if (!_.has(this.queueOpts, name) || !_.has(this.instances, [name, 'worker'])) {
+      throw new Error('no such worker');
+    }
+
+    return this.instances[name].worker;
   }
 
   private async fetchStats(name: string): Promise<BullStats> {
     const q = this.getQueue(name);
-    const counts: JobCounts = await q.getJobCounts();
+    const counts = await q.getJobCounts();
 
     return {
       queue: name,
