@@ -81,3 +81,7 @@ ObjectId using new mongoose.
 ### Migrating from orka  4.0.0 to 4.1.0
 - Mongoose migrated to `^8.7.0` to support MongoDB server 8.x see [mongoose version compatibilty](https://mongoosejs.com/docs/compatibility.html)
 - DD-trace optional dependency migrated to `>=4.30.0` to support the newer versions of the MongoDB driver (>v6.4) [reference](https://github.com/DataDog/dd-trace-js/releases/tag/v4.30.0).
+
+## Migrating from orka  4.x to 5.x
+
+- Migrates from [Bull](https://github.com/OptimalBits/bull) to [BullMQ](https://github.com/taskforcesh/bullmq)
