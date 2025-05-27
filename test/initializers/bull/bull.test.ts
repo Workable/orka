@@ -1,7 +1,6 @@
 import should = require('should');
 import * as sinon from 'sinon';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
-import { Queue } from 'bullmq';
 
 const mock = require('mock-require');
 const sandbox = sinon.createSandbox();
@@ -16,39 +15,51 @@ describe('bull class', () => {
   const redisOptions = { url: 'redis://localhost:6379/' };
   let bull;
   let bullReuse;
-  let mockRedisClient;
+  let MockQueue;
+  let MockWorker;
 
   beforeEach(async () => {
-    mockRedisClient = {
-      setMaxListeners: sandbox.stub(),
-      quit: sandbox.stub().resolves()
+    MockQueue = function(name, options) {
+      this.name = name;
+      this.qualifiedName = `${options.prefix}:${name}`;
+      this.opts = options;
+      this._events = {};
+      return this;
     };
-
-    mock('ioredis', sandbox.stub().returns(mockRedisClient));
-
-    sandbox.stub(Queue.prototype, 'count').resolves(10);
-    sandbox.stub(Queue.prototype, 'getJobCounts').resolves({
+    MockQueue.prototype.count = sandbox.stub().resolves(10);
+    MockQueue.prototype.getJobCounts = sandbox.stub().resolves({
       active: 2,
       completed: 3,
       failed: 1,
       delayed: 4,
       waiting: 6
     });
-    sandbox.stub(Queue.prototype, 'close').resolves();
+    MockQueue.prototype.on = sandbox.stub().returnsThis();
+    MockQueue.prototype.emit = sandbox.stub().returnsThis();
 
-    const MockWorker = function(name, handler, options) {
+    MockWorker = function(name, handler, options) {
+      this.name = name;
+      this.handler = handler;
+      this.opts = options;
       this._events = { drained: [], error: [], failed: [] };
-      this.on = sandbox.stub().returnsThis();
-      this.close = sandbox.stub().resolves();
       return this;
     };
     MockWorker.prototype.on = sandbox.stub().returnsThis();
-    MockWorker.prototype.close = sandbox.stub().resolves();
+    MockWorker.prototype.emit = sandbox.stub().returnsThis();
 
     mock('bullmq', {
-      Queue: Queue,
+      Queue: MockQueue,
       Worker: MockWorker
     });
+
+    const mockRedisClient = {
+      setMaxListeners: sandbox.stub(),
+      quit: sandbox.stub().resolves(),
+      on: sandbox.stub().returnsThis(),
+      connect: sandbox.stub().resolves(),
+      disconnect: sandbox.stub().resolves()
+    };
+    mock('ioredis', sandbox.stub().returns(mockRedisClient));
 
     const Bull = (await import('../../../src/initializers/bull/bull')).default;
     bull = new Bull(prefix, queues, defaultOptions, redisOptions);
@@ -58,12 +69,6 @@ describe('bull class', () => {
   afterEach(async function() {
     sandbox.restore();
     mock.stopAll();
-    if (bull) {
-      await bull.close();
-    }
-    if (bullReuse) {
-      await bullReuse.close();
-    }
   });
 
   describe('getQueue', () => {
