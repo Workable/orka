@@ -187,7 +187,7 @@ describe('bull class', () => {
       it('should return the worker instance', () => {
         const name = 'test_one';
         const worker1 = bull.createWorker(name, jobHandler);
-        const worker2 = bull.getWorker(name, jobHandler);
+        const worker2 = bull.getWorker(name);
 
         worker1.should.not.be.undefined();
         worker2.should.not.be.undefined();
