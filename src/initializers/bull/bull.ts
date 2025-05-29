@@ -166,7 +166,7 @@ export default class Bull {
     return this.instances[name].queue;
   }
 
-  public getWorker(name: string, handler: any) {
+  public getWorker(name: string) {
     if (!_.has(this.queueOpts, name) || !_.has(this.instances, [name, 'worker'])) {
       throw new Error('no such worker');
     }
