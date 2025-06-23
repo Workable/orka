@@ -7,6 +7,7 @@ export class AxiosError extends CustomError {
   public context: object;
   public status: number;
   public code?: string;
+  public response?: Omit<axios.AxiosResponse, 'request' | 'config'>;
 
   constructor(err: axios.AxiosError) {
     if (err.response) {
@@ -29,6 +30,7 @@ export class AxiosError extends CustomError {
       requestData: err.response?.config?.data,
       method: err.config?.method
     };
+    this.response = err.response ? omit(err.response, ['request', 'config']) : undefined;
   }
 
   public [util.inspect.custom]() {
