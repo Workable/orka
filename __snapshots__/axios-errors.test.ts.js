@@ -7,5 +7,9 @@ exports['axios error AxiosError 1'] = {
       "statusText": "internal server error"
     },
     "method": "GET"
+  },
+  "response": {
+    "status": 500,
+    "statusText": "internal server error"
   }
 }

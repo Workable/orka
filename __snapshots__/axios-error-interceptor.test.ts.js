@@ -10,5 +10,11 @@ exports['axios error interceptor should add context in error object for failed g
       "data": ""
     },
     "method": "get"
+  },
+  "response": {
+    "status": 404,
+    "statusText": null,
+    "headers": {},
+    "data": ""
   }
 }
