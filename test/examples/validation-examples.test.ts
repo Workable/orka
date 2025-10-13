@@ -15,7 +15,7 @@ describe('Validation examples', () => {
   });
 
   it('/testGet returns 200', async () => {
-    const { text } = await supertest('localhost:3000')
+    const { text } = await supertest('localhost:3210')
       .get('/testGet?keyNumber=2')
       .expect(200);
 
@@ -23,7 +23,7 @@ describe('Validation examples', () => {
   });
 
   it('/testGet returns 400', async () => {
-    const { text } = await supertest('localhost:3000')
+    const { text } = await supertest('localhost:3210')
       .get('/testGet?keyNumber=somestring')
       .expect(400);
 
@@ -31,7 +31,7 @@ describe('Validation examples', () => {
   });
 
   it('/testPost returns 200', async () => {
-    const { text } = await supertest('localhost:3000')
+    const { text } = await supertest('localhost:3210')
       .post('/testPost')
       .send({ keyNumber: 2 })
       .expect(200);
@@ -40,11 +40,35 @@ describe('Validation examples', () => {
   });
 
   it('/testPost returns 400', async () => {
-    const { text } = await supertest('localhost:3000')
+    const { text } = await supertest('localhost:3210')
       .post('/testPost')
       .send({ keyNumber: 'somestring' })
       .expect(400);
 
     text.should.equal(JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
+  });
+
+  it('/testParams/:id/:name returns 200 with coerced params', async () => {
+    const { body } = await supertest('localhost:3210')
+      .get('/testParams/123/john')
+      .expect(200);
+
+    body.should.eql({ id: 123, name: 'john' });
+  });
+
+  it('/testParams/:id returns 200 with optional param missing', async () => {
+    const { body } = await supertest('localhost:3210')
+      .get('/testParams/456')
+      .expect(200);
+
+    body.should.eql({ id: 456 });
+  });
+
+  it('/testParams/:id returns 400 when id is not a number', async () => {
+    const { text } = await supertest('localhost:3210')
+      .get('/testParams/notanumber')
+      .expect(400);
+
+    text.should.equal(JSON.stringify({ id: '"id" must be a number' }));
   });
 });
