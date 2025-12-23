@@ -1,5 +1,4 @@
-import * as _axios from 'axios';
-import snapshot = require('snap-shot-it');
+import * as snapshot from 'snap-shot-it';
 import * as util from 'util';
 import { AxiosError } from '../../src/errors/axios-error';
 import * as sinon from 'sinon';
