@@ -1,6 +1,6 @@
 import { getLogger } from '../../../src/initializers/log4js';
 import init, { getPrometheus } from '../../../src/initializers/prometheus/index';
-import should = require('should');
+import * as should from 'should';
 import * as sinon from 'sinon';
 const sandbox = sinon.createSandbox();
 

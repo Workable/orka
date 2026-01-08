@@ -1,4 +1,4 @@
-import should = require('should');
+import * as should from 'should';
 import Joi from '../../src/initializers/joi';
 import { isExpiredUrl, isOwnS3Path } from '../../src/initializers/joi';
 import * as sinon from 'sinon';

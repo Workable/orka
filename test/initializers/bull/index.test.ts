@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import init from '../../../src/initializers/bull/index';
 import { getBull } from '../../../src/initializers/bull/index';
-import should = require('should');
+import * as should from 'should';
 
 describe('bull init', () => {
   const appName = 'test';

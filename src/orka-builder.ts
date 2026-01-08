@@ -18,7 +18,7 @@ import parseQuerystring from './initializers/koa/parse-querystring';
 import addRequestContext from './initializers/koa/add-request-context';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
-import assert = require('assert');
+import * as assert from 'assert';
 import { Server } from 'http';
 import logo from './initializers/logo';
 import kafka from './initializers/kafka';

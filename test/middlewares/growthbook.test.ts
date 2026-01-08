@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 import {Context} from 'koa';
-import should = require('should');
+import * as should from 'should';
 import growthbook from '../../src/middlewares/growthbook';
 import * as growthbookInitializer from '../../src/initializers/growthbook';
 import OrkaBuilder from '../../src/orka-builder';

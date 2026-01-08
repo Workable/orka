@@ -1,9 +1,9 @@
-import should = require('should');
+import * as should from 'should';
 // const mock = require('mock-require');
 import * as sinon from 'sinon';
 import * as nock from 'nock';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
-import assert = require('assert');
+import * as assert from 'assert';
 
 const sandbox = sinon.createSandbox();
 

@@ -1,4 +1,4 @@
-import should = require('should');
+import * as should from 'should';
 import * as sinon from 'sinon';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
 

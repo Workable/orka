@@ -2,7 +2,7 @@ import * as sinon from 'sinon';
 import * as log4js from 'log4js';
 import { Context } from 'koa';
 import { default as getRootSpan } from '../../src/helpers/get-root-span';
-import should = require('should');
+import * as should from 'should';
 import * as datadog from '../../src/initializers/datadog/index';
 
 const sandbox = sinon.createSandbox();
