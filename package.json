@@ -51,7 +51,6 @@
     "instrument": true
   },
   "dependencies": {
-    "@google-cloud/debug-agent": "^5.2.8",
     "@honeybadger-io/js": "^6.5.3",
     "@workablehr/riviere": "*",
     "chalk": "^2.4.2",

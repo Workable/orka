@@ -3,7 +3,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -241,7 +240,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -468,7 +466,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -695,7 +692,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -942,7 +938,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -1191,7 +1186,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "testProcess"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [
@@ -1423,7 +1417,6 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "app": {
     "env": "testProcess"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": [

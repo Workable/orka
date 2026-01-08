@@ -8,7 +8,6 @@ import * as bodyParser from 'koa-bodyparser';
 import honeybadger from './initializers/honeybadger';
 import rabbitmq from './initializers/rabbitmq';
 import mongodb from './initializers/mongodb';
-import clouddebugger from './initializers/clouddebugger';
 import { createRedisConnection } from './initializers/redis';
 import { getLogger } from './initializers/log4js';
 import riviere from './initializers/riviere';
@@ -116,13 +115,6 @@ export default class OrkaBuilder {
     }
     require('tsconfig-paths/register');
     require('source-map-support/register');
-    return this;
-  }
-
-  withCloudDebugger() {
-    if (this.config.clouddebugger) {
-      this.queue.push(() => clouddebugger(this.options));
-    }
     return this;
   }
 

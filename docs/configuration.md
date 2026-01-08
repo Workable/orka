@@ -122,7 +122,6 @@ You can find the default values below:
   "app": {
     "env": "development"
   },
-  "clouddebugger": false,
   "honeybadger": {
     "apiKey": "",
     "developmentEnvironments": ["development", "test"]
@@ -195,7 +194,7 @@ You can find the default values below:
     "clientId": "",
     "ssl": true,
     "log": {
-      "errorToWarn": ["The group is rebalancing, re-joining", "Response Heartbeat(key: 12, version: 3)"],
+      "errorToWarn": ["The group is rebalancing, re-joining", "Response Heartbeat(key: 12, version: 3)"]
     },
     "certificates": {
       "key": "",
