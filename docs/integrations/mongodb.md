@@ -46,3 +46,10 @@ module.exports = mongoose.model('Model', Model);
 ```
 
 You use mongoose as you would without worrying about connection initilization.
+
+## Local MongoDB Server
+
+You can easily start a local MongoDB server for development with the below command:
+
+`npm explore @workablehr/orka -- docker compose up -d mongodb`
+

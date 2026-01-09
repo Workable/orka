@@ -50,3 +50,10 @@ const { createRedisConnection } = require('@workablehr/orka');
 // You could pass a different configuration here from the default connection
 const connection = createRedisConnection(config.redis);
 ```
+
+## Local Redis Server
+
+You can easily start a local Redis server for development with the below command:
+
+`npm explore @workablehr/orka -- docker compose up -d redis`
+
