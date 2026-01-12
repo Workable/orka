@@ -18,7 +18,6 @@ describe('Orka', function() {
     builderStub.forTypescript.returns(builderStub);
     builderStub.use.returns(builderStub);
     builderStub.useDefaults.returns(builderStub);
-    builderStub.withCloudDebugger.returns(builderStub);
     builderStub.withLogo.returns(builderStub);
     builderStub.withRabbitMQ.returns(builderStub);
     builderStub.withHoneyBadger.returns(builderStub);
@@ -46,7 +45,6 @@ describe('Orka', function() {
     builderStub.forTypescript.args.should.eql([[false]]);
     builderStub.use.args.should.eql([[stub], [stub]]);
     builderStub.useDefaults.args.should.eql([[]]);
-    builderStub.withCloudDebugger.args.should.eql([[]]);
     builderStub.withLogo.args.should.eql([['logoPath']]);
     builderStub.withRabbitMQ.args.should.eql([[stub]]);
     builderStub.withHoneyBadger.args.should.eql([[]]);

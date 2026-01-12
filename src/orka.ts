@@ -12,7 +12,6 @@ const fromOptions = (options: Partial<OrkaOptions>) => {
     .use(options.beforeMiddleware)
     .useDefaults()
     .use(options.afterMiddleware)
-    .withCloudDebugger()
     .withLogo(options.logoPath)
     .withRabbitMQ(options.rabbitOnConnected)
     .withHoneyBadger()
