@@ -8,7 +8,7 @@ module.exports = {
   queue: {
     prefetch: 100,
     url: 'amqp://127.0.0.1',
-    frameMax: 0x1000,
+    frameMax: 0x2000,
     maxRetries: 0,
     retryDelay: 1000,
     connectDelay: 5000

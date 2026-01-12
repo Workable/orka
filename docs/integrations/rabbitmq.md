@@ -17,7 +17,7 @@ eg:
 module.exports = {
   queue: {
     url: 'amqp://localhost',
-    frameMax: 0x1000, // default frameMax in bytes
+    frameMax: 0x2000, // default frameMax in bytes
     prefetch: 100,
     connectDelay: 5000 // delay when retrying connections in ms
   }
