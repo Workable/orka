@@ -22,7 +22,7 @@ describe('Test rabbitmq connection', function () {
       queue: {
         prefetch: 100,
         url: 'amqp://localhost',
-        frameMax: 0x1000,
+        frameMax: 0x2000,
         maxRetries: 0,
         retryDelay: 1000,
         connectDelay: 5000
@@ -70,7 +70,7 @@ describe('Test rabbitmq connection', function () {
     getRabbit(config, orkaOptions);
     stub.args.should.eql([
       [
-        'amqp://localhost?frameMax=4096',
+        'amqp://localhost?frameMax=8192',
         {
           prefetch: 100,
           prefix: 'test',
@@ -89,7 +89,7 @@ describe('Test rabbitmq connection', function () {
     const rabbit = getRabbit(config, orkaOptions);
     stub.args.should.eql([
       [
-        'amqp://localhost?frameMax=4096',
+        'amqp://localhost?frameMax=8192',
         {
           prefetch: 100,
           prefix: 'test',
