@@ -1,0 +1,45 @@
+services:
+  mongodb:
+    image: mongo:${MONGO_VERSION:-5.0}
+    container_name: mongodb
+    ports:
+     - 27017:27017
+    healthcheck:
+      test: mongosh --eval "db.adminCommand('ping')"
+      timeout: 10s
+      interval: 5s
+      retries: 5
+
+  kafka:
+    image: apache/kafka:${KAFKA_VERSION:-4.1.1}
+    container_name: kafka
+    ports:
+      - 9092:9092
+    healthcheck:
+      test: /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server :9092
+      timeout: 10s
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:${REDIS_VERSION:-7.0}-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION:-3.12.5}-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      timeout: 10s
+      interval: 5s
+      retries: 5

@@ -105,4 +105,5 @@ Note: In the above example only `correlationId` is logged by default. If you wan
 
 You can easily start a local RabbitMQ server for development with the below command:
 
-`npm explore @workablehr/orka -- npm run rabbitmq:start`
+`npm explore @workablehr/orka -- docker compose up -d rabbitmq`
+

@@ -202,7 +202,7 @@ This does not delete old group ids however.
 
 You can easily start a local kafka server for development with the below command:
 
-`npm explore @workablehr/orka -- npm run kafka:start`
+`npm explore @workablehr/orka -- docker compose up -d kafka`
 
 ## Migrating from orka < 2.x.x
 
