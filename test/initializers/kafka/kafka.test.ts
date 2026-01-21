@@ -73,7 +73,7 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.connect();
@@ -102,7 +102,7 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.connect();
@@ -132,7 +132,7 @@ describe('kafka class', () => {
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' },
             ssl: true
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         const producerConfig = { maxInFlightRequests: 10 };
@@ -167,7 +167,7 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.createConsumer();
@@ -196,7 +196,7 @@ describe('kafka class', () => {
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
           ssl: true,
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.createConsumer({ groupId: 'foo' });
@@ -228,7 +228,7 @@ describe('kafka class', () => {
             brokers: ['broker-producer'],
             certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.connectAdmin();
@@ -257,7 +257,7 @@ describe('kafka class', () => {
             sasl: { mechanism: 'scram-sha-256', password: 'foo-producer', username: 'bar' }
           },
           ssl: true,
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
         await kafka.connectAdmin();

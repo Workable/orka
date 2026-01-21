@@ -147,7 +147,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
         "password": ""
       }
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "queue": {
@@ -373,7 +373,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "queue": {
@@ -599,7 +599,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "queue": {
@@ -825,7 +825,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "queue": {
@@ -1051,7 +1051,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
         "password": ""
       }
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "queue": {
@@ -1172,7 +1172,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "username": "",
       "password": ""
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "healthCheck": {
@@ -1403,7 +1403,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "username": "",
       "password": ""
     },
-    "connectionTimeout": 1000,
+    "connectionTimeout": 5000,
     "authenticationTimeout": 10000
   },
   "healthCheck": {

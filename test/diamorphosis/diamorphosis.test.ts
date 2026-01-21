@@ -91,7 +91,7 @@ describe('Diamorphosis Test', () => {
             certificates: { key: '', cert: '', ca: [], rejectUnauthorized: false },
             sasl: { mechanism: '', username: '', password: '' }
           },
-          connectionTimeout: 1000,
+          connectionTimeout: 5000,
           authenticationTimeout: 10000
         });
       });
