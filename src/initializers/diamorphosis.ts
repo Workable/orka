@@ -207,7 +207,7 @@ function addKafkaConfig(config) {
         ...config.kafka?.producer?.sasl
       }
     },
-    connectionTimeout: 1000,
+    connectionTimeout: 5000,
     authenticationTimeout: 10000
   };
 }
