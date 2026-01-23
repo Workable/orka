@@ -1,6 +1,7 @@
 import * as riviere from '@workablehr/riviere';
 import * as log4js from 'log4js';
 import * as sinon from 'sinon';
+import * as https from 'https';
 
 const sandbox = sinon.createSandbox();
 
@@ -93,6 +94,73 @@ describe('riviere', () => {
       loggerStub.args[2][0].should.equal(
         'You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
+    });
+  });
+
+  context('when proxying https.request', () => {
+    let originalRequest;
+    let errorLoggerStub;
+
+    const baseConfig = {
+      riviere: {
+        enabled: true,
+        outbound: {
+          enabled: true,
+          request: { enabled: true }
+        },
+        inbound: {
+          request: { enabled: true }
+        }
+      },
+      traceHeaderName: 'x-request-id'
+    };
+
+    beforeEach(() => {
+      originalRequest = https.request;
+      errorLoggerStub = sandbox.stub(log4js.getLogger('orka.riviere').constructor.prototype, 'error');
+    });
+
+    afterEach(() => {
+      (https as any).request = originalRequest;
+    });
+
+    it('should handle URL string as first argument without error', () => {
+      orkaRiviereInitializer.default(baseConfig, orkaOptions);
+
+      const req = https.request('https://example.com/api/test', { method: 'GET' }, () => { /* noop */ });
+      req.on('error', () => { /* expected - we're destroying the socket */ });
+      req.destroy();
+
+      const headerError = errorLoggerStub.args.find(
+        args => args[0]?.message?.includes('Cannot create property')
+      );
+      (headerError === undefined).should.be.true();
+    });
+
+    it('should handle URL object as first argument without error', () => {
+      orkaRiviereInitializer.default(baseConfig, orkaOptions);
+
+      const req = https.request(new URL('https://example.com/api/test'), { method: 'GET' }, () => { /* noop */ });
+      req.on('error', () => { /* expected - we're destroying the socket */ });
+      req.destroy();
+
+      const headerError = errorLoggerStub.args.find(
+        args => args[0]?.message?.includes('Cannot create property')
+      );
+      (headerError === undefined).should.be.true();
+    });
+
+    it('should handle options object as first argument (original behavior)', () => {
+      orkaRiviereInitializer.default(baseConfig, orkaOptions);
+
+      const req = https.request({ hostname: 'example.com', path: '/api/test', method: 'GET' }, () => { /* noop */ });
+      req.on('error', () => { /* expected - we're destroying the socket */ });
+      req.destroy();
+
+      const headerError = errorLoggerStub.args.find(
+        args => args[0]?.message?.includes('Cannot create property')
+      );
+      (headerError === undefined).should.be.true();
     });
   });
 });

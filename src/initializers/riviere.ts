@@ -78,19 +78,34 @@ const init = (config, orkaOptions) => {
   });
   const handler = {
     apply: (target, thisArg, argumentsList) => {
+      const args = [...argumentsList];
       try {
-        const [requestArgs = {}] = argumentsList || [];
-        requestArgs.headers = requestArgs.headers || {};
-        const traceHeaderName = config.traceHeaderName && config.traceHeaderName.toLowerCase();
-        const traceId = getRequestContext()?.get('requestId') || getRequestContext()?.get('correlationId');
-        appendHeadersFromStore(requestArgs, getRequestContext(), config);
-        if (!requestArgs.headers[traceHeaderName] && traceId) {
-          requestArgs.headers[traceHeaderName] = traceId;
+        // http.request supports two signatures:
+        // - http.request(options[, callback])
+        // - http.request(url[, options][, callback])
+        // Find the options object based on the first argument type
+        let optionsIndex = 0;
+        const firstArg = args[0];
+        if (typeof firstArg === 'string' || firstArg instanceof URL) {
+          optionsIndex = 1;
+          if (!args[1] || typeof args[1] === 'function') {
+            args.splice(1, 0, {});
+          }
+        }
+        const requestArgs = args[optionsIndex] || {};
+        if (typeof requestArgs === 'object' && requestArgs !== null) {
+          requestArgs.headers = requestArgs.headers || {};
+          const traceHeaderName = config.traceHeaderName && config.traceHeaderName.toLowerCase();
+          const traceId = getRequestContext()?.get('requestId') || getRequestContext()?.get('correlationId');
+          appendHeadersFromStore(requestArgs, getRequestContext(), config);
+          if (!requestArgs.headers[traceHeaderName] && traceId) {
+            requestArgs.headers[traceHeaderName] = traceId;
+          }
         }
       } catch (e) {
         getLogger('orka.riviere').error(e);
       }
-      return target.apply(thisArg, argumentsList);
+      return target.apply(thisArg, args);
     }
   };
   http.request = new Proxy(http.request, handler);
