@@ -4,25 +4,25 @@ import * as nock from 'nock';
 
 const sandbox = sinon.createSandbox();
 
-describe('request-context', function () {
+describe('request-context', function() {
   let server;
   let clock;
   let request;
 
-  before(function () {
+  before(function() {
     process.env.LOG_LEVEL = 'info';
     process.env.LOG_JSON = 'true';
     delete process.env.NEW_RELIC_LICENSE_KEY;
   });
 
-  after(function () {
+  after(function() {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
     if (server) server.stop();
     clock.restore();
   });
 
-  before(async function () {
+  before(async function() {
     const serverPath = '../../examples/request-context-example/app';
     delete require.cache[require.resolve('../../build/builder.js')];
     delete require.cache[require.resolve('../../build/index.js')];
@@ -36,10 +36,13 @@ describe('request-context', function () {
     server = require(serverPath);
     await server.start();
     request = supertest('localhost:2121');
-    clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    clock = sinon.useFakeTimers({
+      now: new Date('2019-01-01').getTime(),
+      toFake: ['Date'],
+    });
   });
 
-  afterEach(function () {
+  afterEach(function() {
     sandbox.restore();
   });
 
@@ -56,7 +59,7 @@ describe('request-context', function () {
     ];
   };
 
-  it('/log returns 200 and logs info with requestId', async function () {
+  it('/log returns 200 and logs info with requestId', async function() {
     const logSpy = sandbox.stub(console, 'log');
     const response = await request.get('/log').set('x-orka-request-id', 'test-id').expect(200);
     response.text.should.eql('ok');
@@ -67,7 +70,7 @@ describe('request-context', function () {
     ]);
   });
 
-  it('/logWithAppendedRequestContextVar returns 200 and logs info with requestId and appended var', async function () {
+  it('/logWithAppendedRequestContextVar returns 200 and logs info with requestId and appended var', async function() {
     const logSpy = sandbox.stub(console, 'log');
     const response = await request
       .get('/logWithAppendedRequestContextVar?q=testme')
@@ -79,7 +82,7 @@ describe('request-context', function () {
     ]);
   });
 
-  it('/propagateTracingHeaders returns 200 and propagate istio headers', async function () {
+  it('/propagateTracingHeaders returns 200 and propagate istio headers', async function() {
     const propagatedRequestMock = nock('http://foo.com')
       .matchHeader('x-request-id', 'istio-request-id')
       .matchHeader('x-b3-spanid', 'istio-x-b3-spanid')
@@ -97,18 +100,18 @@ describe('request-context', function () {
     propagatedRequestMock.isDone().should.be.true();
   });
 
-  describe('header Propagation', function () {
-    afterEach(function () {
+  describe('header Propagation', function() {
+    afterEach(function() {
       delete require.cache[require.resolve('../../examples/request-context-example/config.js')];
     });
 
-    describe('when feature flag is off', function () {
-      beforeEach(function () {
+    describe('when feature flag is off', function() {
+      beforeEach(function() {
         const config = require('../../examples/request-context-example/config.js');
         config.requestContext.propagatedHeaders = { enabled: false };
       });
 
-      it('should not propagate headers', async function () {
+      it('should not propagate headers', async function() {
         const propagatedRequestMock = nock('http://foo.com')
           .post('/', body => true)
           .reply(200);
@@ -119,7 +122,7 @@ describe('request-context', function () {
       });
     });
 
-    it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function () {
+    it('/propagateTracingHeaders returns 200 and propagates whitelisted headers', async function() {
       const config = require('../../examples/request-context-example/config.js');
       config.requestContext.propagatedHeaders = { enabled: true, headers: ['header1', 'header2'] };
 

@@ -34,7 +34,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
           path: ctx.params,
           query: omit(ctx.request.query, orkaOptions.omitErrorKeys),
           requestId: ctx.state.requestId,
-          body: omit(ctx.request.body, orkaOptions.omitErrorKeys)
+          body: omit(ctx.request.body as any, orkaOptions.omitErrorKeys)
         }
       });
 

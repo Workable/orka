@@ -5,7 +5,7 @@ exports['axios error interceptor should add context in error object for failed g
   "context": {
     "response": {
       "status": 404,
-      "statusText": null,
+      "statusText": "Not Found",
       "headers": {},
       "data": ""
     },
@@ -13,7 +13,7 @@ exports['axios error interceptor should add context in error object for failed g
   },
   "response": {
     "status": 404,
-    "statusText": null,
+    "statusText": "Not Found",
     "headers": {},
     "data": ""
   }

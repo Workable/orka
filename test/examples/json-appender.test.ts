@@ -24,7 +24,10 @@ describe('json-appender', function () {
     const serverPath = '../../examples/simple-example/app';
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
-    clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    clock = sinon.useFakeTimers({
+      now: new Date('2019-01-01').getTime(),
+      toFake: ['Date'],
+    });
     return server.start();
   });
 
