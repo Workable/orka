@@ -10,7 +10,7 @@ describe('axios error interceptor', () => {
     try {
       await axios.get('http://test.com/test', { headers: { key: 'key' } });
     } catch (e) {
-      e.message.should.equal('Error while requesting get: http://test.com/test, responded with 404, null');
+      e.message.should.equal('Error while requesting get: http://test.com/test, responded with 404, Not Found');
       e.context.method.should.equal('get');
       snapshot(JSON.parse(JSON.stringify(e)));
     }
