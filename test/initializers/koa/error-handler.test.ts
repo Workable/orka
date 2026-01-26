@@ -1,21 +1,20 @@
-import * as should from 'should';
-import * as sinon from 'sinon';
-import * as supertest from 'supertest';
+import { describe, it, after, mock } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
 import * as log4js from 'log4js';
 import { omit } from 'lodash';
 import { isBlacklisted, getExplicitLogLevel } from '../../../src/initializers/koa/error-handler';
-
-const sandbox = sinon.createSandbox();
+import { getMockCallArgs } from '../../helpers/assert-helpers';
 
 describe('error-handler', function () {
-  let server;
+  let server: any;
 
   after(function () {
     if (server) server.stop();
   });
 
   it('tests custom error handler', async function () {
-    const errorHandler = sandbox.stub().callsFake((ctx, err, { omitErrorKeys }) => {
+    const errorHandler = mock.fn((ctx: any, err: any, { omitErrorKeys }: any) => {
       ctx.body = err;
       return [err, { state: omit(ctx.state, omitErrorKeys) }];
     });
@@ -25,7 +24,7 @@ describe('error-handler', function () {
 
     server = await init(
       () => [
-        async (ctx, next) => {
+        async (ctx: any, next: any) => {
           ctx.state.foo = 'foo';
           ctx.state.bar = 'bar';
           await next();
@@ -34,12 +33,12 @@ describe('error-handler', function () {
       errorHandler,
       ['bar', 'riviereStartedAt']
     );
-    const loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'error');
+    const loggerStub = mock.method(log4js.getLogger('orka.errorHandler').constructor.prototype, 'error', () => {});
     const { body } = await (supertest('localhost:3000') as any)
       .get('/error/test')
       .set('X-Orka-Request-Id', '1')
       .expect(500);
-    body.should.eql({
+    assert.deepStrictEqual(body, {
       action: '/error/:type',
       component: 'koa',
       params: {
@@ -54,37 +53,37 @@ describe('error-handler', function () {
       action: '/error/:type',
       params: { path: { type: 'test' }, requestId: '1', body: {}, query: {} }
     });
-    errorHandler.args[0][1].should.eql(error);
-    loggerStub.args.should.eql([[error, { state: { requestId: '1', foo: 'foo' } }]]);
+    assert.deepStrictEqual(getMockCallArgs(errorHandler)[0][1], error);
+    assert.deepStrictEqual(getMockCallArgs(loggerStub), [[error, { state: { requestId: '1', foo: 'foo' } }]]);
   });
 
   it('tests error code blacklisting', () => {
     const config = { blacklistedErrorCodes: ['400', 500] };
-    isBlacklisted({ status: 400 }, config).should.equal(true);
-    isBlacklisted({ status: '400' } as any, config).should.equal(true);
-    isBlacklisted({ status: 500 }, config).should.equal(true);
-    isBlacklisted({ status: '500' } as any, config).should.equal(true);
-    isBlacklisted({ status: 200 } as any, config).should.equal(false);
-    isBlacklisted({ status: '200' } as any, config).should.equal(false);
-    isBlacklisted({ status: 404 }, config).should.equal(false);
-    isBlacklisted({ status: 404, blacklist: true }, config).should.equal(true);
+    assert.strictEqual(isBlacklisted({ status: 400 }, config), true);
+    assert.strictEqual(isBlacklisted({ status: '400' } as any, config), true);
+    assert.strictEqual(isBlacklisted({ status: 500 }, config), true);
+    assert.strictEqual(isBlacklisted({ status: '500' } as any, config), true);
+    assert.strictEqual(isBlacklisted({ status: 200 } as any, config), false);
+    assert.strictEqual(isBlacklisted({ status: '200' } as any, config), false);
+    assert.strictEqual(isBlacklisted({ status: 404 }, config), false);
+    assert.strictEqual(isBlacklisted({ status: 404, blacklist: true }, config), true);
   });
 
   it('tests getExplicitLogLevel from error logLevel', () => {
-    should.equal(null, getExplicitLogLevel(null));
-    should.equal(null, getExplicitLogLevel(undefined));
-    should.equal(null, getExplicitLogLevel({}));
-    should.equal(null, getExplicitLogLevel({ logLevel: null }));
-    should.equal(null, getExplicitLogLevel({ logLevel: undefined }));
-    should.equal(null, getExplicitLogLevel({ logLevel: 'level' }));
-    should.equal(null, getExplicitLogLevel({ logLevel: 'non_existing_level' }));
+    assert.strictEqual(getExplicitLogLevel(null as any), null);
+    assert.strictEqual(getExplicitLogLevel(undefined as any), null);
+    assert.strictEqual(getExplicitLogLevel({}), null);
+    assert.strictEqual(getExplicitLogLevel({ logLevel: null } as any), null);
+    assert.strictEqual(getExplicitLogLevel({ logLevel: undefined } as any), null);
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'level' } as any), null);
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'non_existing_level' } as any), null);
 
-    getExplicitLogLevel({ logLevel: 'FATAL' }).should.equal('fatal');
-    getExplicitLogLevel({ logLevel: 'ERROR' }).should.equal('error');
-    getExplicitLogLevel({ logLevel: 'error' }).should.equal('error');
-    getExplicitLogLevel({ logLevel: 'warn' }).should.equal('warn');
-    getExplicitLogLevel({ logLevel: 'WARN' }).should.equal('warn');
-    getExplicitLogLevel({ logLevel: 'INFO' }).should.equal('info');
-    getExplicitLogLevel({ logLevel: 'DEBUG' }).should.equal('debug');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'FATAL' } as any), 'fatal');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'ERROR' } as any), 'error');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'error' } as any), 'error');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'warn' } as any), 'warn');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'WARN' } as any), 'warn');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'INFO' } as any), 'info');
+    assert.strictEqual(getExplicitLogLevel({ logLevel: 'DEBUG' } as any), 'debug');
   });
 });

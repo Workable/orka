@@ -1,11 +1,9 @@
-import * as should from 'should';
-import * as sinon from 'sinon';
-import * as proxyquire from 'proxyquire';
-
-const sandbox = sinon.createSandbox();
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
+import { getMockCallArgs } from '../../helpers/assert-helpers';
 
 describe('add-visitor-id', function () {
-  let ctx, middleware, visitorWrapper, getRequestContextStub;
+  let ctx: any, middleware: any, visitorWrapper: any, getRequestContextStub: any;
   const visitor = '883b16f6-b589-4786-a1fb-4f53ed38d5cf';
   const config = {
     visitor: {
@@ -13,8 +11,21 @@ describe('add-visitor-id', function () {
     }
   };
 
-  beforeEach(function () {
-    getRequestContextStub = sandbox.stub();
+  beforeEach(async function () {
+    getRequestContextStub = mock.fn();
+
+    mock.module('uuid', {
+      namedExports: {
+        v4: () => 'new-uuid'
+      }
+    });
+
+    mock.module('../../src/builder', {
+      namedExports: {
+        getRequestContext: () => ({ set: getRequestContextStub })
+      }
+    });
+
     ctx = {
       origin: 'https://apply.workable.com/foo',
       state: {},
@@ -22,59 +33,58 @@ describe('add-visitor-id', function () {
         get: () => encodeURIComponent(JSON.stringify({ cookie_id: visitor }))
       }
     } as any;
-    visitorWrapper = proxyquire('../../../src/initializers/koa/add-visitor-id', {
-      'uuid': {
-        v4: () => 'new-uuid'
-      },
-      '../../../src/builder': {
-        getRequestContext: () => ({ set: getRequestContextStub })
-      }
-    }).default;
+
+    delete require.cache[require.resolve('../../../src/initializers/koa/add-visitor-id')];
+    visitorWrapper = (await import('../../../src/initializers/koa/add-visitor-id')).default;
     middleware = visitorWrapper(config);
+  });
+
+  afterEach(function () {
+    mock.restoreAll();
   });
 
   it('sets visitor cookie to state and to requestContext', async function () {
     // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
 
     // Execute
     await middleware(ctx, next);
 
     // Assert
-    next.called.should.be.true();
-    ctx.state.visitor.should.equal(visitor);
-    getRequestContextStub.args.should.eql([['visitor', visitor]]);
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.strictEqual(ctx.state.visitor, visitor);
+    assert.deepStrictEqual(getMockCallArgs(getRequestContextStub), [['visitor', visitor]]);
   });
 
   it('skips visitor setting if it is /health', async function () {
     // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
     ctx.path = '/health';
 
     // Execute
     await middleware(ctx, next);
 
     // Assert
-    next.called.should.be.true();
-    should(ctx.state.visitor).be.undefined();
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.strictEqual(ctx.state.visitor, undefined);
   });
 
   it('calls next if failed to decode', async function () {
     // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
     ctx.cookies.get = () => 'foobar';
 
     // Execute
     await middleware(ctx, next);
 
     // Assert
-    next.called.should.be.true();
-    should(ctx.state.visitor).be.undefined();
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.strictEqual(ctx.state.visitor, undefined);
   });
 
   it('sets new cookie if cookie not exists and setCookie=true', async function () {
     // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
     middleware = visitorWrapper({
       ...config,
       visitor: {
@@ -85,14 +95,14 @@ describe('add-visitor-id', function () {
       }
     });
     ctx.cookies.get = () => undefined;
-    ctx.cookies.set = sandbox.stub();
+    ctx.cookies.set = mock.fn();
 
     // Execute
     await middleware(ctx, next);
 
     // Assert
-    next.called.should.be.true();
-    ctx.cookies.set.args.should.eql([[
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.deepStrictEqual(getMockCallArgs(ctx.cookies.set), [[
       'wmc',
       '%7B%22cookie_id%22%3A%22new-uuid%22%7D',
       {
@@ -103,13 +113,13 @@ describe('add-visitor-id', function () {
         secure: true,
       }
     ]]);
-    ctx.state.visitor.should.equal('new-uuid');
-    getRequestContextStub.args.should.eql([['visitor', 'new-uuid']]);
+    assert.strictEqual(ctx.state.visitor, 'new-uuid');
+    assert.deepStrictEqual(getMockCallArgs(getRequestContextStub), [['visitor', 'new-uuid']]);
   });
 
   it('sets new cookie and overrides cookie domain', async function () {
     // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
     middleware = visitorWrapper({
       ...config,
       visitor: {
@@ -117,19 +127,19 @@ describe('add-visitor-id', function () {
         setCookie: true,
         maxAge: '1d',
         secure: true,
-        getCookieDomain: ctx => ctx.state.cookieDomain
+        getCookieDomain: (ctx: any) => ctx.state.cookieDomain
       }
     });
     ctx.state.cookieDomain = '.facebook.com';
     ctx.cookies.get = () => undefined;
-    ctx.cookies.set = sandbox.stub();
+    ctx.cookies.set = mock.fn();
 
     // Execute
     await middleware(ctx, next);
 
     // Assert
-    next.called.should.be.true();
-    ctx.cookies.set.args.should.eql([[
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.deepStrictEqual(getMockCallArgs(ctx.cookies.set), [[
       'wmc',
       '%7B%22cookie_id%22%3A%22new-uuid%22%7D',
       {
@@ -140,7 +150,7 @@ describe('add-visitor-id', function () {
         secure: true,
       }
     ]]);
-    ctx.state.visitor.should.equal('new-uuid');
-    getRequestContextStub.args.should.eql([['visitor', 'new-uuid']]);
+    assert.strictEqual(ctx.state.visitor, 'new-uuid');
+    assert.deepStrictEqual(getMockCallArgs(getRequestContextStub), [['visitor', 'new-uuid']]);
   });
 });

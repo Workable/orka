@@ -1,18 +1,15 @@
-import should = require('should');
-// const mock = require('mock-require');
-import * as sinon from 'sinon';
-import * as nock from 'nock';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
+import nock from 'nock';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
-import assert = require('assert');
-
-const sandbox = sinon.createSandbox();
+import { assertThrows } from '../../helpers/assert-helpers';
 
 describe('prometheus class', () => {
   const appName = 'my_app';
-  let instance: Prometheus;
+  let instance: Prometheus | null;
   afterEach(() => {
     instance = null;
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   beforeEach(async () => {
@@ -21,7 +18,7 @@ describe('prometheus class', () => {
 
   describe('#contentType', () => {
     it('should return the content type for the exported data', () => {
-      should(instance.contentType).be.equal('text/plain; version=0.0.4; charset=utf-8');
+      assert.strictEqual(instance!.contentType, 'text/plain; version=0.0.4; charset=utf-8');
     });
   });
 
@@ -29,8 +26,8 @@ describe('prometheus class', () => {
     it('should returns metrics as string', () => {
       const counterName = 'counter';
       const gaugeName = 'gauge';
-      const counter = instance.registerCounter('custom', counterName, `${counterName} help`);
-      const gauge = instance.registerGauge('external', gaugeName, `${gaugeName} help`, ['label']);
+      const counter = instance!.registerCounter('custom', counterName, `${counterName} help`);
+      const gauge = instance!.registerGauge('external', gaugeName, `${gaugeName} help`, ['label']);
       counter.inc(1);
       counter.inc(10);
       gauge.set({ label: 'one' }, 100);
@@ -44,25 +41,25 @@ describe('prometheus class', () => {
       external_my_app_gauge{label="one"} 100
       external_my_app_gauge{label="two"} 200
       `.replace(/[ ]{2,}/g, '');
-      should(instance.metrics()).be.equal(expected);
+      assert.strictEqual(instance!.metrics(), expected);
     });
   });
 
   describe('#registerCounter', () => {
     it('should return a Counter metric', () => {
       const name = 'My Counter';
-      const counter = instance.registerCounter('custom', name, 'my counter help', ['foo', 'bar']);
-      should(counter).not.be.undefined();
-      should(counter['name']).be.equal('custom_my_app_my_counter');
-      should(counter.inc).be.Function();
-      should(counter['labelNames']).be.eql(['foo', 'bar']);
-      instance.getMetric('custom', name).should.be.equal(counter);
+      const counter = instance!.registerCounter('custom', name, 'my counter help', ['foo', 'bar']);
+      assert.ok(counter !== undefined);
+      assert.strictEqual((counter as any)['name'], 'custom_my_app_my_counter');
+      assert.strictEqual(typeof counter.inc, 'function');
+      assert.deepStrictEqual((counter as any)['labelNames'], ['foo', 'bar']);
+      assert.strictEqual(instance!.getMetric('custom', name), counter);
     });
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerCounter('custom', name, name);
-      should.throws(
-        () => instance.registerCounter('custom', name, name),
+      instance!.registerCounter('custom', name, name);
+      assertThrows(
+        () => instance!.registerCounter('custom', name, name),
         'Metric custom_my_app_my_metric is already registered'
       );
     });
@@ -70,18 +67,18 @@ describe('prometheus class', () => {
   describe('#registerGauge', () => {
     it('should return a Gauge metric', () => {
       const name = 'my-gauge';
-      const gauge = instance.registerGauge('custom', name, 'my gauge help', ['foo', 'bar']);
-      should(gauge).not.be.undefined();
-      should(gauge['name']).be.equal('custom_my_app_my_gauge');
-      should(gauge.set).be.Function();
-      should(gauge['labelNames']).be.eql(['foo', 'bar']);
-      instance.getMetric('custom', name).should.be.equal(gauge);
+      const gauge = instance!.registerGauge('custom', name, 'my gauge help', ['foo', 'bar']);
+      assert.ok(gauge !== undefined);
+      assert.strictEqual((gauge as any)['name'], 'custom_my_app_my_gauge');
+      assert.strictEqual(typeof gauge.set, 'function');
+      assert.deepStrictEqual((gauge as any)['labelNames'], ['foo', 'bar']);
+      assert.strictEqual(instance!.getMetric('custom', name), gauge);
     });
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerGauge('custom', name, name);
-      should.throws(
-        () => instance.registerGauge('custom', name, name),
+      instance!.registerGauge('custom', name, name);
+      assertThrows(
+        () => instance!.registerGauge('custom', name, name),
         'Metric custom_my_app_my_gauge is already registered'
       );
     });
@@ -90,18 +87,18 @@ describe('prometheus class', () => {
   describe('#registerHistogram', () => {
     it('should return a Histogram metric', () => {
       const name = 'my-histogram';
-      const histogram = instance.registerHistogram('custom', name, 'my gauge help', ['foo', 'bar']);
-      should(histogram).not.be.undefined();
-      should(histogram['name']).be.equal('custom_my_app_my_histogram');
-      should(histogram.observe).be.Function();
-      should(histogram['labelNames']).be.eql(['foo', 'bar']);
-      instance.getMetric('custom', name).should.be.equal(histogram);
+      const histogram = instance!.registerHistogram('custom', name, 'my gauge help', ['foo', 'bar']);
+      assert.ok(histogram !== undefined);
+      assert.strictEqual((histogram as any)['name'], 'custom_my_app_my_histogram');
+      assert.strictEqual(typeof histogram.observe, 'function');
+      assert.deepStrictEqual((histogram as any)['labelNames'], ['foo', 'bar']);
+      assert.strictEqual(instance!.getMetric('custom', name), histogram);
     });
 
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerHistogram('custom', name, name, ['foo', 'bar']);
-      assert.throws(() => instance.registerHistogram('custom', name, name, ['foo', 'bar']), {
+      instance!.registerHistogram('custom', name, name, ['foo', 'bar']);
+      assert.throws(() => instance!.registerHistogram('custom', name, name, ['foo', 'bar']), {
         name: 'Error',
         message: 'Metric my_metric is already registered'
       });
@@ -111,18 +108,18 @@ describe('prometheus class', () => {
   describe('#registerSummary', () => {
     it('should return a Summary metric', () => {
       const name = 'my-summary';
-      const summary = instance.registerSummary('custom', name, 'my gauge help', ['foo', 'bar']);
-      should(summary).not.be.undefined();
-      should(summary['name']).be.equal('custom_my_app_my_summary');
-      should(summary.observe).be.Function();
-      should(summary['labelNames']).be.eql(['foo', 'bar']);
-      instance.getMetric('custom', name).should.be.equal(summary);
+      const summary = instance!.registerSummary('custom', name, 'my gauge help', ['foo', 'bar']);
+      assert.ok(summary !== undefined);
+      assert.strictEqual((summary as any)['name'], 'custom_my_app_my_summary');
+      assert.strictEqual(typeof summary.observe, 'function');
+      assert.deepStrictEqual((summary as any)['labelNames'], ['foo', 'bar']);
+      assert.strictEqual(instance!.getMetric('custom', name), summary);
     });
 
     it('should throw error if already registered', () => {
       const name = 'my_metric';
-      instance.registerSummary('custom', name, name, ['foo', 'bar']);
-      assert.throws(() => instance.registerSummary('custom', name, name, ['foo', 'bar']), {
+      instance!.registerSummary('custom', name, name, ['foo', 'bar']);
+      assert.throws(() => instance!.registerSummary('custom', name, name, ['foo', 'bar']), {
         name: 'Error',
         message: 'Metric my_metric is already registered'
       });
@@ -131,13 +128,13 @@ describe('prometheus class', () => {
 
   describe('#push', () => {
     describe('when no gateway url is provided', () => {
-      it('should be rejected with an error', () => {
-        return instance.push().should.be.rejectedWith('Pushgateway not configured');
+      it('should be rejected with an error', async () => {
+        await assert.rejects(instance!.push(), /Pushgateway not configured/);
       });
     });
     describe('when gateway url is provided', () => {
       const gatewayUrl = 'http://push.gateway.local';
-      let gatewayMock;
+      let gatewayMock: any;
       beforeEach(async () => {
         instance = await makeInstance(appName, gatewayUrl);
         gatewayMock = nock(gatewayUrl);
@@ -145,30 +142,22 @@ describe('prometheus class', () => {
       afterEach(() => {
         nock.cleanAll();
       });
-      it('should push metrics to gateway', () => {
+      it('should push metrics to gateway', async () => {
         gatewayMock.put(`/metrics/job/${appName}`).reply(200);
-        return instance
-          .push()
-          .should.be.fulfilled()
-          .then(() => {
-            gatewayMock.isDone().should.be.true();
-          });
+        await instance!.push();
+        assert.strictEqual(gatewayMock.isDone(), true);
       });
       describe('when gateway returns error', () => {
-        it('should be rejected with error from gateway', () => {
+        it('should be rejected with error from gateway', async () => {
           gatewayMock.put(`/metrics/job/${appName}`).replyWithError('Oops!');
-          return instance
-            .push()
-            .should.be.rejectedWith('Oops!')
-            .then(() => {
-              gatewayMock.isDone().should.be.true();
-            });
+          await assert.rejects(instance!.push(), /Oops!/);
+          assert.strictEqual(gatewayMock.isDone(), true);
         });
       });
     });
   });
 });
 
-async function makeInstance(prefix, gatewayUrl = null) {
+async function makeInstance(prefix: string, gatewayUrl: string | null = null) {
   return new Prometheus(prefix, { gatewayUrl });
 }

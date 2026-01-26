@@ -1,8 +1,5 @@
-const mock = require('mock-require');
-import * as sinon from 'sinon';
-import 'should';
-
-const sandbox = sinon.createSandbox();
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('Test mongodb connection', function() {
   const config = {
@@ -10,30 +7,34 @@ describe('Test mongodb connection', function() {
       url: 'mongodb://localhost'
     }
   };
-  let onStub: sinon.SinonSpy;
-  let mongodb;
-  let connectStub: sinon.SinonSpy;
+  let onStub: ReturnType<typeof mock.fn>;
+  let mongodb: any;
+  let connectStub: ReturnType<typeof mock.fn>;
 
   beforeEach(async function() {
-    onStub = sandbox.stub();
-    connectStub = sandbox.stub();
+    onStub = mock.fn();
+    connectStub = mock.fn();
     delete require.cache[require.resolve('../../src/initializers/mongodb')];
-    mock('mongoose', { connect: connectStub, connection: { on: onStub } });
+    mock.module('mongoose', {
+      namedExports: {
+        connect: connectStub,
+        connection: { on: onStub }
+      }
+    });
     ({ default: mongodb } = await import('../../src/initializers/mongodb'));
   });
 
   afterEach(function() {
-    sandbox.restore();
-    mock.stopAll();
+    mock.restoreAll();
   });
 
   it('should connect to mongodb', () => {
     mongodb(config);
-    onStub.callCount.should.equal(4);
+    assert.strictEqual(onStub.mock.callCount(), 4);
   });
 
   it('should not connect to mongodb with no config', () => {
     mongodb({});
-    connectStub.called.should.be.false();
+    assert.strictEqual(connectStub.mock.callCount(), 0);
   });
 });

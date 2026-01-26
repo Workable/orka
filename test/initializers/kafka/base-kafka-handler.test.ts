@@ -1,22 +1,21 @@
-import * as sinon from 'sinon';
-import * as should from 'should';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import Kafka from '../../../src/initializers/kafka/kafka';
 import { BaseKafkaHandler, BaseKafkaBatchHandler } from '../../../src/initializers/kafka/base-kafka-handler';
 import OrkaBuilder from '../../../src/orka-builder';
-
-const sandbox = sinon.createSandbox();
+import { assertContainsDeep, getMockCallArgs } from '../../helpers/assert-helpers';
 
 describe('base kafka handler class', async () => {
-  let handleStub, consumeStub, runStub, subscribeStub, handleBatchStub, heartBeatStub;
+  let handleStub: any, consumeStub: any, runStub: any, subscribeStub: any, handleBatchStub: any, heartBeatStub: any;
 
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
-    public async handle(args) {
+    public async handle(args: any) {
       handleStub(args);
     }
   }
 
   class TestKafkaBatchHandler extends BaseKafkaBatchHandler<any, any> {
-    public async handleBatch(bulk) {
+    public async handleBatch(bulk: any) {
       handleBatchStub(bulk.messages);
     }
   }
@@ -25,14 +24,14 @@ describe('base kafka handler class', async () => {
     OrkaBuilder.INSTANCE = {
       config: { requestContext: { enabled: true, propagatedHeaders: { enabled: true, headers: 'headers' } } }
     } as any;
-    handleStub = sandbox.stub();
-    handleBatchStub = sandbox.stub();
-    heartBeatStub = sandbox.stub().resolves();
-    runStub = sandbox.stub();
-    subscribeStub = sandbox.stub();
+    handleStub = mock.fn();
+    handleBatchStub = mock.fn();
+    heartBeatStub = mock.fn(async () => {});
+    runStub = mock.fn();
+    subscribeStub = mock.fn();
     consumeStub = {
       subscribe: subscribeStub,
-      run: runStub.callsFake(async ({ eachMessage: fn, eachBatch: fnBatch }) => {
+      run: mock.fn(async ({ eachMessage: fn, eachBatch: fnBatch }: any) => {
         if (fnBatch) {
           return fnBatch({
             batch: {
@@ -57,55 +56,55 @@ describe('base kafka handler class', async () => {
           },
           topic: 'topic',
           partition: '1'
-        }).catch(e => console.log(e));
+        }).catch((e: any) => console.log(e));
       })
     };
   });
 
   afterEach(() => {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('should call consumer with multiple topics', async () => {
-    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+    const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
     const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
     const consumerOptions = { groupId: 'newGroup' };
     const runOptions = { partitionsConsumedConcurrently: 5 };
     const handler = new TestKafkaHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
     await new Promise(resolve => setTimeout(resolve, 10));
-    createConsumer.calledOnce.should.be.true();
-    createConsumer.args.should.eql([[consumerOptions]]);
-    subscribeStub.args.should.eql([
+    assert.strictEqual(createConsumer.mock.calls.length, 1);
+    assert.deepStrictEqual(getMockCallArgs(createConsumer), [[consumerOptions]]);
+    assert.deepStrictEqual(getMockCallArgs(subscribeStub), [
       [{ topic: 'topic1', fromBeginning: undefined }],
       [{ topic: 'topic2', fromBeginning: undefined }]
     ]);
-    should.equal(undefined, handler.fromBeginning);
-    consumeStub.run.args.should.containDeep([[runOptions]]);
-    handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+    assert.strictEqual(handler.fromBeginning, undefined);
+    assertContainsDeep(getMockCallArgs(consumeStub.run), [[runOptions]]);
+    assertContainsDeep(getMockCallArgs(handleStub), [[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
   });
 
   it('should call consumer with batch method and call heartbeat', async () => {
-    const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+    const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
     const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
     const consumerOptions = { groupId: 'newGroup' };
     const runOptions = { partitionsConsumedConcurrently: 5 };
     const handler = new TestKafkaBatchHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
     await new Promise(resolve => setTimeout(resolve, 10));
-    createConsumer.calledOnce.should.be.true();
-    createConsumer.args.should.eql([[consumerOptions]]);
-    subscribeStub.args.should.eql([
+    assert.strictEqual(createConsumer.mock.calls.length, 1);
+    assert.deepStrictEqual(getMockCallArgs(createConsumer), [[consumerOptions]]);
+    assert.deepStrictEqual(getMockCallArgs(subscribeStub), [
       [{ topic: 'topic1', fromBeginning: undefined }],
       [{ topic: 'topic2', fromBeginning: undefined }]
     ]);
-    should.equal(undefined, handler.fromBeginning);
-    consumeStub.run.args.should.containDeep([[runOptions]]);
-    heartBeatStub.calledOnce.should.be.true();
-    handleBatchStub.args.should.containDeep([[[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]]);
+    assert.strictEqual(handler.fromBeginning, undefined);
+    assertContainsDeep(getMockCallArgs(consumeStub.run), [[runOptions]]);
+    assert.strictEqual(heartBeatStub.mock.calls.length, 1);
+    assertContainsDeep(getMockCallArgs(handleBatchStub), [[[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]]);
   });
 
-  context('with autoOffsetReset latest', function () {
+  describe('with autoOffsetReset latest', function () {
     it('should call consumer fromBeginning false', async () => {
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+      const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
@@ -116,21 +115,21 @@ describe('base kafka handler class', async () => {
         autoOffsetReset: 'latest'
       });
       await new Promise(resolve => setTimeout(resolve, 10));
-      createConsumer.calledOnce.should.be.true();
-      createConsumer.args.should.eql([[consumerOptions]]);
-      subscribeStub.args.should.eql([
+      assert.strictEqual(createConsumer.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(createConsumer), [[consumerOptions]]);
+      assert.deepStrictEqual(getMockCallArgs(subscribeStub), [
         [{ topic: 'topic1', fromBeginning: false }],
         [{ topic: 'topic2', fromBeginning: false }]
       ]);
-      handler.fromBeginning.should.equal(false);
-      consumeStub.run.args.should.containDeep([[runOptions]]);
-      handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+      assert.strictEqual(handler.fromBeginning, false);
+      assertContainsDeep(getMockCallArgs(consumeStub.run), [[runOptions]]);
+      assertContainsDeep(getMockCallArgs(handleStub), [[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
     });
   });
 
-  context('with fromBeginning false', function () {
+  describe('with fromBeginning false', function () {
     it('should call consumer fromBeginning false', async () => {
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+      const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
@@ -141,21 +140,21 @@ describe('base kafka handler class', async () => {
         fromBeginning: false
       });
       await new Promise(resolve => setTimeout(resolve, 10));
-      createConsumer.calledOnce.should.be.true();
-      createConsumer.args.should.eql([[consumerOptions]]);
-      subscribeStub.args.should.eql([
+      assert.strictEqual(createConsumer.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(createConsumer), [[consumerOptions]]);
+      assert.deepStrictEqual(getMockCallArgs(subscribeStub), [
         [{ topic: 'topic1', fromBeginning: false }],
         [{ topic: 'topic2', fromBeginning: false }]
       ]);
-      handler.fromBeginning.should.equal(false);
-      consumeStub.run.args.should.containDeep([[runOptions]]);
-      handleStub.args.should.containDeep([[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
+      assert.strictEqual(handler.fromBeginning, false);
+      assertContainsDeep(getMockCallArgs(consumeStub.run), [[runOptions]]);
+      assertContainsDeep(getMockCallArgs(handleStub), [[{ value: { msg: 'msg' }, headers: { key: 'key' } }]]);
     });
   });
 
-  context('with jsonParseValue false', function () {
+  describe('with jsonParseValue false', function () {
     it('should call handler with buffer data', async () => {
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
+      const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
@@ -166,23 +165,23 @@ describe('base kafka handler class', async () => {
         jsonParseValue: false
       });
       await new Promise(resolve => setTimeout(resolve, 10));
-      createConsumer.calledOnce.should.be.true();
-      createConsumer.args.should.eql([[consumerOptions]]);
-      subscribeStub.args.should.eql([
+      assert.strictEqual(createConsumer.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(createConsumer), [[consumerOptions]]);
+      assert.deepStrictEqual(getMockCallArgs(subscribeStub), [
         [{ topic: 'topic1', fromBeginning: undefined }],
         [{ topic: 'topic2', fromBeginning: undefined }]
       ]);
-      consumeStub.run.args.should.containDeep([[runOptions]]);
-      handleStub.args.should.containDeep([
+      assertContainsDeep(getMockCallArgs(consumeStub.run), [[runOptions]]);
+      assertContainsDeep(getMockCallArgs(handleStub), [
         [{ value: Buffer.from('{"msg":"msg"}'), headers: { key: 'key' }, topic: 'topic', partition: '1' }]
       ]);
     });
   });
 
-  context('with onConsumerCreated defined', function () {
+  describe('with onConsumerCreated defined', function () {
     it('should call method', async () => {
-      const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-      const onConsumerCreated = sandbox.spy();
+      const createConsumer = mock.method(Kafka.prototype, 'createConsumer', async () => consumeStub);
+      const onConsumerCreated = mock.fn();
       const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
@@ -194,7 +193,7 @@ describe('base kafka handler class', async () => {
         onConsumerCreated
       });
       await new Promise(resolve => setTimeout(resolve, 10));
-      onConsumerCreated.calledOnce.should.be.true();
+      assert.strictEqual(onConsumerCreated.mock.calls.length, 1);
     });
   });
 });

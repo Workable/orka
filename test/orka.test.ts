@@ -1,37 +1,37 @@
-import * as sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import OrkaBuilder from '../src/orka-builder';
 import orka from '../src/orka';
 
-const sandbox = sinon.createSandbox();
-
 describe('Orka', function() {
-  let builderStub;
+  let builderStub: any;
+
   beforeEach(function() {
-    builderStub = sandbox.createStubInstance(OrkaBuilder);
+    builderStub = {
+      forTypescript: mock.fn(() => builderStub),
+      use: mock.fn(() => builderStub),
+      useDefaults: mock.fn(() => builderStub),
+      withLogo: mock.fn(() => builderStub),
+      withRabbitMQ: mock.fn(() => builderStub),
+      withHoneyBadger: mock.fn(() => builderStub),
+      withKafka: mock.fn(() => builderStub),
+      withMongoDB: mock.fn(() => builderStub),
+      withBull: mock.fn(() => builderStub),
+      withPrometheus: mock.fn(() => builderStub),
+      withRedis: mock.fn(() => builderStub),
+      withPostgres: mock.fn(() => builderStub),
+      loadGrowthbookFeatures: mock.fn(() => builderStub),
+      with: mock.fn(() => builderStub),
+      routes: mock.fn(() => builderStub),
+    };
   });
 
   afterEach(function() {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('initializes orka', function() {
-    builderStub.forTypescript.returns(builderStub);
-    builderStub.use.returns(builderStub);
-    builderStub.useDefaults.returns(builderStub);
-    builderStub.withLogo.returns(builderStub);
-    builderStub.withRabbitMQ.returns(builderStub);
-    builderStub.withHoneyBadger.returns(builderStub);
-    builderStub.withKafka.returns(builderStub);
-    builderStub.withMongoDB.returns(builderStub);
-    builderStub.withBull.returns(builderStub);
-    builderStub.withPrometheus.returns(builderStub);
-    builderStub.withRedis.returns(builderStub);
-    builderStub.withPostgres.returns(builderStub);
-    builderStub.loadGrowthbookFeatures.returns(builderStub);
-    builderStub.with.returns(builderStub);
-    builderStub.routes.returns(builderStub);
-
-    const stub = sandbox.stub();
+    const stub = mock.fn();
     orka({
       builder: builderStub,
       beforeMiddleware: stub,
@@ -42,17 +42,16 @@ describe('Orka', function() {
       routesPath: 'routes'
     });
 
-    builderStub.forTypescript.args.should.eql([[false]]);
-    builderStub.use.args.should.eql([[stub], [stub]]);
-    builderStub.useDefaults.args.should.eql([[]]);
-    builderStub.withLogo.args.should.eql([['logoPath']]);
-    builderStub.withRabbitMQ.args.should.eql([[stub]]);
-    builderStub.withHoneyBadger.args.should.eql([[]]);
-    builderStub.withKafka.args.should.eql([[]]);
-    builderStub.withMongoDB.args.should.eql([[stub]]);
-    builderStub.withRedis.args.should.eql([[]]);
-    builderStub.withPostgres.returns([[]]);
-    builderStub.with.args.should.eql([[[]]]);
-    builderStub.routes.args.should.eql([['routes']]);
+    assert.deepStrictEqual(builderStub.forTypescript.mock.calls.map((c: any) => c.arguments), [[false]]);
+    assert.deepStrictEqual(builderStub.use.mock.calls.map((c: any) => c.arguments), [[stub], [stub]]);
+    assert.deepStrictEqual(builderStub.useDefaults.mock.calls.map((c: any) => c.arguments), [[]]);
+    assert.deepStrictEqual(builderStub.withLogo.mock.calls.map((c: any) => c.arguments), [['logoPath']]);
+    assert.deepStrictEqual(builderStub.withRabbitMQ.mock.calls.map((c: any) => c.arguments), [[stub]]);
+    assert.deepStrictEqual(builderStub.withHoneyBadger.mock.calls.map((c: any) => c.arguments), [[]]);
+    assert.deepStrictEqual(builderStub.withKafka.mock.calls.map((c: any) => c.arguments), [[]]);
+    assert.deepStrictEqual(builderStub.withMongoDB.mock.calls.map((c: any) => c.arguments), [[stub]]);
+    assert.deepStrictEqual(builderStub.withRedis.mock.calls.map((c: any) => c.arguments), [[]]);
+    assert.deepStrictEqual(builderStub.with.mock.calls.map((c: any) => c.arguments), [[[]]]);
+    assert.deepStrictEqual(builderStub.routes.mock.calls.map((c: any) => c.arguments), [['routes']]);
   });
 });

@@ -4,7 +4,7 @@ import { getRequestContext } from '../../builder';
 import { SetOption } from 'cookies';
 import { URL } from 'url';
 import * as uuid from 'uuid';
-import * as ms from 'ms';
+import ms from 'ms';
 
 export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURIComponent(cookie))) || {};
 export const encode = (cookie: any) => encodeURIComponent(JSON.stringify(cookie || {}));

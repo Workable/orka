@@ -1,12 +1,10 @@
-import * as sinon from 'sinon';
+import { describe, it, before, after, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import { runWithContext } from '../../build';
 
-const sandbox = sinon.createSandbox();
-
 describe('request-context', function () {
-  let server;
-  let testFunction;
-  let clock;
+  let server: any;
+  let testFunction: any;
 
   before(function () {
     process.env.LOG_LEVEL = 'info';
@@ -17,7 +15,7 @@ describe('request-context', function () {
   after(function () {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
-    clock.restore();
+    mock.timers.reset();
   });
 
   before(async function () {
@@ -33,14 +31,14 @@ describe('request-context', function () {
     const mod = require(serverPath);
     server = mod.default;
     testFunction = mod.testFunction;
-    clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    mock.timers.enable({ apis: ['Date'], now: new Date('2019-01-01') });
   });
 
   afterEach(function () {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
-  const logEntry = (message, context) => [
+  const logEntry = (message: string, context: any) => [
     JSON.stringify({
       timestamp: '2019-01-01T00:00:00.000Z',
       severity: 'INFO',
@@ -51,8 +49,11 @@ describe('request-context', function () {
   ];
 
   it('it appends requestId to logs if runWithContext', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     await server.initTasks().then(testFunction);
-    logSpy.args.should.eql([logEntry('A log in a service argument', { requestId: 'trace-id' })]);
+    assert.deepStrictEqual(
+      logSpy.mock.calls.map(c => c.arguments),
+      [logEntry('A log in a service argument', { requestId: 'trace-id' })]
+    );
   });
 });

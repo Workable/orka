@@ -1,28 +1,43 @@
-import * as riviere from '@workablehr/riviere';
-import * as log4js from 'log4js';
-import * as sinon from 'sinon';
-
-const sandbox = sinon.createSandbox();
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
+import { getMockCallArgs } from '../helpers/assert-helpers';
 
 describe('riviere', () => {
-  let orkaOptions;
-  let riviereStub;
-  let orkaRiviereInitializer;
+  let orkaOptions: any;
+  let riviereStub: ReturnType<typeof mock.fn>;
+  let orkaRiviereInitializer: any;
+  let loggerWarnStub: ReturnType<typeof mock.fn>;
 
   beforeEach(async function () {
+    riviereStub = mock.fn();
+    loggerWarnStub = mock.fn();
+
+    mock.module('@workablehr/riviere', {
+      namedExports: {
+        riviere: riviereStub
+      }
+    });
+
+    mock.module('log4js', {
+      namedExports: {
+        getLogger: () => ({
+          warn: loggerWarnStub,
+          info: mock.fn(),
+          error: mock.fn()
+        })
+      }
+    });
+
     delete require.cache[require.resolve('../../src/initializers/riviere')];
     orkaRiviereInitializer = await import('../../src/initializers/riviere');
 
     orkaOptions = {
       riviereContext: () => ({})
     };
-    sandbox.restore();
-
-    riviereStub = sandbox.spy(riviere, 'riviere');
   });
 
   afterEach(() => {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('should keep regex flags from config', () => {
@@ -47,15 +62,13 @@ describe('riviere', () => {
     };
 
     orkaRiviereInitializer.default(config, orkaOptions);
-    riviereStub.args[0][0].headersRegex.should.eql(/some-regex/gi);
-    riviereStub.args[0][0].bodyKeysRegex.should.eql(/some-regex/m);
-    riviereStub.args[0][0].outbound.blacklistedPathRegex.should.eql(/some-regex/gim);
+    assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].headersRegex, /some-regex/gi);
+    assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].bodyKeysRegex, /some-regex/m);
+    assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].outbound.blacklistedPathRegex, /some-regex/gim);
   });
 
-  context('when using strings in config', () => {
+  describe('when using strings in config', () => {
     it('should log warning and convert them to RegExp objects', () => {
-      const loggerStub = sandbox.stub(log4js.getLogger('orka.riviere').constructor.prototype, 'warn');
-
       const config = {
         riviere: {
           enabled: true,
@@ -78,19 +91,22 @@ describe('riviere', () => {
 
       orkaRiviereInitializer.default(config, orkaOptions);
 
-      riviereStub.args[0][0].headersRegex.should.eql(/.*/i);
-      riviereStub.args[0][0].bodyKeysRegex.should.eql(/.*/i);
-      riviereStub.args[0][0].outbound.blacklistedPathRegex.should.eql(/.*/i);
+      assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].headersRegex, /.*/i);
+      assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].bodyKeysRegex, /.*/i);
+      assert.deepStrictEqual(getMockCallArgs(riviereStub)[0][0].outbound.blacklistedPathRegex, /.*/i);
 
-      loggerStub.callCount.should.equal(3);
-      loggerStub.args[0][0].should.equal(
+      assert.strictEqual(loggerWarnStub.mock.calls.length, 3);
+      assert.strictEqual(
+        getMockCallArgs(loggerWarnStub)[0][0],
         'You are using a string for regex key headersRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
-      loggerStub.args[1][0].should.equal(
+      assert.strictEqual(
+        getMockCallArgs(loggerWarnStub)[1][0],
         'You are using a string for regex key bodyKeysRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
 
-      loggerStub.args[2][0].should.equal(
+      assert.strictEqual(
+        getMockCallArgs(loggerWarnStub)[2][0],
         'You are using a string for regex key outbound.blacklistedPathRegex in riviere config. This will not be supported after Orka v5.x.x. Please use a RegExp object.'
       );
     });

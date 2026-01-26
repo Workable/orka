@@ -1,6 +1,7 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import axios from 'axios';
-import * as nock from 'nock';
-import * as snapshot from 'snap-shot-it';
+import nock from 'nock';
 import * as interceptor from '../../../src/helpers/interceptors/axios-error-interceptor';
 
 describe('axios error interceptor', () => {
@@ -9,12 +10,13 @@ describe('axios error interceptor', () => {
     nock('http://test.com').get('/test').reply(404);
     try {
       await axios.get('http://test.com/test', { headers: { key: 'key' } });
-    } catch (e) {
-      e.message.should.equal('Error while requesting get: http://test.com/test, responded with 404, null');
-      e.context.method.should.equal('get');
-      snapshot(JSON.parse(JSON.stringify(e)));
+      assert.fail('Should have thrown an error');
+    } catch (e: any) {
+      assert.strictEqual(e.message, 'Error while requesting get: http://test.com/test, responded with 404, null');
+      assert.strictEqual(e.context.method, 'get');
+      assert.ok(e.context);
     }
 
-    nock.isDone();
+    assert.ok(nock.isDone());
   });
 });

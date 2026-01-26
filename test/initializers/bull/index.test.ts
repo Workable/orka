@@ -1,7 +1,8 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import { merge } from 'lodash';
 import init from '../../../src/initializers/bull/index';
 import { getBull } from '../../../src/initializers/bull/index';
-import should = require('should');
 
 describe('bull init', () => {
   const appName = 'test';
@@ -79,11 +80,12 @@ describe('bull init', () => {
       }
     }
   };
+
   it('should handle the absence of bull config', async () => {
     await init({} as any, appName);
-    should.throws(() => {
+    assert.throws(() => {
       getBull();
-    }, 'bull is not initialized');
+    }, /bull is not initialized/);
   });
 
   describe('when using common redis options', () => {
@@ -97,9 +99,10 @@ describe('bull init', () => {
         tls: { ca: ['orka-ca'], cert: 'orka-cert', key: 'orka-key' },
         enableReadyCheck: false
       };
-      bull['redisOpts'].should.be.eql(expectedRedisOpts);
+      assert.deepStrictEqual((bull as any)['redisOpts'], expectedRedisOpts);
     });
   });
+
   describe('when using bull specific redis options', () => {
     it('should initialize bull with specific redis options', async () => {
       const config = merge({}, baseConfig, orkaRedisConfig, bullRedisConfig);
@@ -111,8 +114,9 @@ describe('bull init', () => {
         tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
         enableReadyCheck: false
       };
-      bull['redisOpts'].should.be.eql(expectedRedisOpts);
+      assert.deepStrictEqual((bull as any)['redisOpts'], expectedRedisOpts);
     });
+
     it('should allow passing more redis options', async () => {
       const config = merge({}, baseConfig, orkaRedisConfig, bullRedisConfig, moreRedisOpts);
       await init(config as any, appName);
@@ -123,25 +127,27 @@ describe('bull init', () => {
         tls: { ca: ['bull-ca'], cert: 'bull-cert', key: 'bull-key' },
         enableReadyCheck: true
       };
-      bull['redisOpts'].should.be.eql(expectedRedisOpts);
+      assert.deepStrictEqual((bull as any)['redisOpts'], expectedRedisOpts);
     });
   });
+
   it('should initialize bull with queue options from configuration', async () => {
     const config = merge({}, baseConfig, bullRedisConfig, queueConfig);
     await init(config as any, appName);
     const bull = getBull();
-    bull['prefix'].should.be.eql(appName);
-    bull['defaultOptions'].should.be.eql(queueConfig.bull.queue.options);
+    assert.strictEqual((bull as any)['prefix'], appName);
+    assert.deepStrictEqual((bull as any)['defaultOptions'], queueConfig.bull.queue.options);
     const expectedQueues = {
       queue_one: { name: 'queue_one', options: { priority: 1 } },
       queue_two: { name: 'queue_two', options: { delay: 15000 } }
     };
-    bull['queueOpts'].should.be.eql(expectedQueues);
+    assert.deepStrictEqual((bull as any)['queueOpts'], expectedQueues);
   });
+
   it('should initialize bull with reuseConnections options from configuration', async () => {
     const config = merge({}, baseConfig, bullRedisReuseConnectionsConfig, queueConfig);
     await init(config as any, appName);
     const bull = getBull();
-    bull['reuseClients'].should.be.true();
+    assert.strictEqual((bull as any)['reuseClients'], true);
   });
 });

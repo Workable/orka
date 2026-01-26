@@ -1,5 +1,6 @@
-import 'should';
-import * as supertest from 'supertest';
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
 import * as mongoose from 'mongoose';
 import { getRabbit, close, isHealthy } from '../../build/initializers/rabbitmq/index';
 import { getRedis } from '../../build/initializers/redis';
@@ -7,7 +8,7 @@ import { disconnectProducer } from '../../build/initializers/kafka/index';
 
 describe('Health examples', () => {
   describe('MongoDb example', () => {
-    let server;
+    let server: any;
     after(async () => {
       if (server) await server.stop();
       if (mongoose.connection) await mongoose.connection.close();
@@ -37,7 +38,7 @@ describe('Health examples', () => {
   });
 
   describe('RabbitMQ example', () => {
-    let server;
+    let server: any;
     after(async () => {
       if (server) await server.stop();
       if (isHealthy()) await close();
@@ -67,7 +68,7 @@ describe('Health examples', () => {
   });
 
   describe('Redis example', () => {
-    let server;
+    let server: any;
     after(async () => {
       if (server) await server.stop();
       delete require.cache[require.resolve('../../build/initializers/redis')];
@@ -97,7 +98,7 @@ describe('Health examples', () => {
   });
 
   describe('Kafka example', function () {
-    let server;
+    let server: any;
     after(async () => {
       if (!process.env.TEST_KAFKA) return;
       if (server) await server.stop();

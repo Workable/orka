@@ -1,11 +1,12 @@
+import { describe, it, beforeEach, afterEach, before, after } from 'node:test';
+import assert from 'node:assert';
 import diamorphosis from '../../src/initializers/diamorphosis';
 import { OrkaOptions } from '../../src/typings/orka';
 import * as path from 'path';
-import * as snapshot from 'snap-shot-it';
 
 describe('Diamorphosis Test', () => {
   describe('should set environment variables', () => {
-    let options;
+    let options: OrkaOptions;
 
     beforeEach(() => {
       options = {
@@ -26,8 +27,8 @@ describe('Diamorphosis Test', () => {
 
       diamorphosis(config, {} as OrkaOptions);
 
-      config.app.env.should.equal(config.nodeEnv);
-      config.app.env.should.equal('development');
+      assert.strictEqual(config.app.env, config.nodeEnv);
+      assert.strictEqual(config.app.env, 'development');
     });
 
     it('app.env and nodeEnv shoud equal nodeEnv with nodeEnv set in config', () => {
@@ -35,10 +36,10 @@ describe('Diamorphosis Test', () => {
 
       diamorphosis(config, {} as OrkaOptions);
 
-      config.app.env.should.equal(config.nodeEnv);
-      config.app.env.should.equal('diamorphosis_env');
-      config.visitor.cookie.should.equal('cookie');
-      config.healthCheck.kafka.should.be.true();
+      assert.strictEqual(config.app.env, config.nodeEnv);
+      assert.strictEqual(config.app.env, 'diamorphosis_env');
+      assert.strictEqual(config.visitor.cookie, 'cookie');
+      assert.strictEqual(config.healthCheck.kafka, true);
     });
 
     it('app.env and nodeEnv shoud equal nodeEnv with nodeEnv set in env file', () => {
@@ -46,8 +47,8 @@ describe('Diamorphosis Test', () => {
 
       diamorphosis(config, options);
 
-      config.app.env.should.equal(config.nodeEnv);
-      config.app.env.should.equal('test');
+      assert.strictEqual(config.app.env, config.nodeEnv);
+      assert.strictEqual(config.app.env, 'test');
     });
 
     it('app.env and nodeEnv shoud equal process.env.NODE_ENV with nodeEnv set in process.env', () => {
@@ -57,12 +58,12 @@ describe('Diamorphosis Test', () => {
 
       diamorphosis(config, options);
 
-      config.app.env.should.equal(config.nodeEnv);
-      config.nodeEnv.should.equal(process.env.NODE_ENV);
-      config.app.env.should.equal(process.env.NODE_ENV);
+      assert.strictEqual(config.app.env, config.nodeEnv);
+      assert.strictEqual(config.nodeEnv, process.env.NODE_ENV);
+      assert.strictEqual(config.app.env, process.env.NODE_ENV);
     });
 
-    context('for kafka', function () {
+    describe('for kafka', function () {
       afterEach(() => {
         delete process.env.KAFKA_PRODUCER_BROKERS;
         delete process.env.KAFKA_PRODUCER_SASL_USERNAME;
@@ -75,7 +76,7 @@ describe('Diamorphosis Test', () => {
         const config = require(options.diamorphosis.configPath);
         delete config.kafka;
         diamorphosis(config, options);
-        config.kafka.should.eql({
+        assert.deepStrictEqual(config.kafka, {
           brokers: [],
           groupId: '',
           clientId: '',
@@ -105,7 +106,7 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, options);
 
-        config.kafka.producer.should.eql({
+        assert.deepStrictEqual(config.kafka.producer, {
           brokers: ['confluent1', 'confluent2'],
           certificates: {
             ca: [],
@@ -128,7 +129,7 @@ describe('Diamorphosis Test', () => {
   });
 
   describe('should set json/console loggingvariables', () => {
-    let options;
+    let options: OrkaOptions;
 
     beforeEach(() => {
       options = {
@@ -144,20 +145,19 @@ describe('Diamorphosis Test', () => {
       delete require.cache[require.resolve(options.diamorphosis.configPath)];
     });
 
-    context('when nothing is set config', () =>
+    describe('when nothing is set config', () =>
       it('should be console:true, json:false, styles:[]', () => {
         let config = {} as any;
 
         diamorphosis(config, {} as OrkaOptions);
 
-        config.log.console.should.equal(true);
-        config.log.json.should.equal(false);
-        config.riviere.styles.length.should.equal(0);
-        snapshot(config);
+        assert.strictEqual(config.log.console, true);
+        assert.strictEqual(config.log.json, false);
+        assert.strictEqual(config.riviere.styles.length, 0);
       })
     );
 
-    context('when console:not set, json:true, styles:[]', () =>
+    describe('when console:not set, json:true, styles:[]', () =>
       it('shoud be console:false, json:true, styles:["json"]', () => {
         let config = {
           log: {
@@ -167,15 +167,14 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, {} as OrkaOptions);
 
-        config.log.console.should.equal(false);
-        config.log.json.should.equal(true);
-        config.riviere.styles.length.should.equal(1);
-        config.riviere.styles[0].should.equal('json');
-        snapshot(config);
+        assert.strictEqual(config.log.console, false);
+        assert.strictEqual(config.log.json, true);
+        assert.strictEqual(config.riviere.styles.length, 1);
+        assert.strictEqual(config.riviere.styles[0], 'json');
       })
     );
 
-    context('when console:true, json:true, styles:[]', () =>
+    describe('when console:true, json:true, styles:[]', () =>
       it('shoud be console:true, json:true, styles:["json"]', () => {
         let config = {
           log: {
@@ -186,15 +185,14 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, {} as OrkaOptions);
 
-        config.log.console.should.equal(true);
-        config.log.json.should.equal(true);
-        config.riviere.styles.length.should.equal(1);
-        config.riviere.styles[0].should.equal('json');
-        snapshot(config);
+        assert.strictEqual(config.log.console, true);
+        assert.strictEqual(config.log.json, true);
+        assert.strictEqual(config.riviere.styles.length, 1);
+        assert.strictEqual(config.riviere.styles[0], 'json');
       })
     );
 
-    context('when console:false, json:true, styles:[]', () =>
+    describe('when console:false, json:true, styles:[]', () =>
       it('shoud be console:false, json:true, styles:["json"]', () => {
         let config = {
           log: {
@@ -205,15 +203,14 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, {} as OrkaOptions);
 
-        config.log.console.should.equal(false);
-        config.log.json.should.equal(true);
-        config.riviere.styles.length.should.equal(1);
-        config.riviere.styles[0].should.equal('json');
-        snapshot(config);
+        assert.strictEqual(config.log.console, false);
+        assert.strictEqual(config.log.json, true);
+        assert.strictEqual(config.riviere.styles.length, 1);
+        assert.strictEqual(config.riviere.styles[0], 'json');
       })
     );
 
-    context('when console:not set, json:true, styles:["simple"]', () =>
+    describe('when console:not set, json:true, styles:["simple"]', () =>
       it('shoud be console:false, json:true, styles:["simple"]', () => {
         let config = {
           log: {
@@ -226,15 +223,14 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, {} as OrkaOptions);
 
-        config.log.console.should.equal(false);
-        config.log.json.should.equal(true);
-        config.riviere.styles.length.should.equal(1);
-        config.riviere.styles[0].should.equal('simple');
-        snapshot(config);
+        assert.strictEqual(config.log.console, false);
+        assert.strictEqual(config.log.json, true);
+        assert.strictEqual(config.riviere.styles.length, 1);
+        assert.strictEqual(config.riviere.styles[0], 'simple');
       })
     );
 
-    context('when console:true set in process.env', () => {
+    describe('when console:true set in process.env', () => {
       before(() => {
         process.env.LOG_CONSOLE = 'true';
       });
@@ -248,14 +244,13 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, options);
 
-        config.log.console.should.equal(true);
-        config.log.json.should.equal(false);
-        config.riviere.styles.length.should.equal(0);
-        snapshot(config);
+        assert.strictEqual(config.log.console, true);
+        assert.strictEqual(config.log.json, false);
+        assert.strictEqual(config.riviere.styles.length, 0);
       });
     });
 
-    context('when console:true, json:true set in process.env', () => {
+    describe('when console:true, json:true set in process.env', () => {
       before(() => {
         process.env.LOG_CONSOLE = 'true';
         process.env.LOG_JSON = 'true';
@@ -270,10 +265,9 @@ describe('Diamorphosis Test', () => {
 
         diamorphosis(config, options);
 
-        config.log.console.should.equal(true);
-        config.log.json.should.equal(true);
-        config.riviere.styles.should.eql(['json']);
-        snapshot(config);
+        assert.strictEqual(config.log.console, true);
+        assert.strictEqual(config.log.json, true);
+        assert.deepStrictEqual(config.riviere.styles, ['json']);
       });
     });
   });

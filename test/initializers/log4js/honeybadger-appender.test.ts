@@ -1,27 +1,25 @@
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import * as appender from '../../../src/initializers/log4js/honeybadger-appender';
-import 'should';
 import * as Honeybadger from '@honeybadger-io/js';
-import * as sinon from 'sinon';
 import { runWithContext } from '../../../src/builder';
+import { getMockCallArgs } from '../../helpers/assert-helpers';
 
-const sandbox = sinon.createSandbox();
-
-let notifySpy;
+let notifySpy: any;
 
 const logLevelLessThanError = 39999;
 
 describe('log4js_honeybadger_appender', () => {
   beforeEach(() => {
-    notifySpy = sandbox.spy();
-    sandbox.stub(Honeybadger, 'notify').callsFake(notifySpy);
+    notifySpy = mock.method(Honeybadger, 'notify', () => {});
   });
 
   afterEach(() => {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('should contain method "configure"', () => {
-    (typeof appender.configure === 'function').should.equal(true);
+    assert.strictEqual(typeof appender.configure === 'function', true);
   });
 
   it('should pass if err is undefined', () => {
@@ -36,9 +34,9 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: 'test data'
     });
-    notifySpy.calledOnce.should.equal(true);
-    notifySpy.args[0][0].message.startsWith('test data').should.equal(true);
-    notifySpy.args[0][1].should.eql({
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][0].message.startsWith('test data'), true);
+    assert.deepStrictEqual(getMockCallArgs(notifySpy)[0][1], {
       context: {},
       headers: {},
       cgiData: {
@@ -60,7 +58,7 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: 'test data'
     });
-    notifySpy.callCount.should.equal(0);
+    assert.strictEqual(notifySpy.mock.calls.length, 0);
   });
 
   it('should default the component to name and then compute the fingerprint', () => {
@@ -74,8 +72,8 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: err
     });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][1].should.eql({
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.deepStrictEqual(getMockCallArgs(notifySpy)[0][1], {
       context: {},
       headers: {},
       cgiData: {
@@ -101,13 +99,13 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: err
     });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][1].fingerprint.should.equal('testController_/test/endpoint');
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][1].fingerprint, 'testController_/test/endpoint');
   });
 
   it('should compute the fingerprint using the error name', () => {
     class CustomError extends Error {
-      constructor(message) {
+      constructor(message: string) {
         super(message);
         this.name = 'CustomError';
       }
@@ -124,8 +122,8 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: err
     });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][1].fingerprint.should.equal('CustomError_testController_/test/endpoint');
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][1].fingerprint, 'CustomError_testController_/test/endpoint');
   });
 
   it('should use fingerprint from context if it exists', () => {
@@ -140,8 +138,8 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: [err, { fingerprint: 'CustomError' }]
     });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][1].fingerprint.should.equal('CustomError');
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][1].fingerprint, 'CustomError');
   });
 
   it('should append to the error message any additional string parameters', () => {
@@ -157,9 +155,9 @@ describe('log4js_honeybadger_appender', () => {
       categoryName: 'testCategoryName',
       data: [err, 'a', 'b', 'c']
     });
-    notifySpy.callCount.should.equal(1);
-    notifySpy.args[0][0].message.should.equal('omg. a. b. c');
-    notifySpy.args[0][0].name.should.equal('CustomName');
+    assert.strictEqual(notifySpy.mock.calls.length, 1);
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][0].message, 'omg. a. b. c');
+    assert.strictEqual(getMockCallArgs(notifySpy)[0][0].name, 'CustomName');
   });
 
   it('should assign any additional json values to the context', () => {
@@ -189,8 +187,8 @@ describe('log4js_honeybadger_appender', () => {
           { tags: ['tag3'] }
         ]
       });
-      notifySpy.callCount.should.equal(1);
-      notifySpy.args[0][1].should.eql({
+      assert.strictEqual(notifySpy.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(notifySpy)[0][1], {
         context: {
           a: 'aOK',
           b: 'bOK',

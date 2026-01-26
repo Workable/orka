@@ -1,24 +1,23 @@
+import { describe, it, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import { getLogger } from '../../../src/initializers/log4js';
 import init, { getPrometheus } from '../../../src/initializers/prometheus/index';
-import should = require('should');
-import * as sinon from 'sinon';
-const sandbox = sinon.createSandbox();
 
 describe('prometheus init', () => {
   const appName = 'My Test App';
 
   afterEach(() => {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   describe('when configuration is missing', () => {
     it('should return undefined and log error', async () => {
       const logger = getLogger('orka.initializers.prometheus');
-      const logSpy = sandbox.spy(logger, 'error');
+      const logSpy = mock.method(logger, 'error', logger.error);
       await init({} as any, appName);
-      should(getPrometheus()).be.undefined();
-      sandbox.assert.calledOnce(logSpy);
-      should(logSpy.args[0][0].message).equal('prometheus is not initialized');
+      assert.strictEqual(getPrometheus(), undefined);
+      assert.strictEqual(logSpy.mock.calls.length, 1);
+      assert.strictEqual(logSpy.mock.calls[0].arguments[0].message, 'prometheus is not initialized');
     });
   });
   describe('when enabled', () => {
@@ -30,9 +29,9 @@ describe('prometheus init', () => {
     it('should return a prometheus instance without gateway', async () => {
       await init(config, appName);
       const prom = getPrometheus();
-      should(prom).not.be.undefined();
-      prom['appName'].should.equal('my_test_app');
-      should(prom['gateway']).be.undefined();
+      assert.ok(prom !== undefined);
+      assert.strictEqual((prom as any)['appName'], 'my_test_app');
+      assert.strictEqual((prom as any)['gateway'], undefined);
     });
   });
   describe('when enabled with pushgateway', () => {
@@ -45,10 +44,10 @@ describe('prometheus init', () => {
     it('should return a prometheus instance with gateway', async () => {
       await init(configWithGateway, appName);
       const prom = getPrometheus();
-      should(prom).not.be.undefined();
-      should(prom['gateway']).not.be.undefined();
-      prom['appName'].should.equal('my_test_app');
-      prom['gateway']['gatewayUrl'].should.equal('http://somehost.local');
+      assert.ok(prom !== undefined);
+      assert.ok((prom as any)['gateway'] !== undefined);
+      assert.strictEqual((prom as any)['appName'], 'my_test_app');
+      assert.strictEqual((prom as any)['gateway']['gatewayUrl'], 'http://somehost.local');
     });
   });
 });

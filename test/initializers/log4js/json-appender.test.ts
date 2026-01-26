@@ -1,65 +1,63 @@
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import * as appender from '../../../src/initializers/log4js/json-appender';
-import 'should';
-import * as sinon from 'sinon';
 import * as path from 'path';
 import * as Log4js from 'log4js';
+import { getMockCallArgs } from '../../helpers/assert-helpers';
 
-const sandbox = sinon.createSandbox();
-
-let configureSpy, createErrorLogSpy, createValidLogSpy;
+let configureSpy: any, createErrorLogSpy: any, createValidLogSpy: any;
 
 describe('log4js_json_appender', () => {
   beforeEach(() => {
-    configureSpy = sandbox.spy(appender, 'configure');
-    createErrorLogSpy = sandbox.spy(appender, 'createErrorLog');
-    createValidLogSpy = sandbox.spy(appender, 'createValidLog');
+    configureSpy = mock.method(appender, 'configure', appender.configure);
+    createErrorLogSpy = mock.method(appender, 'createErrorLog', appender.createErrorLog);
+    createValidLogSpy = mock.method(appender, 'createValidLog', appender.createValidLog);
   });
 
   afterEach(() => {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('should contain method "configure"', () => {
-    (typeof appender.configure === 'function').should.equal(true);
+    assert.strictEqual(typeof appender.configure === 'function', true);
   });
 
   it('should call createValidLog and return valid json object', () => {
     const layout = {
-      messagePassThroughLayout: log => {
+      messagePassThroughLayout: (log: any) => {
         return 'test';
       }
     };
 
-    appender.configure({}, layout)({
+    appender.configure({}, layout as any)({
       level: {
         levelStr: 'INFO'
       },
       startTime: '01-01-1970',
       categoryName: 'testCategoryName',
       data: ['test']
+    } as any);
+    assert.strictEqual(configureSpy.mock.calls.length, 1);
+    assert.strictEqual(createErrorLogSpy.mock.calls.length, 0);
+    assert.strictEqual(createValidLogSpy.mock.calls.length, 1);
+    const result = createValidLogSpy.mock.results[0].result;
+    assert.deepStrictEqual(result, {
+      timestamp: '01-01-1970',
+      severity: 'INFO',
+      categoryName: 'testCategoryName',
+      message: 'test',
+      context: {}
     });
-    configureSpy.calledOnce.should.equal(true);
-    createErrorLogSpy.calledOnce.should.equal(false);
-    createValidLogSpy.calledOnce.should.equal(true);
-    createValidLogSpy
-      .returned({
-        timestamp: '01-01-1970',
-        severity: 'INFO',
-        categoryName: 'testCategoryName',
-        message: 'test',
-        context: {}
-      })
-      .should.equal(true);
   });
 
   it('should call createErrorLog and return error json object', () => {
     const layout = {
-      messagePassThroughLayout: log => {
+      messagePassThroughLayout: (log: any) => {
         return 'test';
       }
     };
 
-    appender.configure({}, layout)({
+    appender.configure({}, layout as any)({
       level: {
         levelStr: 'ERROR'
       },
@@ -71,11 +69,12 @@ describe('log4js_json_appender', () => {
           stack: 'stack trace'
         }
       ]
-    });
-    configureSpy.calledOnce.should.equal(true);
-    createValidLogSpy.calledOnce.should.equal(false);
-    createErrorLogSpy.calledOnce.should.equal(true);
-    createErrorLogSpy.returnValues.should.eql([
+    } as any);
+    assert.strictEqual(configureSpy.mock.calls.length, 1);
+    assert.strictEqual(createValidLogSpy.mock.calls.length, 0);
+    assert.strictEqual(createErrorLogSpy.mock.calls.length, 1);
+    const results = createErrorLogSpy.mock.results.map((r: any) => r.result);
+    assert.deepStrictEqual(results, [
       {
         timestamp: '01-01-1970',
         severity: 'ERROR',
@@ -91,8 +90,9 @@ describe('log4js_json_appender', () => {
   });
 
   it('should correctly print circular json', () => {
-    let clock = sinon.useFakeTimers(new Date('2019-01-01'));
-    const logSpy = sandbox.stub(console, 'log');
+    const now = new Date('2019-01-01');
+    mock.timers.enable({ apis: ['Date'], now });
+    const logSpy = mock.method(console, 'log', () => {});
 
     const appenders = {
       json: {
@@ -112,7 +112,7 @@ describe('log4js_json_appender', () => {
       }
     });
 
-    let circular = {
+    let circular: any = {
       id: 'id',
       temp: {}
     };
@@ -121,7 +121,7 @@ describe('log4js_json_appender', () => {
     var logger = Log4js.getLogger();
     logger.debug(circular);
 
-    logSpy.args.should.eql([
+    assert.deepStrictEqual(getMockCallArgs(logSpy), [
       [
         JSON.stringify({
           timestamp: '2019-01-01T00:00:00.000Z',
@@ -132,6 +132,6 @@ describe('log4js_json_appender', () => {
         })
       ]
     ]);
-    clock.restore();
+    mock.timers.reset();
   });
 });

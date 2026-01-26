@@ -1,43 +1,44 @@
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import { default as logMetrics } from '../../src/helpers/log-metrics';
 import * as log4js from 'log4js';
 import * as newrelic from '../../src/initializers/newrelic';
-import * as sinon from 'sinon';
 import OrkaBuilder from '../../src/orka-builder';
-
-const sandbox = sinon.createSandbox();
+import { assertContainsDeep } from './assert-helpers';
 
 describe('Test log-metrics helper', function () {
   describe('Test start', function () {
     it('should return start as bigint', function () {
       const start = logMetrics.start();
       const s = Number(start) / 1e9;
-      s.should.be.a.Number();
+      assert.strictEqual(typeof s, 'number');
     });
   });
 
   describe('Test end', function () {
-    let observeSpy;
-    let recordMetricSpy;
-    let loggerStub;
+    let observeSpy: ReturnType<typeof mock.fn>;
+    let recordMetricSpy: ReturnType<typeof mock.fn>;
+    let loggerStub: ReturnType<typeof mock.method>;
+
     beforeEach(function () {
-      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerStub = mock.method(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
 
-      observeSpy = sandbox.stub();
-      sandbox.stub(logMetrics, 'prometheusEndClient').returns({
+      observeSpy = mock.fn();
+      mock.method(logMetrics, 'prometheusEndClient', () => ({
         observe: observeSpy
-      } as any);
+      }) as any);
 
-      recordMetricSpy = sandbox.stub();
-      sandbox.stub(newrelic, 'getNewRelic').returns({
+      recordMetricSpy = mock.fn();
+      mock.method(newrelic, 'getNewRelic', () => ({
         recordMetric: recordMetricSpy
-      } as any);
+      }) as any);
     });
 
     afterEach(function () {
-      sandbox.restore();
+      mock.restoreAll();
     });
 
-    context('when prometheus/newrelic are enabled', function () {
+    describe('when prometheus/newrelic are enabled', function () {
       it('should log info and send to newRelic and prometheus', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true, timeSummary: { enabled: true } } } } as any;
         process.env.NEW_RELIC_LICENSE_KEY = 'foo';
@@ -45,81 +46,83 @@ describe('Test log-metrics helper', function () {
         const start = logMetrics.start();
         logMetrics.end(start, 'name', 'type', 'corID');
 
-        loggerStub.calledOnce.should.be.true();
-        loggerStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
-        recordMetricSpy.calledOnce.should.be.true();
-        recordMetricSpy.args[0][0].should.eql('Custom/type/name');
-        observeSpy.calledOnce.should.be.true();
-        observeSpy.args[0].should.containDeep([{ flow: 'name', flowType: 'type' }]);
+        assert.strictEqual(loggerStub.mock.callCount(), 1);
+        assert.ok((loggerStub.mock.calls[0].arguments[0] as string).includes('[corID] TIME_LOGGING[type][name]'));
+        assert.strictEqual(recordMetricSpy.mock.callCount(), 1);
+        assert.strictEqual(recordMetricSpy.mock.calls[0].arguments[0], 'Custom/type/name');
+        assert.strictEqual(observeSpy.mock.callCount(), 1);
+        assertContainsDeep(observeSpy.mock.calls[0].arguments[0], { flow: 'name', flowType: 'type' });
 
         delete process.env.NEW_RELIC_LICENSE_KEY;
       });
     });
 
-    context('when prometheus/newrelic are not enabled for time logging', function () {
+    describe('when prometheus/newrelic are not enabled for time logging', function () {
       it('should log info', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true } } } as any;
 
         const start = logMetrics.start();
         logMetrics.end(start, 'name', 'type', 'corID');
 
-        recordMetricSpy.called.should.be.false();
-        observeSpy.called.should.be.false();
-        loggerStub.called.should.be.true();
-        loggerStub.args[0][0].should.containEql('[corID] TIME_LOGGING[type][name]');
+        assert.strictEqual(recordMetricSpy.mock.callCount(), 0);
+        assert.strictEqual(observeSpy.mock.callCount(), 0);
+        assert.strictEqual(loggerStub.mock.callCount() > 0, true);
+        assert.ok((loggerStub.mock.calls[0].arguments[0] as string).includes('[corID] TIME_LOGGING[type][name]'));
       });
     });
   });
 
   describe('Test recordMetric', function () {
-    let observeSpy;
-    let recordMetricSpy;
-    let loggerStub;
+    let observeSpy: ReturnType<typeof mock.fn>;
+    let recordMetricSpy: ReturnType<typeof mock.fn>;
+    let loggerStub: ReturnType<typeof mock.method>;
+
     beforeEach(function () {
-      loggerStub = sandbox.stub(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
+      loggerStub = mock.method(log4js.getLogger('orka.errorHandler').constructor.prototype, 'debug');
 
-      observeSpy = sandbox.stub();
-      sandbox.stub(logMetrics, 'prometheusRecordMetricsClient').returns({
+      observeSpy = mock.fn();
+      mock.method(logMetrics, 'prometheusRecordMetricsClient', () => ({
         observe: observeSpy
-      } as any);
+      }) as any);
 
-      recordMetricSpy = sandbox.stub();
-      sandbox.stub(newrelic, 'getNewRelic').returns({
+      recordMetricSpy = mock.fn();
+      mock.method(newrelic, 'getNewRelic', () => ({
         recordMetric: recordMetricSpy
-      } as any);
+      }) as any);
     });
 
     afterEach(function () {
-      sandbox.restore();
+      mock.restoreAll();
     });
 
-    context('when prometheus/newrelic are enabled', function () {
+    describe('when prometheus/newrelic are enabled', function () {
       it('should log debug and send to newRelic and prometheus', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: true, eventSummary: { enabled: true } } } } as any;
         process.env.NEW_RELIC_LICENSE_KEY = 'foo';
 
         logMetrics.recordMetric('test', 'type', 1);
 
-        recordMetricSpy.called.should.be.true();
-        recordMetricSpy.calledWith('Custom/type/test', 1).should.be.true();
-        loggerStub.calledOnce.should.be.true();
-        loggerStub.calledWith('[type][test]: 1').should.be.true();
-        observeSpy.args[0].should.containDeep([{ event: 'test', eventType: 'type' }, 1]);
+        assert.strictEqual(recordMetricSpy.mock.callCount() > 0, true);
+        assert.strictEqual(recordMetricSpy.mock.calls[0].arguments[0], 'Custom/type/test');
+        assert.strictEqual(recordMetricSpy.mock.calls[0].arguments[1], 1);
+        assert.strictEqual(loggerStub.mock.callCount(), 1);
+        assert.strictEqual(loggerStub.mock.calls[0].arguments[0], '[type][test]: 1');
+        assertContainsDeep(observeSpy.mock.calls[0].arguments, [{ event: 'test', eventType: 'type' }, 1]);
 
         delete process.env.NEW_RELIC_LICENSE_KEY;
       });
     });
 
-    context('when prometheus/newrelic are not enabled', function () {
+    describe('when prometheus/newrelic are not enabled', function () {
       it('should log debug', function () {
         OrkaBuilder.INSTANCE = { config: { prometheus: { enabled: false } } } as any;
 
         logMetrics.recordMetric('test', 'type', 1);
 
-        recordMetricSpy.called.should.be.false();
-        observeSpy.called.should.be.false();
-        loggerStub.called.should.be.true();
-        loggerStub.calledWith('[type][test]: 1').should.be.true();
+        assert.strictEqual(recordMetricSpy.mock.callCount(), 0);
+        assert.strictEqual(observeSpy.mock.callCount(), 0);
+        assert.strictEqual(loggerStub.mock.callCount() > 0, true);
+        assert.strictEqual(loggerStub.mock.calls[0].arguments[0], '[type][test]: 1');
       });
     });
   });

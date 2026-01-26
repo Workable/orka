@@ -1,20 +1,18 @@
-const mock = require('mock-require');
-import * as sinon from 'sinon';
-import 'should';
-import * as RabbitType from 'rabbit-queue';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
+import type * as RabbitType from 'rabbit-queue';
 import { getRequestContext } from '../../../src/builder';
 import { logMetrics } from '../../../src/helpers';
-
-const sandbox = sinon.createSandbox();
+import { getMockCallArgs } from '../../helpers/assert-helpers';
 
 describe('Test rabbitmq connection', function () {
-  let config;
+  let config: any;
   const orkaOptions = {
     appName: 'test'
   };
-  let stub: sinon.SinonSpy;
-  let onStub: sinon.SinonSpy;
-  let getRabbit;
+  let stub: any;
+  let onStub: any;
+  let getRabbit: any;
   let getConnection: () => RabbitType.Rabbit;
 
   beforeEach(async function () {
@@ -29,21 +27,23 @@ describe('Test rabbitmq connection', function () {
       },
       requestContext: { enabled: true, propagatedHeaders: { enabled: true } }
     };
-    onStub = sandbox.stub();
-    stub = sandbox.stub().returns({
+    onStub = mock.fn();
+    stub = mock.fn(() => ({
       on: onStub
-    });
-    mock('rabbit-queue', {
-      Rabbit: stub,
-      BaseQueueHandler: class BaseQueueHandler {
-        getCorrelationId() {
-          return 'corId';
+    }));
+    mock.module('rabbit-queue', {
+      namedExports: {
+        Rabbit: stub,
+        BaseQueueHandler: class BaseQueueHandler {
+          getCorrelationId() {
+            return 'corId';
+          }
+          handle() {}
+          tryHandle() {
+            (this as any).handle();
+          }
+          handleError() {}
         }
-        handle() {}
-        tryHandle() {
-          this.handle();
-        }
-        handleError() {}
       }
     });
     delete require.cache[require.resolve('../../../src/initializers/rabbitmq')];
@@ -51,24 +51,23 @@ describe('Test rabbitmq connection', function () {
   });
 
   afterEach(function () {
-    sandbox.restore();
-    mock.stopAll();
+    mock.restoreAll();
   });
 
   it('should connect to rabbitmq', () => {
     const rabbit = getRabbit(config, orkaOptions);
-    stub.calledOnce.should.be.true();
+    assert.strictEqual(stub.mock.calls.length, 1);
   });
 
   it('should not connect to rabbitmq, no config', () => {
     const rabbit = getRabbit({}, orkaOptions);
-    stub.called.should.be.false();
+    assert.strictEqual(stub.mock.calls.length, 0);
   });
 
   it('should not connect to rabbitmq, already connected', () => {
     getRabbit(config, orkaOptions);
     getRabbit(config, orkaOptions);
-    stub.args.should.eql([
+    assert.deepStrictEqual(getMockCallArgs(stub), [
       [
         'amqp://localhost?frameMax=8192',
         {
@@ -87,7 +86,7 @@ describe('Test rabbitmq connection', function () {
     config.queue.options = {};
     config.queue.options.scheduledPublish = false;
     const rabbit = getRabbit(config, orkaOptions);
-    stub.args.should.eql([
+    assert.deepStrictEqual(getMockCallArgs(stub), [
       [
         'amqp://localhost?frameMax=8192',
         {
@@ -103,17 +102,17 @@ describe('Test rabbitmq connection', function () {
   });
 
   describe('BaseQueueHandler enhanced logic', function () {
-    let queueHandler;
-    let stub;
+    let queueHandler: any;
+    let handleStub: any;
     beforeEach(async function () {
       getRabbit(config, orkaOptions);
       const rabbit = getConnection();
       const { BaseQueueHandler } = await import('rabbit-queue');
-      stub = sandbox.stub();
+      handleStub = mock.fn();
       class TestHandler extends BaseQueueHandler {
         handle() {
           const ctx = getRequestContext();
-          stub(ctx);
+          handleStub(ctx);
           return;
         }
       }
@@ -122,27 +121,27 @@ describe('Test rabbitmq connection', function () {
 
     it('runsTryHandle in context', function () {
       queueHandler.tryHandle();
-      stub.args.should.eql([[new Map().set('correlationId', 'corId')]]);
+      assert.deepStrictEqual(getMockCallArgs(handleStub), [[new Map().set('correlationId', 'corId')]]);
     });
 
     it('getTime as a bigint from logMetrics', function () {
-      sandbox.stub(logMetrics, 'start').returns(1 as any);
-      queueHandler.getTime().should.eql(1);
+      mock.method(logMetrics, 'start', () => 1 as any);
+      assert.strictEqual(queueHandler.getTime(), 1);
     });
 
     it('logTime from logMetrics', function () {
-      const stub = sandbox.stub(logMetrics, 'end');
+      const logStub = mock.method(logMetrics, 'end', () => {});
       queueHandler.logTime('args', 1);
-      stub.args.should.eql([['args', undefined, 'queue', 1]]);
+      assert.deepStrictEqual(getMockCallArgs(logStub), [['args', undefined, 'queue', 1]]);
     });
 
     it('handleError adds compatible to HB keys', function () {
       const err: any = new Error('test');
       queueHandler.queueName = 'test';
       queueHandler.handleError(err, {});
-      err.action.should.eql('test');
-      err.component.should.eql('rabbit-queue');
-      err.context.should.eql({ correlationId: 'corId' });
+      assert.strictEqual(err.action, 'test');
+      assert.strictEqual(err.component, 'rabbit-queue');
+      assert.deepStrictEqual(err.context, { correlationId: 'corId' });
     });
   });
 });

@@ -1,10 +1,9 @@
-import * as sinon from 'sinon';
+import { describe, it, beforeEach, mock } from 'node:test';
+import assert from 'node:assert';
 import middleware from '../../../src/initializers/koa/parse-querystring';
 
-const sandbox = sinon.createSandbox();
-
 describe('parse-querystring', function () {
-  let ctx;
+  let ctx: any;
 
   beforeEach(function () {
     ctx = {
@@ -14,15 +13,12 @@ describe('parse-querystring', function () {
   });
 
   it('parses querystring and calls next', async function () {
-    // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
 
-    // Execute
     await middleware(ctx, next);
 
-    // Assert
-    next.called.should.be.true();
-    ctx.state.query.should.eql({
+    assert.strictEqual(next.mock.callCount(), 1);
+    assert.deepStrictEqual(ctx.state.query, {
       firstname: 'john',
       lastname: 'doe',
       children: ['bolek', 'lolek']
@@ -30,15 +26,12 @@ describe('parse-querystring', function () {
   });
 
   it('overrides query in state', async function () {
-    // Prepare
-    const next = sandbox.stub();
+    const next = mock.fn();
 
-    // Execute
     await middleware(ctx, next);
 
-    // Assert
-    next.called.should.be.true();
+    assert.strictEqual(next.mock.callCount(), 1);
     ctx.state.query = 'asd';
-    ctx.state.query.should.eql('asd');
+    assert.strictEqual(ctx.state.query, 'asd');
   });
 });

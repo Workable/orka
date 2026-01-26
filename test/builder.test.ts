@@ -1,6 +1,7 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
 import builder from '../src/builder';
 import defaults from '../src/default-options';
-import 'should';
 
 describe('builder', function() {
   it('initializes typescript');
@@ -21,13 +22,13 @@ describe('builder', function() {
     const staticOptions = { diamorphosis: { configFolder: './examples/simple-example' } };
     const orkaBuilder = builder(staticOptions);
     const { appName } = orkaBuilder.options;
-    appName.should.equal('foo');
+    assert.strictEqual(appName, 'foo');
   });
 
   it('should get app name from options.appName if set', () => {
     const staticOptions = { appName: 'orka', diamorphosis: { configFolder: './examples/simple-example' } };
     const orkaBuilder = builder(staticOptions);
     const { appName } = orkaBuilder.options;
-    appName.should.equal('orka');
+    assert.strictEqual(appName, 'orka');
   });
 });

@@ -1,68 +1,88 @@
-import * as sinon from 'sinon';
-import 'should';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import type KafkaType from '../../../src/initializers/kafka/kafka';
 import { Partitioners } from 'kafkajs';
-
-const sandbox = sinon.createSandbox();
-const mock = require('mock-require');
+import { assertContainsDeep, getMockCallArgs } from '../../helpers/assert-helpers';
 
 describe('kafka class', () => {
-  let producerStub;
-  let consumerStub;
-  let adminStub;
-  let kafkaStub;
-  let fetchTopicMetadataStub;
-  let createTopicsStub;
-  let kafkaStubReturn;
-  let fetchOffsetsStub;
-  let setOffsetsStub;
-  let listTopicsStub;
+  let producerStub: any;
+  let consumerStub: any;
+  let adminStub: any;
+  let kafkaStub: any;
+  let fetchTopicMetadataStub: any;
+  let createTopicsStub: any;
+  let kafkaStubReturn: any;
+  let fetchOffsetsStub: any;
+  let setOffsetsStub: any;
+  let listTopicsStub: any;
   let Kafka: typeof KafkaType;
 
   beforeEach(async function () {
+    const connectMock = mock.fn();
+    const sendMock = mock.fn(() => [{}]);
+    const sendBatchMock = mock.fn(() => ({}));
+    const disconnectMock = mock.fn(() => ({}));
+    const onMock = mock.fn();
+
     producerStub = {
-      connect: sandbox.stub(),
-      send: sandbox.stub().returns([{}]),
-      sendBatch: sandbox.stub().returns({}),
-      disconnect: sandbox.stub().returns({}),
-      on: sandbox.stub(),
+      connect: connectMock,
+      send: sendMock,
+      sendBatch: sendBatchMock,
+      disconnect: disconnectMock,
+      on: onMock,
       events: {
         CONNECT: 'producer.connect',
         DISCONNECT: 'producer.disconnect'
       }
     };
-    consumerStub = sandbox.stub().returns({
-      connect: sandbox.stub(),
-      on: sandbox.stub()
+
+    const consumerConnectMock = mock.fn();
+    const consumerOnMock = mock.fn();
+    consumerStub = mock.fn(() => ({
+      connect: consumerConnectMock,
+      on: consumerOnMock
+    }));
+
+    fetchTopicMetadataStub = mock.fn(async () => 'metadata');
+
+    let createTopicsCallCount = 0;
+    createTopicsStub = mock.fn(async () => {
+      createTopicsCallCount++;
+      return createTopicsCallCount === 1 ? true : false;
     });
-    fetchTopicMetadataStub = sandbox.stub().resolves('metadata');
-    createTopicsStub = sandbox.stub().onFirstCall().resolves(true).resolves(false);
-    fetchOffsetsStub = sandbox.stub();
-    setOffsetsStub = sandbox.stub();
-    listTopicsStub = sandbox.stub().resolves([]);
-    adminStub = sandbox.stub().returns({
-      connect: sandbox.stub(),
-      disconnect: sandbox.stub(),
+
+    fetchOffsetsStub = mock.fn();
+    setOffsetsStub = mock.fn();
+    listTopicsStub = mock.fn(async () => []);
+
+    const adminConnectMock = mock.fn();
+    const adminDisconnectMock = mock.fn();
+    adminStub = mock.fn(() => ({
+      connect: adminConnectMock,
+      disconnect: adminDisconnectMock,
       fetchTopicMetadata: fetchTopicMetadataStub,
       createTopics: createTopicsStub,
       fetchOffsets: fetchOffsetsStub,
       setOffsets: setOffsetsStub,
       listTopics: listTopicsStub
-    });
+    }));
+
     kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
-    kafkaStub = sinon.stub().returns(kafkaStubReturn);
+    kafkaStub = mock.fn(() => kafkaStubReturn);
+
     delete require.cache[require.resolve('../../../src/initializers/kafka/kafka')];
-    mock('kafkajs', { Kafka: kafkaStub, Partitioners  });
+    mock.module('kafkajs', {
+      namedExports: { Kafka: kafkaStub, Partitioners }
+    });
     ({ default: Kafka } = await import('../../../src/initializers/kafka/kafka'));
   });
 
   afterEach(function () {
-    sandbox.restore();
-    mock.stopAll();
+    mock.restoreAll();
   });
 
   describe('connect', function () {
-    context('with certificates', function () {
+    describe('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
@@ -77,9 +97,9 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.connect();
-        producerStub.connect.calledOnce.should.eql(true);
+        assert.strictEqual(producerStub.connect.mock.calls.length, 1);
 
-        kafkaStub.args.should.containDeep([
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-producer'],
@@ -91,7 +111,7 @@ describe('kafka class', () => {
       });
     });
 
-    context('without headers', function () {
+    describe('without headers', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
@@ -106,9 +126,9 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.connect();
-        producerStub.connect.calledOnce.should.eql(true);
+        assert.strictEqual(producerStub.connect.mock.calls.length, 1);
 
-        kafkaStub.args.should.containDeep([
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-producer'],
@@ -120,7 +140,7 @@ describe('kafka class', () => {
       });
     });
 
-    context('with ssl', function () {
+    describe('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
@@ -136,12 +156,13 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         const producerConfig = { maxInFlightRequests: 10 };
-        const producerSpy = sandbox.spy(kafkaStubReturn, 'producer');
+        const producerSpy = mock.fn(() => producerStub);
+        kafkaStubReturn.producer = producerSpy;
         await kafka.connect(producerConfig);
-        producerStub.connect.calledOnce.should.eql(true);
+        assert.strictEqual(producerStub.connect.mock.calls.length, 1);
 
-        producerSpy.args.should.eql([[producerConfig]]);
-        kafkaStub.args.should.containDeep([
+        assert.deepStrictEqual(getMockCallArgs(producerSpy), [[producerConfig]]);
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-producer'],
@@ -156,7 +177,7 @@ describe('kafka class', () => {
   });
 
   describe('createConsumer', function () {
-    context('with certificates', function () {
+    describe('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
@@ -171,8 +192,8 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.createConsumer();
-        consumerStub.args.should.eql([[{ groupId: 'groupId' }]]);
-        kafkaStub.args.should.containDeep([
+        assert.deepStrictEqual(getMockCallArgs(consumerStub), [[{ groupId: 'groupId' }]]);
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-consumer'],
@@ -184,7 +205,7 @@ describe('kafka class', () => {
       });
     });
 
-    context('with ssl', function () {
+    describe('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
@@ -200,9 +221,9 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.createConsumer({ groupId: 'foo' });
-        consumerStub.args.should.eql([[{ groupId: 'foo' }]]);
+        assert.deepStrictEqual(getMockCallArgs(consumerStub), [[{ groupId: 'foo' }]]);
 
-        kafkaStub.args.should.containDeep([
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-consumer'],
@@ -217,7 +238,7 @@ describe('kafka class', () => {
   });
 
   describe('connectAdmin', function () {
-    context('with certificates', function () {
+    describe('with certificates', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
@@ -232,8 +253,8 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.connectAdmin();
-        adminStub.args.should.eql([[]]);
-        kafkaStub.args.should.containDeep([
+        assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-consumer'],
@@ -245,7 +266,7 @@ describe('kafka class', () => {
       });
     });
 
-    context('with ssl', function () {
+    describe('with ssl', function () {
       it('should call correct methods with correct args', async () => {
         const kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
@@ -261,9 +282,9 @@ describe('kafka class', () => {
           authenticationTimeout: 10000
         });
         await kafka.connectAdmin();
-        adminStub.args.should.eql([[]]);
+        assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
 
-        kafkaStub.args.should.containDeep([
+        assertContainsDeep(getMockCallArgs(kafkaStub), [
           [
             {
               brokers: ['broker-consumer'],
@@ -291,9 +312,9 @@ describe('kafka class', () => {
         ssl: true
       });
       const response = await kafka.metadata();
-      adminStub.args.should.eql([[]]);
-      fetchTopicMetadataStub.args.should.eql([[]]);
-      response.should.eql('metadata');
+      assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
+      assert.deepStrictEqual(getMockCallArgs(fetchTopicMetadataStub), [[]]);
+      assert.strictEqual(response, 'metadata');
     });
   });
 
@@ -315,14 +336,15 @@ describe('kafka class', () => {
         { topic: 'bar', numPartitions: 10, replicationFactor: 1 },
         { topic: 'test', numPartitions: 10, replicationFactor: 1 }
       ]);
-      adminStub.args.should.eql([[]]);
-      createTopicsStub.args.should.eql([
+      assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
+      assert.deepStrictEqual(getMockCallArgs(createTopicsStub), [
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'foo' }] }],
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }],
         [{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'test' }] }]
       ]);
-      response.should.eql([{ foo: true }, { bar: false }, { test: false }]);
+      assert.deepStrictEqual(response, [{ foo: true }, { bar: false }, { test: false }]);
     });
+
     it('creates topics that do not exist', async function () {
       const kafka = new Kafka({
         sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
@@ -335,15 +357,15 @@ describe('kafka class', () => {
         },
         ssl: true
       });
-      listTopicsStub.resolves(['foo', 'test']);
+      listTopicsStub.mock.mockImplementation(async () => ['foo', 'test']);
       const response = await kafka.createTopics([
         { topic: 'foo', numPartitions: 10, replicationFactor: 1 },
         { topic: 'bar', numPartitions: 10, replicationFactor: 1 },
         { topic: 'test', numPartitions: 10, replicationFactor: 1 }
       ]);
-      adminStub.args.should.eql([[]]);
-      createTopicsStub.args.should.eql([[{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }]]);
-      response.should.eql([{ bar: true }]);
+      assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
+      assert.deepStrictEqual(getMockCallArgs(createTopicsStub), [[{ topics: [{ numPartitions: 10, replicationFactor: 1, topic: 'bar' }] }]]);
+      assert.deepStrictEqual(response, [{ bar: true }]);
     });
   });
 
@@ -360,37 +382,48 @@ describe('kafka class', () => {
         },
         ssl: true
       });
-      fetchOffsetsStub.onFirstCall().returns([{ topic: 'topic', partitions: [{ partition: 0, offset: '-1' }] }]);
-      fetchOffsetsStub.onSecondCall().returns([{ topic: 'topic2', partitions: [{ partition: 0, offset: '5' }] }]);
-      fetchOffsetsStub.onThirdCall().returns([{ topic: 'topic3', partitions: [{ partition: 0, offset: '-1' }] }]);
 
-      fetchOffsetsStub.onCall(3).returns([
-        {
-          partitions: [
-            { partition: 0, offset: '3' },
-            { partition: 1, offset: '-1' }
-          ]
+      let callCount = 0;
+      fetchOffsetsStub.mock.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return [{ topic: 'topic', partitions: [{ partition: 0, offset: '-1' }] }];
+        } else if (callCount === 2) {
+          return [{ topic: 'topic2', partitions: [{ partition: 0, offset: '5' }] }];
+        } else if (callCount === 3) {
+          return [{ topic: 'topic3', partitions: [{ partition: 0, offset: '-1' }] }];
+        } else if (callCount === 4) {
+          return [
+            {
+              partitions: [
+                { partition: 0, offset: '3' },
+                { partition: 1, offset: '-1' }
+              ]
+            }
+          ];
+        } else {
+          return [{ partitions: [{ partition: 0, offset: '-1' }] }];
         }
-      ]);
-      fetchOffsetsStub.returns([{ partitions: [{ partition: 0, offset: '-1' }] }]);
+      });
+
       const response = await kafka.renameGroupId([
         { groupId: 'newGroupId', topic: 'topic', oldGroupId: 'oldGroupId' },
         { groupId: 'newGroupId2', topic: 'topic2', oldGroupId: 'oldGroupId2' },
         { groupId: 'newGroupId3', topic: 'topic3', oldGroupId: 'oldGroupId3' }
       ]);
 
-      adminStub.args.should.eql([[]]);
-      fetchOffsetsStub.args.should.eql([
+      assert.deepStrictEqual(getMockCallArgs(adminStub), [[]]);
+      assert.deepStrictEqual(getMockCallArgs(fetchOffsetsStub), [
         [{ groupId: 'newGroupId', topics: ['topic'], resolveOffsets: false }],
         [{ groupId: 'newGroupId2', topics: ['topic2'], resolveOffsets: false }],
         [{ groupId: 'newGroupId3', topics: ['topic3'], resolveOffsets: false }],
         [{ groupId: 'oldGroupId', topics: ['topic'], resolveOffsets: false }],
         [{ groupId: 'oldGroupId3', topics: ['topic3'], resolveOffsets: false }]
       ]);
-      setOffsetsStub.args.should.eql([
+      assert.deepStrictEqual(getMockCallArgs(setOffsetsStub), [
         [{ groupId: 'newGroupId', partitions: [{ offset: '3', partition: 0 }], topic: 'topic' }]
       ]);
-      response.should.eql([
+      assert.deepStrictEqual(response, [
         {
           groupId: 'newGroupId',
           oldOffsets: [{ offset: '3', partition: 0 }],

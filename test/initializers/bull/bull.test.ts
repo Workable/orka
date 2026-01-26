@@ -1,9 +1,7 @@
-import should = require('should');
-import * as sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import Prometheus from '../../../src/initializers/prometheus/prometheus';
-
-const mock = require('mock-require');
-const sandbox = sinon.createSandbox();
+import { assertThrows } from '../../helpers/assert-helpers';
 
 describe('bull class', () => {
   const prefix = 'test';
@@ -13,77 +11,82 @@ describe('bull class', () => {
   ];
   const defaultOptions = { removeOnComplete: true };
   const redisOptions = { url: 'redis://localhost:6379/' };
-  let bull;
-  let bullReuse;
-  let MockQueue;
-  let MockWorker;
+  let bull: any;
+  let bullReuse: any;
+  let MockQueue: any;
+  let MockWorker: any;
 
   beforeEach(async () => {
-    MockQueue = function(name, options) {
+    MockQueue = function(this: any, name: string, options: any) {
       this.name = name;
       this.qualifiedName = `${options.prefix}:${name}`;
       this.opts = options;
       this._events = {};
       return this;
     };
-    MockQueue.prototype.count = sandbox.stub().resolves(10);
-    MockQueue.prototype.getJobCounts = sandbox.stub().resolves({
+    MockQueue.prototype.count = mock.fn(async () => 10);
+    MockQueue.prototype.getJobCounts = mock.fn(async () => ({
       active: 2,
       completed: 3,
       failed: 1,
       delayed: 4,
       waiting: 6
-    });
-    MockQueue.prototype.on = sandbox.stub().returnsThis();
-    MockQueue.prototype.emit = sandbox.stub().returnsThis();
+    }));
+    MockQueue.prototype.on = mock.fn(function(this: any) { return this; });
+    MockQueue.prototype.emit = mock.fn(function(this: any) { return this; });
 
-    MockWorker = function(name, handler, options) {
+    MockWorker = function(this: any, name: string, handler: any, options: any) {
       this.name = name;
       this.handler = handler;
       this.opts = options;
       this._events = { drained: [], error: [], failed: [] };
       return this;
     };
-    MockWorker.prototype.on = sandbox.stub().returnsThis();
-    MockWorker.prototype.emit = sandbox.stub().returnsThis();
-
-    mock('bullmq', {
-      Queue: MockQueue,
-      Worker: MockWorker
-    });
+    MockWorker.prototype.on = mock.fn(function(this: any) { return this; });
+    MockWorker.prototype.emit = mock.fn(function(this: any) { return this; });
 
     const mockRedisClient = {
-      setMaxListeners: sandbox.stub(),
-      quit: sandbox.stub().resolves(),
-      on: sandbox.stub().returnsThis(),
-      connect: sandbox.stub().resolves(),
-      disconnect: sandbox.stub().resolves()
+      setMaxListeners: mock.fn(),
+      quit: mock.fn(async () => {}),
+      on: mock.fn(function(this: any) { return this; }),
+      connect: mock.fn(async () => {}),
+      disconnect: mock.fn(async () => {})
     };
-    mock('ioredis', sandbox.stub().returns(mockRedisClient));
 
+    mock.module('bullmq', {
+      namedExports: {
+        Queue: MockQueue,
+        Worker: MockWorker
+      }
+    });
+
+    mock.module('ioredis', {
+      defaultExport: mock.fn(() => mockRedisClient)
+    });
+
+    delete require.cache[require.resolve('../../../src/initializers/bull/bull')];
     const Bull = (await import('../../../src/initializers/bull/bull')).default;
     bull = new Bull(prefix, queues, defaultOptions, redisOptions);
     bullReuse = new Bull(prefix, queues, defaultOptions, redisOptions, undefined, true);
   });
 
-  afterEach(async function() {
-    sandbox.restore();
-    mock.stopAll();
+  afterEach(function() {
+    mock.restoreAll();
   });
 
   describe('getQueue', () => {
     describe('when queue is not configured', () => {
       it('should throw no such queue error', () => {
-        should.throws(() => bull.getQueue('unknown'), 'no such queue');
+        assertThrows(() => bull.getQueue('unknown'), 'no such queue');
       });
     });
     describe('when queue is not initialized', () => {
       it('should create the queue and return its instance', () => {
         const name = 'test_one';
         const q = bull.getQueue(name);
-        q.should.not.be.undefined();
-        q.qualifiedName.should.be.equal(`${prefix}:${name}`);
-        q.opts.should.be.eql({
+        assert.ok(q !== undefined);
+        assert.strictEqual(q.qualifiedName, `${prefix}:${name}`);
+        assert.deepStrictEqual(q.opts, {
           connection: {
             url: 'redis://localhost:6379/',
           },
@@ -97,17 +100,17 @@ describe('bull class', () => {
       it('should create the queue and return its instance with client reuse', () => {
         const name = 'test_one';
         const q = bullReuse.getQueue(name);
-        q.should.not.be.undefined();
-        q.qualifiedName.should.be.equal(`${prefix}:${name}`);
-        q.opts.createClient.should.be.Function();
+        assert.ok(q !== undefined);
+        assert.strictEqual(q.qualifiedName, `${prefix}:${name}`);
+        assert.strictEqual(typeof q.opts.createClient, 'function');
       });
       describe('when limiter options are configured', () => {
         it('should create a rate limited queue', () => {
           const name = 'rate_limited';
           const q = bull.getQueue(name);
-          q.should.not.be.undefined();
-          q.qualifiedName.should.be.equal(`${prefix}:${name}`);
-          q.opts.should.be.eql({
+          assert.ok(q !== undefined);
+          assert.strictEqual(q.qualifiedName, `${prefix}:${name}`);
+          assert.deepStrictEqual(q.opts, {
             connection: {
               url: 'redis://localhost:6379/',
             },
@@ -124,9 +127,9 @@ describe('bull class', () => {
         const name = 'test_one';
         const q1 = bull.getQueue(name);
         const q2 = bull.getQueue(name);
-        q1.should.not.be.undefined();
-        q2.should.not.be.undefined();
-        q1.should.be.equal(q2);
+        assert.ok(q1 !== undefined);
+        assert.ok(q2 !== undefined);
+        assert.strictEqual(q1, q2);
       });
     });
   });
@@ -136,7 +139,7 @@ describe('bull class', () => {
 
     describe('when worker queue is not configured', () => {
       it('should throw no such worker error', () => {
-        should.throws(() => bull.createWorker('unknown', jobHandler), 'no such worker');
+        assertThrows(() => bull.createWorker('unknown', jobHandler), 'no such worker');
       });
     });
 
@@ -144,26 +147,27 @@ describe('bull class', () => {
       it('should create and return a worker instance', () => {
         const name = 'test_one';
         const worker = bull.createWorker(name, jobHandler);
-        worker.should.not.be.undefined();
-        Object.keys(worker._events).should.be.eql(['drained', 'error', 'failed']);
+        assert.ok(worker !== undefined);
+        assert.deepStrictEqual(Object.keys(worker._events), ['drained', 'error', 'failed']);
       });
     });
 
     describe('when worker already exists', () => {
       it('should return the same worker instance and log a warning', () => {
         const name = 'test_one';
-        const warnStub = sandbox.stub();
-        sandbox.stub(bull, 'logger').value({ warn: warnStub, info: sandbox.stub(), error: sandbox.stub() });
+        const warnStub = mock.fn();
+        const logger = { warn: warnStub, info: mock.fn(), error: mock.fn() };
+        bull.logger = logger;
 
         const worker1 = bull.createWorker(name, jobHandler);
         const worker2 = bull.createWorker(name, jobHandler);
 
-        worker1.should.not.be.undefined();
-        worker2.should.not.be.undefined();
-        worker1.should.be.equal(worker2);
+        assert.ok(worker1 !== undefined);
+        assert.ok(worker2 !== undefined);
+        assert.strictEqual(worker1, worker2);
 
-        sandbox.assert.calledOnce(warnStub);
-        sandbox.assert.calledWith(warnStub, `Worker ${name} already exists`);
+        assert.strictEqual(warnStub.mock.calls.length, 1);
+        assert.strictEqual(warnStub.mock.calls[0].arguments[0], `Worker ${name} already exists`);
       });
     });
   });
@@ -173,13 +177,13 @@ describe('bull class', () => {
 
     describe('when worker queue is not configured', () => {
       it('should throw no such worker error', () => {
-        should.throws(() => bull.getWorker('unknown', jobHandler), 'no such worker');
+        assertThrows(() => bull.getWorker('unknown', jobHandler), 'no such worker');
       });
     });
 
     describe('when worker does not exist', () => {
       it('should throw no such worker error', () => {
-        should.throws(() => bull.getWorker('test_one', jobHandler), 'no such worker');
+        assertThrows(() => bull.getWorker('test_one', jobHandler), 'no such worker');
       });
     });
 
@@ -189,9 +193,9 @@ describe('bull class', () => {
         const worker1 = bull.createWorker(name, jobHandler);
         const worker2 = bull.getWorker(name);
 
-        worker1.should.not.be.undefined();
-        worker2.should.not.be.undefined();
-        worker1.should.be.equal(worker2);
+        assert.ok(worker1 !== undefined);
+        assert.ok(worker2 !== undefined);
+        assert.strictEqual(worker1, worker2);
       });
     });
   });
@@ -199,7 +203,7 @@ describe('bull class', () => {
   describe('getStats', () => {
     it('should retrieve the stats from each queue configured', async () => {
       const stats = await bull.getStats();
-      stats.should.be.eql([
+      assert.deepStrictEqual(stats, [
         { queue: 'test_one', count: 10, active: 2, completed: 3, failed: 1, delayed: 4, waiting: 6 },
         { queue: 'rate_limited', count: 10, active: 2, completed: 3, failed: 1, delayed: 4, waiting: 6 }
       ]);
@@ -209,57 +213,63 @@ describe('bull class', () => {
   describe('updateMetrics', () => {
     describe('when prometheus is not available', () => {
       it('should noop and log error', async () => {
-        const errorLogSpy = sandbox.spy(bull.logger, 'error');
-        const getStatsSpy = sandbox.spy(bull, 'getStats');
+        const errorLogSpy = mock.method(bull.logger, 'error', bull.logger.error);
+        const getStatsSpy = mock.method(bull, 'getStats', bull.getStats);
         await bull.updateMetrics();
-        sandbox.assert.notCalled(getStatsSpy);
-        sandbox.assert.calledOnce(errorLogSpy);
-        should(errorLogSpy.args[0][0].message).be.equal(
+        assert.strictEqual(getStatsSpy.mock.calls.length, 0);
+        assert.strictEqual(errorLogSpy.mock.calls.length, 1);
+        assert.strictEqual(
+          errorLogSpy.mock.calls[0].arguments[0].message,
           'Prometheus metrics not enabled, Bull queue metrics will not be exported'
         );
       });
     });
     describe('when prometheus is available', () => {
-      let depth, active, completed, failed, delayed, waiting, register;
+      let depth: any, active: any, completed: any, failed: any, delayed: any, waiting: any, register: any;
       beforeEach(async () => {
-        depth = sandbox.stub();
-        active = sandbox.stub();
-        completed = sandbox.stub();
-        failed = sandbox.stub();
-        delayed = sandbox.stub();
-        waiting = sandbox.stub();
-        register = sandbox.stub();
-        register.onCall(0).returns({ set: depth });
-        register.onCall(1).returns({ set: active });
-        register.onCall(2).returns({ set: completed });
-        register.onCall(3).returns({ set: failed });
-        register.onCall(4).returns({ set: delayed });
-        register.onCall(5).returns({ set: waiting });
+        depth = mock.fn();
+        active = mock.fn();
+        completed = mock.fn();
+        failed = mock.fn();
+        delayed = mock.fn();
+        waiting = mock.fn();
+        let callCount = 0;
+        register = mock.fn(() => {
+          callCount++;
+          if (callCount === 1) return { set: depth };
+          if (callCount === 2) return { set: active };
+          if (callCount === 3) return { set: completed };
+          if (callCount === 4) return { set: failed };
+          if (callCount === 5) return { set: delayed };
+          if (callCount === 6) return { set: waiting };
+          return { set: mock.fn() };
+        });
 
         const prometheus = {
           registerGauge: register
-        } as Prometheus;
+        } as unknown as Prometheus;
         const Bull = (await import('../../../src/initializers/bull/bull')).default;
         bull = new Bull(prefix, queues, defaultOptions, redisOptions, prometheus);
       });
       it('should add queue metrics to prometheus', async () => {
-        const getStatsSpy = sandbox.spy(bull, 'getStats');
+        const getStatsSpy = mock.method(bull, 'getStats', bull.getStats);
         await bull.updateMetrics();
-        sandbox.assert.calledOnce(getStatsSpy);
-        sandbox.assert.callCount(depth, queues.length);
-        sandbox.assert.callCount(active, queues.length);
-        sandbox.assert.callCount(completed, queues.length);
-        sandbox.assert.callCount(failed, queues.length);
-        sandbox.assert.callCount(delayed, queues.length);
-        sandbox.assert.callCount(waiting, queues.length);
-        queues.forEach(q => {
+        assert.strictEqual(getStatsSpy.mock.calls.length, 1);
+        assert.strictEqual(depth.mock.calls.length, queues.length);
+        assert.strictEqual(active.mock.calls.length, queues.length);
+        assert.strictEqual(completed.mock.calls.length, queues.length);
+        assert.strictEqual(failed.mock.calls.length, queues.length);
+        assert.strictEqual(delayed.mock.calls.length, queues.length);
+        assert.strictEqual(waiting.mock.calls.length, queues.length);
+        
+        queues.forEach((q, index) => {
           const queue = q.name;
-          sandbox.assert.calledWith(depth, { queue }, 10);
-          sandbox.assert.calledWith(active, { queue }, 2);
-          sandbox.assert.calledWith(completed, { queue }, 3);
-          sandbox.assert.calledWith(failed, { queue }, 1);
-          sandbox.assert.calledWith(delayed, { queue }, 4);
-          sandbox.assert.calledWith(waiting, { queue }, 6);
+          assert.deepStrictEqual(depth.mock.calls[index].arguments, [{ queue }, 10]);
+          assert.deepStrictEqual(active.mock.calls[index].arguments, [{ queue }, 2]);
+          assert.deepStrictEqual(completed.mock.calls[index].arguments, [{ queue }, 3]);
+          assert.deepStrictEqual(failed.mock.calls[index].arguments, [{ queue }, 1]);
+          assert.deepStrictEqual(delayed.mock.calls[index].arguments, [{ queue }, 4]);
+          assert.deepStrictEqual(waiting.mock.calls[index].arguments, [{ queue }, 6]);
         });
       });
     });

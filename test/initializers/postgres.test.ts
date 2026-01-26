@@ -1,8 +1,5 @@
-const mock = require('mock-require');
-import * as sinon from 'sinon';
-import 'should';
-
-const sandbox = sinon.createSandbox();
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 
 describe('Test postgres connection', function () {
   const config = {
@@ -10,29 +7,32 @@ describe('Test postgres connection', function () {
       url: 'postgres://localhost'
     }
   };
-  let postgres;
-  let poolStub: sinon.SinonSpy;
+  let postgres: any;
+  let poolStub: ReturnType<typeof mock.fn>;
 
   beforeEach(async function () {
-    poolStub = sandbox.stub().returns({ on: sandbox.stub() });
+    poolStub = mock.fn(() => ({ on: mock.fn() }));
     delete require.cache[require.resolve('../../src/initializers/postgres')];
-    mock('pg', { Pool: poolStub });
+    mock.module('pg', {
+      namedExports: {
+        Pool: poolStub
+      }
+    });
     ({ default: postgres } = await import('../../src/initializers/postgres'));
   });
 
   afterEach(function () {
-    sandbox.restore();
-    mock.stopAll();
+    mock.restoreAll();
   });
 
   it('should connect to postgres', () => {
     postgres(config);
-    poolStub.callCount.should.equal(1);
+    assert.strictEqual(poolStub.mock.callCount(), 1);
   });
 
   it('should not connect to postgres with no config', () => {
     postgres({});
-    poolStub.called.should.be.false();
+    assert.strictEqual(poolStub.mock.callCount(), 0);
   });
 
   it('should use ssl to connect to postgres', () => {
@@ -45,7 +45,7 @@ describe('Test postgres connection', function () {
         }
       }
     });
-    poolStub.args.should.eql([
+    assert.deepStrictEqual(poolStub.mock.calls.map((c: any) => c.arguments), [
       [
         {
           connectionString: 'postgres://localhost',
@@ -77,7 +77,7 @@ describe('Test postgres connection', function () {
         queryTimeout: 5000
       }
     });
-    poolStub.args.should.eql([
+    assert.deepStrictEqual(poolStub.mock.calls.map((c: any) => c.arguments), [
       [
         {
           connectionString: 'postgres://localhost',
@@ -107,7 +107,7 @@ describe('Test postgres connection', function () {
         connectionTimeoutMillis: 0
       }
     });
-    poolStub.args.should.eql([
+    assert.deepStrictEqual(poolStub.mock.calls.map((c: any) => c.arguments), [
       [
         {
           connectionString: 'postgres://localhost',

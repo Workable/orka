@@ -1,8 +1,9 @@
-import 'should';
-import * as supertest from 'supertest';
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
 
 describe('Validation examples', () => {
-  let server;
+  let server: any;
   after(async () => {
     if (server) await server.stop();
   });
@@ -19,7 +20,7 @@ describe('Validation examples', () => {
       .get('/testGet?keyNumber=2')
       .expect(200);
 
-    text.should.eql(JSON.stringify({}));
+    assert.strictEqual(text, JSON.stringify({}));
   });
 
   it('/testGet returns 400', async () => {
@@ -27,7 +28,7 @@ describe('Validation examples', () => {
       .get('/testGet?keyNumber=somestring')
       .expect(400);
 
-    text.should.equal(JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
+    assert.strictEqual(text, JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
   });
 
   it('/testPost returns 200', async () => {
@@ -36,7 +37,7 @@ describe('Validation examples', () => {
       .send({ keyNumber: 2 })
       .expect(200);
 
-    text.should.eql(JSON.stringify({ keyNumber: 2 }));
+    assert.strictEqual(text, JSON.stringify({ keyNumber: 2 }));
   });
 
   it('/testPost returns 400', async () => {
@@ -45,6 +46,6 @@ describe('Validation examples', () => {
       .send({ keyNumber: 'somestring' })
       .expect(400);
 
-    text.should.equal(JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
+    assert.strictEqual(text, JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
   });
 });

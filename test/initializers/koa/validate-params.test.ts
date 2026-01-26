@@ -1,9 +1,7 @@
-import 'should';
-import * as sinon from 'sinon';
+import { describe, it, before, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import * as Joi from 'joi';
 import { validateBody, validateQueryString } from '../../../src/middlewares/validate-params';
-
-const sandbox = sinon.createSandbox();
 
 const schema = Joi.object().keys({
   keyString: Joi.string(),
@@ -14,15 +12,15 @@ const schema = Joi.object().keys({
 
 describe('validate-params', function() {
   before(function() {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   afterEach(function() {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('tests validate body', async function() {
-    const next = sandbox.stub();
+    const next = mock.fn();
     const ctx = {
       request: {
         body: {
@@ -36,8 +34,8 @@ describe('validate-params', function() {
 
     await validateBody(schema)(ctx, next);
 
-    next.calledOnce.should.be.equal(true);
-    ctx.request.body.should.eql({
+    assert.strictEqual(next.mock.calls.length, 1);
+    assert.deepStrictEqual(ctx.request.body, {
       keyString: 'somestring',
       keyNumber: 2,
       keyBoolean: true,
@@ -46,16 +44,20 @@ describe('validate-params', function() {
   });
 
   it('tests validate body with error', async function() {
-    const next = sandbox.stub();
+    const next = mock.fn();
     const ctx = { request: { body: { keyNumber: 'somestring' } } } as any;
-    await validateBody(schema)(ctx, next).should.be.rejectedWith(
-      JSON.stringify({ keyNumber: '"keyNumber" must be a number' })
+    await assert.rejects(
+      async () => await validateBody(schema)(ctx, next),
+      (err: any) => {
+        assert.strictEqual(err.message, JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
+        return true;
+      }
     );
-    next.called.should.be.equal(false);
+    assert.strictEqual(next.mock.calls.length, 0);
   });
 
   it('tests validate query string', async function() {
-    const next = sandbox.stub();
+    const next = mock.fn();
     const ctx = {
       query: {
         keyString: 'somestring',
@@ -66,15 +68,19 @@ describe('validate-params', function() {
     } as any;
 
     await validateQueryString(schema)(ctx, next);
-    next.calledOnce.should.be.equal(true);
+    assert.strictEqual(next.mock.calls.length, 1);
   });
 
   it('tests validate query string with error', async function() {
-    const next = sandbox.stub();
+    const next = mock.fn();
     const ctx = { query: { keyNumber: 'somestring' } } as any;
-    await validateQueryString(schema)(ctx, next).should.be.rejectedWith(
-      JSON.stringify({ keyNumber: '"keyNumber" must be a number' })
+    await assert.rejects(
+      async () => await validateQueryString(schema)(ctx, next),
+      (err: any) => {
+        assert.strictEqual(err.message, JSON.stringify({ keyNumber: '"keyNumber" must be a number' }));
+        return true;
+      }
     );
-    next.called.should.be.equal(false);
+    assert.strictEqual(next.mock.calls.length, 0);
   });
 });

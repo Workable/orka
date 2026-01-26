@@ -1,8 +1,9 @@
-import 'should';
-import * as supertest from 'supertest';
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
 
 describe('Star CORS examples', () => {
-  let server;
+  let server: any;
   after(async () => {
     if (server) await server.stop();
   });
@@ -20,14 +21,15 @@ describe('Star CORS examples', () => {
       .get('/api/allowAll/accounts/banana')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('*');
+    assert.strictEqual(response.headers['access-control-allow-origin'], '*');
   });
+
   it('/health/ returns access-control-allow-origin localhost:3000', async () => {
     const response = await supertest('localhost:3000')
       .get('/health')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('http://localhost:3000');
+    assert.strictEqual(response.headers['access-control-allow-origin'], 'http://localhost:3000');
   });
 
   it('/api triggers cors policy', async () => {
@@ -36,8 +38,8 @@ describe('Star CORS examples', () => {
       .set('origin', 'http://lvh.me.foreign.com')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.not.eql('http://lvh.me.foreign.com');
-    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
+    assert.notStrictEqual(response.headers['access-control-allow-origin'], 'http://lvh.me.foreign.com');
+    assert.strictEqual(response.headers['access-control-allow-origin'], 'localhost:3000');
   });
 
   it('/api/example returns access-control-allow-origin that contains the subdomain', async () => {
@@ -46,7 +48,7 @@ describe('Star CORS examples', () => {
       .set('origin', 'http://some.localhost:3000')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('http://some.localhost:3000');
+    assert.strictEqual(response.headers['access-control-allow-origin'], 'http://some.localhost:3000');
   });
 
   it('/api/example blocks deep subdomains', async () => {
@@ -55,7 +57,7 @@ describe('Star CORS examples', () => {
       .set('origin', 'http://some.very.deep.subdomain.localhost:3000')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('localhost:3000');
+    assert.strictEqual(response.headers['access-control-allow-origin'], 'localhost:3000');
   });
 
   it('/api/example allows deep subdomains when the allowed origin is \'*.lvh.me\'', async () => {
@@ -64,6 +66,6 @@ describe('Star CORS examples', () => {
       .set('origin', 'https://some.very.deep.subdomain.lvh.me')
       .expect(200);
 
-    response.headers['access-control-allow-origin'].should.eql('https://some.very.deep.subdomain.lvh.me');
+    assert.strictEqual(response.headers['access-control-allow-origin'], 'https://some.very.deep.subdomain.lvh.me');
   });
 });

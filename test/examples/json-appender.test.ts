@@ -1,12 +1,11 @@
+import { describe, it, before, after, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import { pickBy } from 'lodash';
-import * as sinon from 'sinon';
-import * as supertest from 'supertest';
-
-const sandbox = sinon.createSandbox();
+import supertest from 'supertest';
 
 describe('json-appender', function () {
-  let server;
-  let clock;
+  let server: any;
+
   before(function () {
     process.env.LOG_LEVEL = 'info';
     process.env.LOG_JSON = 'true';
@@ -17,29 +16,29 @@ describe('json-appender', function () {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
     if (server) server.stop();
-    clock.restore();
+    mock.timers.reset();
   });
 
   before(function () {
     const serverPath = '../../examples/simple-example/app';
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
-    clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    mock.timers.enable({ apis: ['Date'], now: new Date('2019-01-01') });
     return server.start();
   });
 
   afterEach(function () {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   it('/log returns 200 and logs info', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/log?')
       .set('x-orka-request-id', 'test-id')
       .expect(200);
-    text.should.eql('logged');
-    logSpy.args.should.eql([
+    assert.strictEqual(text, 'logged');
+    assert.deepStrictEqual(logSpy.mock.calls.map(c => c.arguments), [
       [
         JSON.stringify({
           timestamp: '2019-01-01T00:00:00.000Z',
@@ -57,20 +56,20 @@ describe('json-appender', function () {
   });
 
   it('/logError returns 505 and logs error', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/logError')
       .set('x-orka-request-id', 'test-id')
       .expect(505);
-    text.should.eql('default body');
-    const cleanStack = msg => {
+    assert.strictEqual(text, 'default body');
+    const cleanStack = (msg: string) => {
       const stack = JSON.parse(msg);
       stack.stack_trace = stack.stack_trace.substring(0, 29);
       return stack;
     };
-    logSpy.args
-      .map(callArg => callArg.map(cleanStack))
-      .should.eql([
+    assert.deepStrictEqual(
+      logSpy.mock.calls.map(c => (c.arguments as string[]).map(cleanStack)),
+      [
         [
           {
             timestamp: '2019-01-01T00:00:00.000Z',
@@ -104,28 +103,29 @@ describe('json-appender', function () {
                 state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
                 requestId: 'test-id'
               },
-              _ => _ !== undefined
+              (_: any) => _ !== undefined
             )
           }
         ]
-      ]);
+      ]
+    );
   });
 
   it('should log a message if the log level is WARN and the first element of the logEvent data is an error object', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     const { text } = await (supertest('localhost:3000') as any)
       .get('/logWarning')
       .set('x-orka-request-id', 'test-id')
       .expect(505);
-    text.should.eql('default body');
-    const cleanStack = msg => {
+    assert.strictEqual(text, 'default body');
+    const cleanStack = (msg: string) => {
       const stack = JSON.parse(msg);
       stack.stack_trace = stack.stack_trace?.substring(0, 31);
       return stack;
     };
-    logSpy.args
-      .map(callArg => callArg.map(cleanStack))
-      .should.eql([
+    assert.deepStrictEqual(
+      logSpy.mock.calls.map(c => (c.arguments as string[]).map(cleanStack)),
+      [
         [
           {
             timestamp: '2019-01-01T00:00:00.000Z',
@@ -159,10 +159,11 @@ describe('json-appender', function () {
                 state: { riviereStartedAt: 1546300800000, requestId: 'test-id' },
                 requestId: 'test-id'
               },
-              _ => _ !== undefined
+              (_: any) => _ !== undefined
             )
           }
         ]
-      ]);
+      ]
+    );
   });
 });

@@ -1,15 +1,14 @@
-import 'should';
-import * as supertest from 'supertest';
-import * as mockRequire from 'mock-require';
+import { describe, it, before, after, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
 import { getLogger } from '../../build/initializers/log4js';
-import * as sinon from 'sinon';
 
-const sandbox = sinon.createSandbox();
 function deleteEnv() {
   delete process.env.NEW_RELIC_LICENSE_KEY;
   delete process.env.DD_SERVICE;
   delete process.env.DD_ENV;
 }
+
 const ws: [string, string, Function?][] = [
   ['../../examples/simple-example/app', 'simple-example'],
   ['../../examples/builder-example/app', 'builder-example'],
@@ -32,27 +31,33 @@ const ws: [string, string, Function?][] = [
 ];
 
 describe('examples', function () {
-  let loggerSpy;
+  let loggerSpy: ReturnType<typeof mock.method>;
+
   before(function () {
-    mockRequire('newrelic', () => console.log('initialized newrelic'));
-    mockRequire('dd-trace', {
-      init: () => ({
-        use: () => ({}),
-        trace: (name, options, fn) => fn(),
-        scope: () => ({ active: () => ({ context: () => ({ _trace: { started: [{ setTag: sandbox.stub() }] } }) }) })
-      })
+    // Module mocking for newrelic and dd-trace
+    mock.module('newrelic', {
+      defaultExport: () => console.log('initialized newrelic')
+    });
+    mock.module('dd-trace', {
+      namedExports: {
+        init: () => ({
+          use: () => ({}),
+          trace: (name: string, options: any, fn: Function) => fn(),
+          scope: () => ({ active: () => ({ context: () => ({ _trace: { started: [{ setTag: mock.fn() }] } }) }) })
+        })
+      }
     });
     const logger = getLogger('orka');
-    loggerSpy = sandbox.stub(logger, 'warn');
+    loggerSpy = mock.method(logger, 'warn');
   });
 
   after(function () {
     deleteEnv();
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   ws.forEach(function ([serverPath, name, setEnv]: [string, string, Function?]) {
-    let server;
+    let server: any;
     describe('Example:' + name, function () {
       after(function () {
         if (server) server.stop();
@@ -72,14 +77,13 @@ describe('examples', function () {
       });
 
       afterEach(function () {
-        sandbox.reset();
+        loggerSpy.mock.resetCalls();
       });
 
       it('/test returns ok', async function () {
         const { text } = await (supertest('localhost:3000') as any).get('/test').expect(200);
-        text.should.eql('ok changed by prefix');
-        const spyArgs = [];
-        loggerSpy.args.should.eql(spyArgs);
+        assert.strictEqual(text, 'ok changed by prefix');
+        assert.deepStrictEqual(loggerSpy.mock.calls.map(c => c.arguments), []);
       });
 
       it('/testPolicy returns 401', async function () {
@@ -88,7 +92,7 @@ describe('examples', function () {
 
       it('/testPolicy returns 200', async function () {
         const { text } = await (supertest('localhost:3000') as any).get('/testPolicy?secret_key=success').expect(200);
-        text.should.eql('ok changed by prefix');
+        assert.strictEqual(text, 'ok changed by prefix');
       });
     });
   });

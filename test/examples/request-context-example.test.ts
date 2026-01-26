@@ -1,13 +1,11 @@
-import * as sinon from 'sinon';
-import * as supertest from 'supertest';
-import * as nock from 'nock';
-
-const sandbox = sinon.createSandbox();
+import { describe, it, before, after, afterEach, beforeEach, mock } from 'node:test';
+import assert from 'node:assert';
+import supertest from 'supertest';
+import nock from 'nock';
 
 describe('request-context', function () {
-  let server;
-  let clock;
-  let request;
+  let server: any;
+  let request: supertest.Agent;
 
   before(function () {
     process.env.LOG_LEVEL = 'info';
@@ -19,7 +17,7 @@ describe('request-context', function () {
     process.env.LOG_LEVEL = 'fatal';
     delete process.env.LOG_JSON;
     if (server) server.stop();
-    clock.restore();
+    mock.timers.reset();
   });
 
   before(async function () {
@@ -35,15 +33,15 @@ describe('request-context', function () {
     delete require.cache[require.resolve(serverPath)];
     server = require(serverPath);
     await server.start();
-    request = supertest('localhost:2121');
-    clock = sinon.useFakeTimers(new Date('2019-01-01'));
+    request = supertest('localhost:2121') as any;
+    mock.timers.enable({ apis: ['Date'], now: new Date('2019-01-01') });
   });
 
   afterEach(function () {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
-  const logEntry = (message, context) => {
+  const logEntry = (message: string, context: any) => {
     context.propagatedHeaders = { 'x-orka-request-id': 'test-id' };
     return [
       JSON.stringify({
@@ -57,10 +55,10 @@ describe('request-context', function () {
   };
 
   it('/log returns 200 and logs info with requestId', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     const response = await request.get('/log').set('x-orka-request-id', 'test-id').expect(200);
-    response.text.should.eql('ok');
-    logSpy.args.should.eql([
+    assert.strictEqual(response.text, 'ok');
+    assert.deepStrictEqual(logSpy.mock.calls.map(c => c.arguments), [
       logEntry('A log in controller, before service call', { requestId: 'test-id', afterMiddleware: 'orka' }),
       logEntry('A log in a service', { requestId: 'test-id', afterMiddleware: 'orka' }),
       logEntry('A log in controller, after service call', { requestId: 'test-id', afterMiddleware: 'orka' })
@@ -68,13 +66,13 @@ describe('request-context', function () {
   });
 
   it('/logWithAppendedRequestContextVar returns 200 and logs info with requestId and appended var', async function () {
-    const logSpy = sandbox.stub(console, 'log');
+    const logSpy = mock.method(console, 'log');
     const response = await request
       .get('/logWithAppendedRequestContextVar?q=testme')
       .set('x-orka-request-id', 'test-id')
       .expect(200);
-    response.text.should.eql('ok');
-    logSpy.args.should.eql([
+    assert.strictEqual(response.text, 'ok');
+    assert.deepStrictEqual(logSpy.mock.calls.map(c => c.arguments), [
       logEntry('A log in a service', { requestId: 'test-id', query: 'testme', afterMiddleware: 'orka' })
     ]);
   });
@@ -83,7 +81,7 @@ describe('request-context', function () {
     const propagatedRequestMock = nock('http://foo.com')
       .matchHeader('x-request-id', 'istio-request-id')
       .matchHeader('x-b3-spanid', 'istio-x-b3-spanid')
-      .post('/', body => true)
+      .post('/', () => true)
       .reply(200);
 
     const response = await request
@@ -93,8 +91,8 @@ describe('request-context', function () {
       .set('x-b3-spanid', 'istio-x-b3-spanid')
       .expect(200);
 
-    response.text.should.eql('ok');
-    propagatedRequestMock.isDone().should.be.true();
+    assert.strictEqual(response.text, 'ok');
+    assert.strictEqual(propagatedRequestMock.isDone(), true);
   });
 
   describe('header Propagation', function () {
@@ -110,12 +108,12 @@ describe('request-context', function () {
 
       it('should not propagate headers', async function () {
         const propagatedRequestMock = nock('http://foo.com')
-          .post('/', body => true)
+          .post('/', () => true)
           .reply(200);
 
         await request.post('/propagateTracingHeaders').set('cf-ray', 'header-value').expect(200);
 
-        propagatedRequestMock.isDone().should.be.true();
+        assert.strictEqual(propagatedRequestMock.isDone(), true);
       });
     });
 
@@ -126,7 +124,7 @@ describe('request-context', function () {
       const propagatedRequestMock = nock('http://foo.com')
         .matchHeader('header1', 'header-value')
         .matchHeader('header2', 'header2-value')
-        .post('/', body => true)
+        .post('/', () => true)
         .reply(200);
 
       await request
@@ -136,7 +134,7 @@ describe('request-context', function () {
         .set('header3', 'header3-value')
         .expect(200);
 
-      propagatedRequestMock.isDone().should.be.true();
+      assert.strictEqual(propagatedRequestMock.isDone(), true);
     });
   });
 });

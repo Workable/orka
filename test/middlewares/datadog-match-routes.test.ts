@@ -1,26 +1,40 @@
 /// <reference types="../../src/typings/koa" />
-import * as sinon from 'sinon';
+import { describe, it, before, after, beforeEach, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import { Context } from 'koa';
-import datadogMatchRoutes from '../../src/middlewares/datadog-match-routes';
-import * as datadog from '../../src/initializers/datadog/index';
+import { getMockCallArgs } from '../helpers/assert-helpers';
 
-const sandbox = sinon.createSandbox();
 describe('Datadog match routes middleware', function () {
   afterEach(function () {
-    sandbox.restore();
+    mock.restoreAll();
   });
 
   describe('Dadatog not enabled', function () {
+    let datadogMatchRoutes: any;
+
+    beforeEach(async function () {
+      mock.module('../../src/initializers/datadog/index', {
+        namedExports: {
+          getDatadogTracer: () => undefined
+        }
+      });
+
+      delete require.cache[require.resolve('../../src/middlewares/datadog-match-routes')];
+      datadogMatchRoutes = (await import('../../src/middlewares/datadog-match-routes')).default;
+    });
+
     it('runs next', async function () {
       const ctx = {} as Context;
-      const next = sandbox.stub();
+      const next = mock.fn();
       await datadogMatchRoutes(ctx, next);
-      next.called.should.be.true();
-      ctx.should.eql({});
+      assert.strictEqual(next.mock.calls.length, 1);
+      assert.deepStrictEqual(ctx, {});
     });
   });
 
   describe('Datadog enabled', function () {
+    let datadogMatchRoutes: any;
+
     before(function () {
       process.env.DD_SERVICE = 'true';
       process.env.DD_ENV = 'true';
@@ -31,22 +45,27 @@ describe('Datadog match routes middleware', function () {
       delete process.env.DD_ENV;
     });
 
+    beforeEach(async function () {
+      delete require.cache[require.resolve('../../src/middlewares/datadog-match-routes')];
+      datadogMatchRoutes = (await import('../../src/middlewares/datadog-match-routes')).default;
+    });
+
     it('calls ddSpan', async function () {
-      const stub = sandbox.stub();
+      const stub = mock.fn();
       const ctx = ({
         req: { _datadog: { span: { setTag: stub } } },
         request: { method: 'GET' },
         _matchedRoute: '/api/foo/bar'
       } as unknown) as Context;
-      const next = sandbox.stub();
+      const next = mock.fn();
       await datadogMatchRoutes(ctx, next);
-      ctx.should.eql({
+      assert.deepStrictEqual(ctx, {
         req: { _datadog: { span: { setTag: stub } } },
         request: { method: 'GET' },
         _matchedRoute: '/api/foo/bar'
       });
-      next.called.should.be.true();
-      stub.args.should.eql([
+      assert.strictEqual(next.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(stub), [
         ['resource.name', 'GET /api/foo/bar'],
         ['matchedRoute', '/api/foo/bar'],
         ['params', undefined]
@@ -54,29 +73,40 @@ describe('Datadog match routes middleware', function () {
     });
 
     it('calls ddSpan from tracer', async function () {
-      const stub = sandbox.stub();
+      const stub = mock.fn();
+      const contextStub = mock.fn(() => ({ _trace: { started: [{ setTag: stub }] } }));
+      const activeStub = mock.fn(() => ({
+        context: contextStub
+      }));
       const tracerStub = {
-        scope: sandbox.stub().returns({
-          active: sandbox.stub().returns({
-            context: sandbox.stub().returns({ _trace: { started: [{ setTag: stub }] } })
-          })
-        })
+        scope: mock.fn(() => ({
+          active: activeStub
+        }))
       };
-      sandbox.stub(datadog, 'getDatadogTracer').returns(tracerStub as any);
+
+      mock.module('../../src/initializers/datadog/index', {
+        namedExports: {
+          getDatadogTracer: () => tracerStub
+        }
+      });
+
+      delete require.cache[require.resolve('../../src/middlewares/datadog-match-routes')];
+      datadogMatchRoutes = (await import('../../src/middlewares/datadog-match-routes')).default;
+
       const ctx = ({
         request: { method: 'GET' },
         _matchedRoute: '/api/foo/bar'
       } as unknown) as Context;
-      const next = sandbox.stub();
+      const next = mock.fn();
 
       await datadogMatchRoutes(ctx, next);
 
-      ctx.should.eql({
+      assert.deepStrictEqual(ctx, {
         request: { method: 'GET' },
         _matchedRoute: '/api/foo/bar'
       });
-      next.called.should.be.true();
-      stub.args.should.eql([
+      assert.strictEqual(next.mock.calls.length, 1);
+      assert.deepStrictEqual(getMockCallArgs(stub), [
         ['resource.name', 'GET /api/foo/bar'],
         ['matchedRoute', '/api/foo/bar'],
         ['params', undefined]

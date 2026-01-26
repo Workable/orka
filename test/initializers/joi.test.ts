@@ -1,24 +1,27 @@
-import should = require('should');
+import { describe, it, afterEach, mock } from 'node:test';
+import assert from 'node:assert';
 import Joi from '../../src/initializers/joi';
 import { isExpiredUrl, isOwnS3Path } from '../../src/initializers/joi';
-import * as sinon from 'sinon';
 
 describe('joi extensions', function () {
   describe('string', function () {
     it('validates and strips null byte', function () {
-      Joi.string()
-        .validate(`asd ${String.fromCharCode(0, 0)}`)
-        .value.should.equal('asd ');
+      assert.strictEqual(
+        Joi.string()
+          .validate(`asd ${String.fromCharCode(0, 0)}`)
+          .value,
+        'asd '
+      );
     });
     describe('defaultIfEmpty', function () {
       it('with empty string', function () {
-        Joi.string().defaultIfEmpty('-').validate('').value.should.equal('-');
+        assert.strictEqual(Joi.string().defaultIfEmpty('-').validate('').value, '-');
       });
       it('with string with spaces', function () {
-        Joi.string().trim().defaultIfEmpty('-').validate('  ').value.should.equal('-');
+        assert.strictEqual(Joi.string().trim().defaultIfEmpty('-').validate('  ').value, '-');
       });
       it('with null', function () {
-        Joi.string().defaultIfEmpty('-').validate(null).value.should.equal('-');
+        assert.strictEqual(Joi.string().defaultIfEmpty('-').validate(null).value, '-');
       });
     });
   });
@@ -26,81 +29,87 @@ describe('joi extensions', function () {
   describe('phone', function () {
     it('valid phone', function () {
       const result = Joi.phone().validate('(+30) 6999999999');
-      result.value.should.equal('(+30) 6999999999');
-      should(result.error).be.undefined();
+      assert.strictEqual(result.value, '(+30) 6999999999');
+      assert.strictEqual(result.error, undefined);
     });
     it('invalid phone', function () {
       const result = Joi.phone().validate('abc');
-      result.value.should.equal('abc');
-      result.error.message.should.equal('The provided phone is invalid');
+      assert.strictEqual(result.value, 'abc');
+      assert.strictEqual(result.error.message, 'The provided phone is invalid');
     });
     it('valid phone with strip', function () {
       const result = Joi.phone().stripIfInvalid().validate('(+30) 6999999999');
-      result.value.should.equal('(+30) 6999999999');
-      should(result.error).be.undefined();
+      assert.strictEqual(result.value, '(+30) 6999999999');
+      assert.strictEqual(result.error, undefined);
     });
     it('invalid phone with strip', function () {
       const result = Joi.phone().stripIfInvalid().validate('abc');
-      should(result.value).be.undefined();
-      should(result.error).be.undefined();
+      assert.strictEqual(result.value, undefined);
+      assert.strictEqual(result.error, undefined);
     });
   });
 
   describe('stringWithEmpty', function () {
     it('validates and strips null byte', function () {
-      Joi.stringWithEmpty()
-        .validate(`asd ${String.fromCharCode(0, 0)}asd`)
-        .value.should.equal('asd asd');
+      assert.strictEqual(
+        Joi.stringWithEmpty()
+          .validate(`asd ${String.fromCharCode(0, 0)}asd`)
+          .value,
+        'asd asd'
+      );
     });
     it('allows empty or null values', function () {
       const result1 = Joi.stringWithEmpty().validate('');
-      should(result1.error).be.undefined();
-      result1.value.should.equal('');
+      assert.strictEqual(result1.error, undefined);
+      assert.strictEqual(result1.value, '');
 
       const result2 = Joi.stringWithEmpty().validate(null);
-      should(result2.error).be.undefined();
-      should(result2.value).be.null();
+      assert.strictEqual(result2.error, undefined);
+      assert.strictEqual(result2.value, null);
 
       const result3 = Joi.stringWithEmpty().validate(undefined);
-      should(result3.error).be.undefined();
-      should(result3.value).be.undefined();
+      assert.strictEqual(result3.error, undefined);
+      assert.strictEqual(result3.value, undefined);
     });
     describe('defaultIfEmpty', function () {
       it('with empty string', function () {
-        Joi.stringWithEmpty().defaultIfEmpty('-').validate('').value.should.equal('-');
+        assert.strictEqual(Joi.stringWithEmpty().defaultIfEmpty('-').validate('').value, '-');
       });
       it('with empty spaces string', function () {
-        Joi.stringWithEmpty().trim().defaultIfEmpty('-').validate('  ').value.should.equal('-');
+        assert.strictEqual(Joi.stringWithEmpty().trim().defaultIfEmpty('-').validate('  ').value, '-');
       });
       it('with null', function () {
-        Joi.stringWithEmpty().defaultIfEmpty('-').validate(null).value.should.equal('-');
+        assert.strictEqual(Joi.stringWithEmpty().defaultIfEmpty('-').validate(null).value, '-');
       });
     });
   });
 
   describe('urlInOwnS3', function () {
     it('empty bucket name', function () {
-      should(() => Joi.urlInOwnS3().bucket('').validate('https://foo.s3.amazonaws.com')).throw();
+      assert.throws(() => Joi.urlInOwnS3().bucket('').validate('https://foo.s3.amazonaws.com'));
     });
     it('url not in s3', function () {
-      Joi.urlInOwnS3()
-        .bucket('application-form')
-        .validate('https://foo.s3.amazonaws.com')
-        .error.message.should.equal('Invalid path provided');
+      assert.strictEqual(
+        Joi.urlInOwnS3()
+          .bucket('application-form')
+          .validate('https://foo.s3.amazonaws.com')
+          .error.message,
+        'Invalid path provided'
+      );
     });
     it('url in s3 1', function () {
       const underTest = Joi.urlInOwnS3()
         .bucket('application-form')
         .validate('https://application-form.s3.amazonaws.com');
-      should(underTest.error).be.undefined();
-      underTest.value.should.equal('https://application-form.s3.amazonaws.com');
+      assert.strictEqual(underTest.error, undefined);
+      assert.strictEqual(underTest.value, 'https://application-form.s3.amazonaws.com');
     });
     it('url in s3 2', function () {
       const underTest = Joi.urlInOwnS3()
         .bucket('application-form')
         .validate('https://s3.us-east.amazonaws.com/application-form/a/path?asd=foo');
-      should(underTest.error).be.undefined();
-      underTest.value.should.equal('https://s3.us-east.amazonaws.com/application-form/a/path?asd=foo');
+      assert.strictEqual(underTest.error, undefined);
+      assert.strictEqual(underTest.value, 'https://s3.us-east.amazonaws.com/application-form/a/path?asd=foo');
     });
     it('expired tmp url', function () {
       const expiredTimestamp = Math.round(Date.now() / 1000) - 100;
@@ -108,21 +117,21 @@ describe('joi extensions', function () {
         .bucket('application-form')
         .errorOnExpiredUrl()
         .validate(`https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${expiredTimestamp}`);
-      underTest.error.message.should.equal('Your url is expired');
+      assert.strictEqual(underTest.error.message, 'Your url is expired');
     });
     it('expired tmp url with no rule should succeed', function () {
       const expiredTimestamp = Math.round(Date.now() / 1000) - 100;
       const underTest = Joi.urlInOwnS3()
         .bucket('application-form')
         .validate(`https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${expiredTimestamp}`);
-      should(underTest.error).be.undefined();
+      assert.strictEqual(underTest.error, undefined);
     });
     it('not expired tmp url should succeed', function () {
       const futureTimestamp = Math.round(Date.now() / 1000) + 100000;
       const url = `https://application-form.s3.amazonaws.com/tmp/123-456-789?Expires=${futureTimestamp}`;
       const underTest = Joi.urlInOwnS3().bucket('application-form').errorOnExpiredUrl().validate(url);
-      should(underTest.error).be.undefined();
-      underTest.value.should.equal(url);
+      assert.strictEqual(underTest.error, undefined);
+      assert.strictEqual(underTest.value, url);
     });
     it('s3 url with @ after domain should throw error', function () {
       const urls = [
@@ -134,7 +143,7 @@ describe('joi extensions', function () {
       ];
       urls.forEach(url => {
         const underTest = Joi.urlInOwnS3().bucket('application-form').validate(url);
-        underTest.error.message.should.equal('Invalid path provided');
+        assert.strictEqual(underTest.error.message, 'Invalid path provided');
       });
     });
     it('s3 url with malicious domain should throw error', function () {
@@ -147,89 +156,104 @@ describe('joi extensions', function () {
 
       urls.forEach(url => {
         const underTest = Joi.urlInOwnS3().bucket('workable-application-form').validate(url);
-        underTest.error.message.should.equal('Invalid path provided');
+        assert.strictEqual(underTest.error.message, 'Invalid path provided');
       });
     });
   });
 
   describe('url', function () {
     it('rejects URLs with less than two domain fragments', function () {
-      Joi.url().validate('https://foo').error.message.should.equal('"value" must contain a valid domain name');
+      assert.strictEqual(Joi.url().validate('https://foo').error.message, '"value" must contain a valid domain name');
     });
 
     it('accepts URLs with two or more domain fragments', function () {
-      should(Joi.url().validate('https://foo.com/').error).be.undefined();
+      assert.strictEqual(Joi.url().validate('https://foo.com/').error, undefined);
     });
   });
 
   describe('urlWithEmpty', function () {
     it('accepts undefined', function () {
-      should(Joi.urlWithEmpty().validate(undefined).error).be.undefined();
+      assert.strictEqual(Joi.urlWithEmpty().validate(undefined).error, undefined);
     });
 
     it('accepts null', function () {
-      should(Joi.urlWithEmpty().validate(null).error).be.undefined();
+      assert.strictEqual(Joi.urlWithEmpty().validate(null).error, undefined);
     });
 
     it('accepts ""', function () {
-      should(Joi.urlWithEmpty().validate('').error).be.undefined();
+      assert.strictEqual(Joi.urlWithEmpty().validate('').error, undefined);
     });
 
     it('rejects URLs with less than two domain fragments', function () {
-      Joi.urlWithEmpty().validate('https://foo').error.message.should.equal('"value" must contain a valid domain name');
+      assert.strictEqual(Joi.urlWithEmpty().validate('https://foo').error.message, '"value" must contain a valid domain name');
     });
 
     it('accepts URLs with two or more domain fragments', function () {
-      Joi.urlWithEmpty().validate('https://foo.com/').value.should.equal('https://foo.com/');
+      assert.strictEqual(Joi.urlWithEmpty().validate('https://foo.com/').value, 'https://foo.com/');
     });
   });
 
   describe('safeHtml', function () {
     it('valid html', function () {
-      Joi.safeHtml().validate('<p>banana</p>').value.should.equal('<p>banana</p>');
-      Joi.safeHtml().validate('<b>banana</b>').value.should.equal('<b>banana</b>');
+      assert.strictEqual(Joi.safeHtml().validate('<p>banana</p>').value, '<p>banana</p>');
+      assert.strictEqual(Joi.safeHtml().validate('<b>banana</b>').value, '<b>banana</b>');
 
-      Joi.safeHtml()
-        .validate('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>')
-        .value.should.equal('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>');
+      assert.strictEqual(
+        Joi.safeHtml()
+          .validate('<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>')
+          .value,
+        '<a href="https://banana.com" target="_blank" rel="nofollow">banana</a>'
+      );
 
-      Joi.safeHtml().validate('<a href="/j/ABCDEFG">banana</a>').value.should.equal('<a href="/j/ABCDEFG">banana</a>');
+      assert.strictEqual(Joi.safeHtml().validate('<a href="/j/ABCDEFG">banana</a>').value, '<a href="/j/ABCDEFG">banana</a>');
     });
     it('invalid tags', function () {
-      Joi.safeHtml()
-        .validate('<script src="javascript:alert(1);">asd</script><p>foo</p>')
-        .value.should.equal('<p>foo</p>');
-      Joi.safeHtml().validate('<img src="https://www.google.com" />').value.should.equal('');
+      assert.strictEqual(
+        Joi.safeHtml()
+          .validate('<script src="javascript:alert(1);">asd</script><p>foo</p>')
+          .value,
+        '<p>foo</p>'
+      );
+      assert.strictEqual(Joi.safeHtml().validate('<img src="https://www.google.com" />').value, '');
     });
     it('invalid attributes', function () {
-      Joi.safeHtml()
-        .validate('<a href="https://workable.com" name="invalid">asd</a>')
-        .value.should.equal('<a href="https://workable.com">asd</a>');
+      assert.strictEqual(
+        Joi.safeHtml()
+          .validate('<a href="https://workable.com" name="invalid">asd</a>')
+          .value,
+        '<a href="https://workable.com">asd</a>'
+      );
     });
     it('required', function () {
-      should(Joi.safeHtml().allow('', null).validate('').error).be.undefined();
-      Joi.safeHtml().validate('').error.message.should.equal('"value" is not allowed to be empty');
+      assert.strictEqual(Joi.safeHtml().allow('', null).validate('').error, undefined);
+      assert.strictEqual(Joi.safeHtml().validate('').error.message, '"value" is not allowed to be empty');
     });
     it('specify tags', function () {
-      Joi.safeHtml()
-        .allowedTags(['a'])
-        .allowedAttributes({
-          a: ['href', 'class']
-        })
-        .validate(
-          '<script src="javascript:alert(1);">asd</script><a href="http://google.com" ' +
-            'class="aclass" target="_blank"></a><p>foo</p>'
-        )
-        .value.should.equal('<a href="http://google.com" class="aclass"></a>foo');
+      assert.strictEqual(
+        Joi.safeHtml()
+          .allowedTags(['a'])
+          .allowedAttributes({
+            a: ['href', 'class']
+          })
+          .validate(
+            '<script src="javascript:alert(1);">asd</script><a href="http://google.com" ' +
+              'class="aclass" target="_blank"></a><p>foo</p>'
+          )
+          .value,
+        '<a href="http://google.com" class="aclass"></a>foo'
+      );
     });
     it('no html at all', function () {
-      Joi.safeHtml().allowedAttributes({}).allowedTags([]).validate('<p>banana</p>').value.should.equal('banana');
+      assert.strictEqual(Joi.safeHtml().allowedAttributes({}).allowedTags([]).validate('<p>banana</p>').value, 'banana');
     });
     it('allow any attribute', function () {
-      Joi.safeHtml()
-        .allowedAttributes(false)
-        .validate('<p class="asd" rel="asd">banana</p>')
-        .value.should.equal('<p class="asd" rel="asd">banana</p>');
+      assert.strictEqual(
+        Joi.safeHtml()
+          .allowedAttributes(false)
+          .validate('<p class="asd" rel="asd">banana</p>')
+          .value,
+        '<p class="asd" rel="asd">banana</p>'
+      );
     });
     it('allows specific schemes', function () {
       const maliciousHtml = `<img src="mailto:kyriakos@workable.com" />`;
@@ -240,44 +264,46 @@ describe('joi extensions', function () {
         .allowedSchemes(['https'])
         .allowedSchemesAppliedToAttributes(['src']);
 
-      schema.validate(maliciousHtml).value.should.equal('<img />');
-      schema.validate(validHtml).value.should.equal(validHtml);
+      assert.strictEqual(schema.validate(maliciousHtml).value, '<img />');
+      assert.strictEqual(schema.validate(validHtml).value, validHtml);
     });
   });
 
   describe('objectid', function () {
     it('rejects if invalid objectid', function () {
-      Joi.objectId().validate('123').error.message.should.equal('Invalid objectId');
+      assert.strictEqual(Joi.objectId().validate('123').error.message, 'Invalid objectId');
     });
     it('accepts if valid objectid', function () {
-      should(Joi.objectId().validate('627b825fb99b51cc16df1b41').error).be.undefined();
-      Joi.objectId().validate('627b825fb99b51cc16df1b41').value.should.equal('627b825fb99b51cc16df1b41');
+      assert.strictEqual(Joi.objectId().validate('627b825fb99b51cc16df1b41').error, undefined);
+      assert.strictEqual(Joi.objectId().validate('627b825fb99b51cc16df1b41').value, '627b825fb99b51cc16df1b41');
     });
   });
 
   describe('isExpiredUrl', function () {
     afterEach(() => {
-      sinon.restore();
+      mock.restoreAll();
     });
 
     it('returns true if expired', function () {
       const expirationDate = new Date('2023-01-08T10:00:00Z');
-      sinon.useFakeTimers(new Date('2023-01-10T10:00:00Z'));
+      mock.timers.enable({ apis: ['Date'], now: new Date('2023-01-10T10:00:00Z') });
       const isExpired = [
         isExpiredUrl(`https://bucket.s3.amazonaws.com?Expires=${expirationDate.getTime() / 1000}`),
         isExpiredUrl('https://bucket.s3.amazonaws.com?X-Amz-Date=20230101T100000Z&X-Amz-Expires=604800')
       ];
-      isExpired.map(x => x.should.be.true());
+      isExpired.forEach(x => assert.strictEqual(x, true));
+      mock.timers.reset();
     });
 
     it('returns false if not expired', function () {
       const expirationDate = new Date('2023-01-08T10:00:00Z');
-      sinon.useFakeTimers(new Date('2023-01-05T10:00:00Z'));
+      mock.timers.enable({ apis: ['Date'], now: new Date('2023-01-05T10:00:00Z') });
       const isExpired = [
         isExpiredUrl(`https://bucket.s3.amazonaws.com?Expires=${expirationDate.getTime() / 1000}`),
         isExpiredUrl('https://bucket.s3.amazonaws.com?X-Amz-Date=20230101T100000Z&X-Amz-Expires=604800')
       ];
-      isExpired.map(x => x.should.be.false());
+      isExpired.forEach(x => assert.strictEqual(x, false));
+      mock.timers.reset();
     });
   });
 
@@ -288,7 +314,7 @@ describe('joi extensions', function () {
         isOwnS3Path('some-bucket', 'https://some-bucket.s3.some-region-1.amazonaws.com/'),
         isOwnS3Path('some-bucket', 'https://some-bucket.s3.amazonaws.com/')
       ];
-      isOwnPath.map(x => x.should.be.true());
+      isOwnPath.forEach(x => assert.strictEqual(x, true));
     });
 
     it('should return false for invalid s3 path', function () {
@@ -299,7 +325,7 @@ describe('joi extensions', function () {
         isOwnS3Path('some-bucket', 'https://some-other-bucket.s3.some.deep.nested.subdomain.amazonaws.com/'),
         isOwnS3Path('some-bucket', 'https://some-bucket.s3.some.deep.nested.subdomain.amazonaws.com/')
       ];
-      isOwnPath.map(x => x.should.be.false());
+      isOwnPath.forEach(x => assert.strictEqual(x, false));
     });
   });
 });

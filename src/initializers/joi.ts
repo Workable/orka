@@ -1,6 +1,6 @@
 import * as _Joi from 'joi';
 import { isString } from 'lodash';
-import * as sanitizeHtml from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 import { URL } from 'url';
 import { getLogger } from './log4js';
 
