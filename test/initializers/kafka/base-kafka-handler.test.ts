@@ -7,7 +7,7 @@ import OrkaBuilder from '../../../src/orka-builder';
 const sandbox = sinon.createSandbox();
 
 describe('base kafka handler class', async () => {
-  let handleStub, consumeStub, runStub, subscribeStub, handleBatchStub, heartBeatStub;
+  let handleStub, consumeStub, runStub, subscribeStub, handleBatchStub, heartBeatStub, kafka;
 
   class TestKafkaHandler extends BaseKafkaHandler<any, any> {
     public async handle(args) {
@@ -64,11 +64,12 @@ describe('base kafka handler class', async () => {
 
   afterEach(() => {
     sandbox.restore();
+    kafka?.disconnect();
   });
 
   it('should call consumer with multiple topics', async () => {
     const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-    const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+    kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
     const consumerOptions = { groupId: 'newGroup' };
     const runOptions = { partitionsConsumedConcurrently: 5 };
     const handler = new TestKafkaHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
@@ -86,7 +87,7 @@ describe('base kafka handler class', async () => {
 
   it('should call consumer with batch method and call heartbeat', async () => {
     const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-    const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+    kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
     const consumerOptions = { groupId: 'newGroup' };
     const runOptions = { partitionsConsumedConcurrently: 5 };
     const handler = new TestKafkaBatchHandler(kafka, { topic: ['topic1', 'topic2'], consumerOptions, runOptions });
@@ -106,7 +107,7 @@ describe('base kafka handler class', async () => {
   context('with autoOffsetReset latest', function () {
     it('should call consumer fromBeginning false', async () => {
       const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
       const handler = new TestKafkaHandler(kafka, {
@@ -131,7 +132,7 @@ describe('base kafka handler class', async () => {
   context('with fromBeginning false', function () {
     it('should call consumer fromBeginning false', async () => {
       const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
       const handler = new TestKafkaHandler(kafka, {
@@ -156,7 +157,7 @@ describe('base kafka handler class', async () => {
   context('with jsonParseValue false', function () {
     it('should call handler with buffer data', async () => {
       const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
-      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
       const handler = new TestKafkaHandler(kafka, {
@@ -183,7 +184,7 @@ describe('base kafka handler class', async () => {
     it('should call method', async () => {
       const createConsumer = sandbox.stub(Kafka.prototype, 'createConsumer').resolves(consumeStub);
       const onConsumerCreated = sandbox.spy();
-      const kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
+      kafka = new Kafka({ groupId: 'groupId', clientId: 'clientId', brokers: [] } as any);
       const consumerOptions = { groupId: 'newGroup' };
       const runOptions = { partitionsConsumedConcurrently: 5 };
       const handler = new TestKafkaHandler(kafka, {
