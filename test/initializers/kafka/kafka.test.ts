@@ -18,6 +18,7 @@ describe('kafka class', () => {
   let setOffsetsStub;
   let listTopicsStub;
   let Kafka: typeof KafkaType;
+  let kafka: KafkaType;
 
   beforeEach(async function () {
     producerStub = {
@@ -32,7 +33,8 @@ describe('kafka class', () => {
       }
     };
     consumerStub = sandbox.stub().returns({
-      connect: sandbox.stub(),
+      connect: sandbox.stub().resolves(),
+      disconnect: sandbox.stub().resolves(),
       on: sandbox.stub()
     });
     fetchTopicMetadataStub = sandbox.stub().resolves('metadata');
@@ -59,12 +61,13 @@ describe('kafka class', () => {
   afterEach(function () {
     sandbox.restore();
     mock.stopAll();
+    kafka?.disconnect();
   });
 
   describe('connect', function () {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -93,7 +96,7 @@ describe('kafka class', () => {
 
     context('without headers', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -122,7 +125,7 @@ describe('kafka class', () => {
 
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -158,7 +161,7 @@ describe('kafka class', () => {
   describe('createConsumer', function () {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -186,7 +189,7 @@ describe('kafka class', () => {
 
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -219,7 +222,7 @@ describe('kafka class', () => {
   describe('connectAdmin', function () {
     context('with certificates', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -247,7 +250,7 @@ describe('kafka class', () => {
 
     context('with ssl', function () {
       it('should call correct methods with correct args', async () => {
-        const kafka = new Kafka({
+        kafka = new Kafka({
           sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
           groupId: 'groupId',
           clientId: 'clientId',
@@ -274,12 +277,55 @@ describe('kafka class', () => {
           ]
         ]);
       });
+
+      it('should register sigtermHandler in SIGTERM process listeners and remove on disconnect', async function() {
+        kafka = new Kafka({
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
+          groupId: 'groupId',
+          clientId: 'clientId',
+          brokers: ['broker-consumer'],
+          producer: {
+            brokers: ['broker-producer'],
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
+          },
+          connectionTimeout: 5000,
+          authenticationTimeout: 10000
+        });
+
+        const handler = (kafka as any).sigtermHandler;
+
+        process.listeners('SIGTERM').should.containEql(handler);
+
+        kafka.disconnect();
+
+        process.listeners('SIGTERM').should.not.containEql(handler);
+      });
+
+      it('should disconnect consumers on SIGTERM', async () => {
+        kafka = new Kafka({
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
+          groupId: 'groupId',
+          clientId: 'clientId',
+          brokers: ['broker-consumer'],
+          producer: {
+            brokers: ['broker-producer'],
+            certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
+          },
+          connectionTimeout: 5000,
+          authenticationTimeout: 10000
+        });
+        await kafka.createConsumer();
+
+        (kafka as any).handleSigterm();
+
+        consumerStub().disconnect.calledOnce.should.eql(true);
+      })
     });
   });
 
   describe('metadata', function () {
     it('returns metadata', async function () {
-      const kafka = new Kafka({
+      kafka = new Kafka({
         sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',
@@ -299,7 +345,7 @@ describe('kafka class', () => {
 
   describe('createTopics', function () {
     it('creates topics', async function () {
-      const kafka = new Kafka({
+      kafka = new Kafka({
         sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',
@@ -324,7 +370,7 @@ describe('kafka class', () => {
       response.should.eql([{ foo: true }, { bar: false }, { test: false }]);
     });
     it('creates topics that do not exist', async function () {
-      const kafka = new Kafka({
+      kafka = new Kafka({
         sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',
@@ -349,7 +395,7 @@ describe('kafka class', () => {
 
   describe('renameGroupId', function () {
     it('copies offsets from old groupId-topic combination', async function () {
-      const kafka = new Kafka({
+      kafka = new Kafka({
         sasl: { mechanism: 'scram-sha-256', password: 'foo', username: 'bar' },
         groupId: 'groupId',
         clientId: 'clientId',

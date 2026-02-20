@@ -12,9 +12,14 @@ export default class OrkaKafka {
   public consumeClient: KafkajsType.Kafka;
   public produceClient: KafkajsType.Kafka;
   public producer: KafkajsType.Producer;
+  private readonly sigtermHandler: () => void;
+  private readonly consumers: Map<string, KafkajsType.Consumer> = new Map();
 
   constructor(options: KafkaConfig) {
     this.options = options;
+    this.sigtermHandler = this.handleSigterm.bind(this);
+
+    process.once('SIGTERM', this.sigtermHandler);
   }
 
   public async connect(options?: KafkajsType.ProducerConfig) {
@@ -54,6 +59,7 @@ export default class OrkaKafka {
 
   public async disconnect() {
     if (this.producer) await this.producer.disconnect();
+    process.off('SIGTERM', this.sigtermHandler);
   }
 
   public isHealthy() {
@@ -77,6 +83,7 @@ export default class OrkaKafka {
       authenticationTimeout
     });
     const consumer = this.consumeClient.consumer({ groupId, ...rest });
+    this.consumers.set(groupId, consumer);
     await consumer.connect();
     logger.info(`Kafka consumer(${groupId}) connected ${brokers.join(', ')}`);
     return consumer;
@@ -169,6 +176,19 @@ export default class OrkaKafka {
       return 'warn';
     }
     return level;
+  }
+
+  private handleSigterm() {
+    logger.info('Received SIGTERM. Cancelling kafka consumers..');
+
+    for (const [groupId, consumer] of this.consumers) {
+      consumer.disconnect()
+        .then(() => {
+          logger.debug(`Consumer for kafka group ${groupId} disconnected.`);
+        }).catch(e => {
+          logger.error(`Consumer for kafka group ${groupId} failed to disconnect`, e);
+        });
+    }
   }
 }
 
