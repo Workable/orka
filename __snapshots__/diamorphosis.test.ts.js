@@ -89,7 +89,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -313,7 +314,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -539,7 +541,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -765,7 +768,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -919,7 +923,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -1272,7 +1277,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
@@ -1503,7 +1509,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "inbound": {
       "request": {
         "enabled": false
-      }
+      },
+      "blacklistedPaths": ["/health","/metrics"]
     },
     "outbound": {
       "blacklistedPathRegex": {},
