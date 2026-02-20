@@ -74,6 +74,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   config.riviere = {
     enabled: true,
     inbound: {
+      blacklistedPaths: ['/health', '/metrics'],
       ...config.riviere?.inbound,
       request: {
         enabled: false,
