@@ -1,7 +1,7 @@
 import 'should';
 import * as sinon from 'sinon';
 import * as Joi from 'joi';
-import { validateBody, validateQueryString } from '../../../src/middlewares/validate-params';
+import { validateBody, validateQueryString, validateParams } from '../../../src/middlewares/validate-params';
 
 const sandbox = sinon.createSandbox();
 
@@ -73,6 +73,36 @@ describe('validate-params', function() {
     const next = sandbox.stub();
     const ctx = { query: { keyNumber: 'somestring' } } as any;
     await validateQueryString(schema)(ctx, next).should.be.rejectedWith(
+      JSON.stringify({ keyNumber: '"keyNumber" must be a number' })
+    );
+    next.called.should.be.equal(false);
+  });
+
+  it('tests validate path params', async function() {
+    const next = sandbox.stub();
+    const ctx = {
+      params: {
+        keyString: 'somestring',
+        keyNumber: '2',
+        keyBoolean: 'true',
+        keyStringArray: ['a', 'b']
+      }
+    } as any;
+
+    await validateParams(schema)(ctx, next);
+    next.calledOnce.should.be.equal(true);
+    ctx.params.should.eql({
+      keyString: 'somestring',
+      keyNumber: 2,
+      keyBoolean: true,
+      keyStringArray: ['a', 'b']
+    });
+  });
+
+  it('tests validate path params with error', async function() {
+    const next = sandbox.stub();
+    const ctx = { params: { keyNumber: 'somestring' } } as any;
+    await validateParams(schema)(ctx, next).should.be.rejectedWith(
       JSON.stringify({ keyNumber: '"keyNumber" must be a number' })
     );
     next.called.should.be.equal(false);

@@ -32,3 +32,11 @@ export function validateQueryString(schema: Joi.ObjectSchema) {
     await next();
   };
 }
+
+export function validateParams(schema: Joi.ObjectSchema) {
+  return async (ctx: Koa.Context, next: any) => {
+    const result = validate(ctx.params, schema);
+    ctx.params = result.value;
+    await next();
+  };
+}
