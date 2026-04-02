@@ -90,6 +90,61 @@ describe('log4js_json_appender', () => {
     ]);
   });
 
+  it('should use only the message when logger.error is called with a string as first argument', () => {
+    const layout = {
+      messagePassThroughLayout: log => log.data.join(' ')
+    };
+
+    appender.configure({}, layout)({
+      level: {
+        levelStr: 'ERROR'
+      },
+      startTime: '01-01-1970',
+      categoryName: 'services.converters.referral-converter',
+      data: [
+        'Expected: [closed] - Actual: [archived]',
+        { jobId: 12345 }
+      ]
+    });
+
+    createErrorLogSpy.calledOnce.should.equal(true);
+    createErrorLogSpy.returnValues.should.eql([
+      {
+        timestamp: '01-01-1970',
+        severity: 'ERROR',
+        categoryName: 'services.converters.referral-converter',
+        message: 'Expected: [closed] - Actual: [archived]',
+        stack_trace: undefined,
+        context: { jobId: 12345 }
+      }
+    ]);
+  });
+
+  it('should combine error message and additional string when logger.error is called with an Error as first argument', () => {
+    const layout = {
+      messagePassThroughLayout: log => log.data.join(' ')
+    };
+
+    appender.configure({}, layout)({
+      level: {
+        levelStr: 'ERROR'
+      },
+      startTime: '01-01-1970',
+      categoryName: 'services.converters.referral-converter',
+      data: [
+        new Error('something broke'),
+        'Expected: [closed] - Actual: [archived]',
+        { jobId: 12345 }
+      ]
+    });
+
+    createErrorLogSpy.calledOnce.should.equal(true);
+    const result = createErrorLogSpy.returnValues[0];
+    result.message.should.equal('something broke - Expected: [closed] - Actual: [archived]');
+    result.stack_trace.should.startWith('Error: something broke');
+    result.context.should.eql({ jobId: 12345 });
+  });
+
   it('should correctly print circular json', () => {
     let clock = sinon.useFakeTimers(new Date('2019-01-01'));
     const logSpy = sandbox.stub(console, 'log');
