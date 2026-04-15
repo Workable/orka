@@ -27,4 +27,6 @@ jobs:
       - run: |
           TAG=$(node -p "require('./package.json').version.includes('-') ? 'beta' : 'latest'")
           npm publish --provenance --ignore-scripts --tag $TAG
+        env:
+            NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
