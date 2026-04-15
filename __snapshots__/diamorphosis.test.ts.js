@@ -111,6 +111,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "cookie": "",
     "setCookie": false
   },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
+  },
   "kafka": {
     "brokers": [],
     "groupId": "",
@@ -337,6 +342,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "visitor": {
     "cookie": "",
     "setCookie": false
+  },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
   },
   "kafka": {
     "brokers": [],
@@ -565,6 +575,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "cookie": "",
     "setCookie": false
   },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
+  },
   "kafka": {
     "brokers": [],
     "groupId": "",
@@ -791,6 +806,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "visitor": {
     "cookie": "",
     "setCookie": false
+  },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
   },
   "kafka": {
     "brokers": [],
@@ -1019,6 +1039,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "cookie": "",
     "setCookie": false
   },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
+  },
   "kafka": {
     "brokers": [],
     "groupId": "",
@@ -1187,6 +1212,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "visitor": {
     "cookie": "cookie",
     "setCookie": false
+  },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
   },
   "app": {
     "env": "testProcess"
@@ -1419,6 +1449,11 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
   "visitor": {
     "cookie": "cookie",
     "setCookie": false
+  },
+  "queryParser": {
+    "arrayLimit": 1000,
+    "parameterLimit": 1000,
+    "depth": 5
   },
   "app": {
     "env": "testProcess"

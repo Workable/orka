@@ -114,6 +114,7 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addMongoDBConfig(config);
   addRedisConfig(config);
   addPostgresConfig(config);
+  addQueryParserConfig(config);
   addWorkersConfig(config);
   addGrowthbookConfig(config);
 
@@ -267,6 +268,15 @@ function addRedisConfig(config) {
         ...config?.redis?.options?.tls
       }
     }
+  };
+}
+
+function addQueryParserConfig(config) {
+  config.queryParser = {
+    arrayLimit: 1000,
+    parameterLimit: 1000,
+    depth: 5,
+    ...config.queryParser
   };
 }
 
