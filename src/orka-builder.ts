@@ -73,7 +73,7 @@ export default class OrkaBuilder {
       this.use(() => addRequestContext(this.als, this.config));
     }
     this.use(() => bodyParser(this.config.bodyParser));
-    this.use(() => parseQuerystring);
+    this.use(() => parseQuerystring(this.config));
     this.use(() => riviere(this.config, this.options));
     this.use(() => this.errorHandler(this.config, this.options));
     this.use(
