@@ -100,7 +100,7 @@ export default class OrkaBuilder {
     return this.use(() =>
       cors({
         origin: (ctx: Context) => {
-          const origin = ctx.request.headers.origin || ctx.request.origin;
+          const origin = ctx.request.headers.origin || `${ctx.protocol}://${ctx.host}`;
           if (publicPrefixes.some(p => ctx.path.startsWith(p))) return '*';
           return allowedOrigin.test(origin) ? origin : allowedOrigins[0];
         },
