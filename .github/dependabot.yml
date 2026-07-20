@@ -5,3 +5,9 @@ updates:
     schedule:
       interval: monthly
     rebase-strategy: disabled
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    versioning-strategy: increase
+    rebase-strategy: disabled
