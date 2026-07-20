@@ -98,7 +98,7 @@
     "lint-staged": "^9.4.3",
     "mocha": "^11.7.5",
     "mock-require": "^3.0.3",
-    "newrelic": "^13.10.0",
+    "newrelic": "^14.3.1",
     "nock": "^14.0.10",
     "nyc": "^15.1.0",
     "pg": "*",
