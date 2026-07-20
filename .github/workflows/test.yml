@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: read
+      contents: write
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
@@ -62,7 +62,7 @@ jobs:
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: |
           gh pr review --approve "$PR_URL"
-          gh pr merge --squash --admin "$PR_URL"
+          gh pr merge --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
