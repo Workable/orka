@@ -70,7 +70,7 @@ ObjectId using new mongoose.
 
 ### Migrating from orka  3.x to 4.x
 
-- Support for older node version pre v18 is dropped. Only v18 and v20+ will be unit tested and guaranteed to work
+- Support for older node version pre v20 is dropped. Only v20+ will be unit tested and guaranteed to work
 - Usage of randomUUID that is not supported in many older versions
 - Changes in default config: istioTraceHeaders and headerPropagation are deprecated in favor of a generic propagatedHeaders
 - Methods kafka.send that was deprecated is removed. Use kafka.producer.send instead
