@@ -18,6 +18,7 @@ const paramsSchema = Joi.object().keys({
 module.exports = {
   get: {
     '/testGet': [validateQueryString(schema), async (ctx, next) => (ctx.body = ctx.request.body)],
+    '/testParams/:id': [validateParams(paramsSchema), async (ctx, next) => (ctx.body = ctx.params)],
     '/testParams/:id/:name': [validateParams(paramsSchema), async (ctx, next) => (ctx.body = ctx.params)]
   },
   post: {
