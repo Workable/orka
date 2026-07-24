@@ -90,7 +90,7 @@
     "@types/sinon": "^21.0.0",
     "axios": "^1.18.0",
     "bullmq": "*",
-    "dd-trace": "^5.83.0",
+    "dd-trace": "^6.6.0",
     "growthbook": "npm:@growthbook/growthbook@*",
     "husky": "^3.0.9",
     "ioredis": "*",
