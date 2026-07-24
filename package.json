@@ -88,7 +88,7 @@
     "@types/qs": "^6.9.7",
     "@types/redis": "^2.8.14",
     "@types/sinon": "^21.0.0",
-    "axios": "^1.18.0",
+    "axios": "^1.18.1",
     "bullmq": "*",
     "dd-trace": "^5.83.0",
     "growthbook": "npm:@growthbook/growthbook@*",
