@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@honeybadger-io/js": "^6.5.3",
-    "@workablehr/riviere": "^1.22.0",
+    "@workablehr/riviere": "^1.22.3",
     "chalk": "^2.4.2",
     "codependency": "^2.1.0",
     "diamorphosis": "^1.1.0",
