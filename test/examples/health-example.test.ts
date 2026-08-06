@@ -91,7 +91,7 @@ describe('Health examples', () => {
     });
 
     it('/health returns not ok', async () => {
-      getRedis().end(true);
+      getRedis().destroy();
       await supertest('localhost:3210').get('/health').expect(503);
     });
   });
