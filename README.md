@@ -68,6 +68,19 @@ config = {
 }
 ```
 
+### Redis client (node-redis v6)
+
+Orka uses [node-redis](https://github.com/redis/node-redis) v6. The client returned by `getRedis()`
+is promise-based (`await getRedis().get('key')`) — the callback API of node-redis v3 is gone.
+The `config.redis` schema is unchanged: `url`, `options.tls` and the legacy retry/keepalive options
+(`timesConnected`, `totalRetryTime`, `reconnectAfterMultiplier`, `socketKeepalive`, `socketInitialDelay`)
+are mapped to the new driver's `socket` options and reconnect strategy. Any other key in
+`config.redis.options` (e.g. `RESP`, `pingInterval`, `socket`) is passed through to `createClient`.
+Orka pins `RESP: 2` by default to preserve the wire protocol reply shapes; set
+`config.redis.options.RESP = 3` to opt into RESP3.
+The initial connection is awaited during boot; if redis is down the app still starts
+and `/health` reports unhealthy.
+
 ```js
 const { orka } = require('@workablehr/orka');
 

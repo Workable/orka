@@ -1,5 +1,4 @@
 const { getRedis } = require('../../build');
-const { promisify } = require('util');
 const {
   middlewares: { health }
 } = require('../../build');
@@ -9,12 +8,12 @@ module.exports = {
   get: {
     health: health,
     '/key': async (ctx, next) => {
-      ctx.body = await promisify(redis.get.bind(redis))('key');
+      ctx.body = await redis.get('key');
     }
   },
   put: {
     '/key': async (ctx, next) => {
-      ctx.body = await promisify(redis.set.bind(redis))('key', ctx.request.body.key);
+      ctx.body = await redis.set('key', ctx.request.body.key);
     }
   }
 };
