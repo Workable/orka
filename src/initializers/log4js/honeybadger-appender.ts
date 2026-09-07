@@ -16,7 +16,13 @@ function notifyHoneybadger(categoryName, error, ...rest) {
 
 function buildError(error: Error | string, rest: any[]) {
   if (typeof error === 'string') {
-    error = new Error(error);
+    const actualError = rest.find(r => r instanceof Error);
+    if (actualError) {
+      rest = [error, ...rest.filter(r => r !== actualError)];
+      error = actualError;
+    } else {
+      error = new Error(error);
+    }
   }
 
   const message = rest.filter(r => typeof r === 'string').join('. ');
