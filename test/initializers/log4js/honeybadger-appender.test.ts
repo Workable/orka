@@ -209,4 +209,34 @@ describe('log4js_honeybadger_appender', () => {
       });
     });
   });
+
+  it('should preserve the real error message and stack when a string is logged before the error', () => {
+    const err = new Error('connection refused') as any;
+    const originalStack = err.stack;
+    appender.configure()({
+      level: {
+        level: 40000
+      },
+      categoryName: 'testCategoryName',
+      data: ['job-123 - Notifications scheduler failed with error:', err]
+    });
+    notifySpy.callCount.should.equal(1);
+    const notifiedError = notifySpy.args[0][0];
+    notifiedError.should.equal(err);
+    notifiedError.stack.should.equal(originalStack);
+    notifiedError.message.should.equal('connection refused. job-123 - Notifications scheduler failed with error:');
+  });
+
+  it('should still fall back to a synthetic error when no rest argument is an actual Error', () => {
+    appender.configure()({
+      level: {
+        level: 40000
+      },
+      categoryName: 'testCategoryName',
+      data: ['plain message', { foo: 'bar' }]
+    });
+    notifySpy.callCount.should.equal(1);
+    notifySpy.args[0][0].message.should.equal('plain message');
+    notifySpy.args[0][1].context.should.eql({ foo: 'bar' });
+  });
 });
