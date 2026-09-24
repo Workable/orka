@@ -1,3 +1,4 @@
+import './initializers/datadog/preload';
 import newrelic from './initializers/newrelic';
 import { OrkaOptions } from './typings/orka';
 import _defaults from './default-options';

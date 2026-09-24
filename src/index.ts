@@ -1,3 +1,4 @@
+import './initializers/datadog/preload';
 import Orka from './orka';
 import * as middlewares from './middlewares';
 import * as helpers from './helpers';
