@@ -1,3 +1,4 @@
+import './initializers/datadog/preload';
 import * as lodash from 'lodash';
 import builder from './builder';
 import defaults from './default-options';
