@@ -38,13 +38,9 @@ export default function (config): Middleware {
         ctx.cookies.secure = true;
       }
 
-      let cookieDomain = domain((ctx.origin && new URL(ctx.origin).hostname) || ctx.hostname);
-      if (config.visitor.getCookieDomain && typeof config.visitor.getCookieDomain === 'function') {
-        cookieDomain = config.visitor.getCookieDomain(ctx);
-      }
 
       const options: SetOption = {
-        domain: cookieDomain,
+        domain: getCookieDomain(ctx, config),
         maxAge: config.visitor.maxAge && ms(config.visitor.maxAge),
         httpOnly: false,
         secure: config.visitor.secure,
@@ -59,4 +55,23 @@ export default function (config): Middleware {
     }
     return next();
   };
+
+  function getCookieDomain(ctx: Context, config): string {
+    // custom cb function takes precedence
+    if (config.visitor.getCookieDomain && typeof config.visitor.getCookieDomain === 'function') {
+      return config.visitor.getCookieDomain(ctx);
+    }
+
+    // utilizes the original origin
+    // even when  app is behind proxy
+    // https://github.com/koajs/koa/issues/1008#issuecomment-2872014479
+    if (URL.canParse(ctx.request.URL.origin)) {
+      return domain(ctx.request.URL.hostname);
+    } else {
+      // get hostname from Host header
+      // or X-Forwarded-Host when is proxy enabled
+      // https://github.com/koajs/koa/blob/master/lib/request.js#L281
+      return domain(ctx.hostname);
+    }
+  }
 }
