@@ -16,7 +16,7 @@ describe('add-visitor-id', function () {
   beforeEach(function () {
     getRequestContextStub = sandbox.stub();
     ctx = {
-      origin: 'https://apply.workable.com/foo',
+      request: { URL: new URL('https://apply.workable.com/foo') },
       state: {},
       cookies: {
         get: () => encodeURIComponent(JSON.stringify({ cookie_id: visitor }))
