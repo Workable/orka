@@ -48,7 +48,7 @@ describe('Default middlewares examples', () => {
       should(response.headers['set-cookie']).be.undefined();
     });
 
-    describe('when origin header is invalid', function() {
+    describe('when the Origin header is malformed', function() {
       it('/test sets a visitor cookie', async () => {
         const response = await supertest('localhost:3220')
           .get('/test')
@@ -68,17 +68,26 @@ describe('Default middlewares examples', () => {
         const decoded = JSON.parse(decodeURIComponent(encoded));
         uuid.validate(decoded.cookie_id).should.be.true();
       });
+
+      it('derives the cookie domain from the host, not from Origin', async () => {
+        const response = await supertest('localhost:3220')
+          .get('/test')
+          .set('origin', 'https://evil.example.com')
+          .expect(200);
+        const visitorCookie = response.headers['set-cookie'].find(c => c.startsWith('wmc='));
+        should(visitorCookie).not.be.undefined();
+        visitorCookie.should.match(/domain=localhost/i);
+        visitorCookie.should.not.match(/evil\.example\.com/i);
+      });
     });
 
     describe('when callback for cookie domain is provided from config', function() {
-      let origConfig;
       before(function() {
-        origConfig = server.config.visitor;
         server.config.visitor.getCookieDomain = () => 'domain-provider-cb';
       });
 
       after(function() {
-        server.config.visitor = origConfig;
+        delete server.config.visitor.getCookieDomain;
       });
 
       it('uses the callback to set a visitor cookie domain', async () => {
