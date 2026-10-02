@@ -74,7 +74,7 @@
     "redis": "^6.1.0",
     "sanitize-html": "^2.17.7",
     "source-map-support": "^0.5.16",
-    "tsconfig-paths": "^3.9.0",
+    "tsconfig-paths": "^4.2.0",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
