@@ -1,6 +1,6 @@
 const { getBull, getLogger } = require('../../build');
 const path = require('path');
-const { v4: uuid } = require('uuid');
+const { randomUUID: uuid } = require('crypto');
 const { metrics } = require('../../build/middlewares');
 const bull = getBull();
 
@@ -11,7 +11,7 @@ module.exports = {
   get: {
     '/metrics': metrics,
     '/init': async (ctx, next) => {
-      bull.createWorker('queue_one', (job) => {
+      bull.createWorker('queue_one', job => {
         // with done(error, results) callback
         const { id, data } = job;
         queueLogger.info(`Processing job #${id}`);
