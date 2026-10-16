@@ -18,6 +18,15 @@ export let getLogger = (name: string) => {
 };
 const loggers = {};
 
+// Until log4js(config) runs, log4js writes plain text, which log aggregators can merge into preceding
+// output with the wrong severity. With LOG_JSON, log start-up messages as JSON lines from the start.
+if (process.env.LOG_JSON === 'true') {
+  Log4js.configure({
+    appenders: { json: { type: path.resolve(path.join(__dirname, './json-appender')) } },
+    categories: { default: { appenders: ['json'], level: 'off' } }
+  });
+}
+
 export default async config => {
   let appenders = {} as any;
   let appendersList = [];
@@ -96,6 +105,8 @@ export default async config => {
   });
 
   tmp = Log4js.getLogger.bind(Log4js);
+  // Loggers handed out before configuration log under 'initializing.<name>'; move them to their own category.
+  Object.entries(loggers).forEach(([name, logger]) => ((logger as any).category = name));
 };
 
 function toLog(obj, prefix = '', traceId) {
