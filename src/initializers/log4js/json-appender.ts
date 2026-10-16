@@ -42,13 +42,19 @@ export const createErrorLog = (layout, logEvent, config) => {
 
   const context = { ...requestContextKeys(config), ...getContextObject(data) };
   const message = getMessageObject(layout, data);
+  const first = logEvent.data[0];
+  const firstIsError = first?.message !== undefined || first?.stack !== undefined;
+  // Usually the error is the first argument, but it can also come later or inside a context object, e.g. { reason: error }.
+  const error = firstIsError
+    ? first
+    : data.find(e => e instanceof Error) || Object.values(context).find(e => e instanceof Error);
 
   return {
     timestamp: logEvent.startTime,
     severity: logEvent.level.levelStr,
     categoryName: logEvent.categoryName,
-    message: logEvent.data[0]?.message + (message ? ' - ' + message : ''),
-    stack_trace: logEvent.data[0]?.stack,
+    message: firstIsError ? first.message + (message ? ' - ' + message : '') : message || error?.message,
+    stack_trace: error?.stack,
     context
   };
 };
