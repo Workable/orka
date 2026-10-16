@@ -20,9 +20,14 @@ describe('log4js early logging', function () {
   this.timeout(30000);
 
   it('logs a dd-trace preload failure as a single JSON error line with LOG_JSON and still fails', () => {
-    const { status, stdout } = run('preload-failure.js', { LOG_JSON: 'true', DD_SERVICE: 'orka', DD_ENV: 'test' });
+    const { status, stdout, stderr } = run('preload-failure.js', {
+      LOG_JSON: 'true',
+      DD_SERVICE: 'orka',
+      DD_ENV: 'test'
+    });
 
-    status.should.not.equal(0);
+    status.should.equal(1);
+    stderr.should.equal('');
     const lines = jsonLines(stdout);
     lines.should.have.length(1);
     lines[0].should.containDeep({
