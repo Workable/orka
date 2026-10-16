@@ -47,14 +47,31 @@ describe('log4js early logging', function () {
     status.should.not.equal(0);
     const errors = jsonLines(stdout).filter(line => line.severity === 'ERROR');
     errors.should.have.length(1);
-    errors[0].should.containDeep({ message: 'Version check of module "newrelic" failed' });
+    errors[0].should.containDeep({ categoryName: 'orka', message: 'Version check of module "newrelic" failed' });
     errors[0].stack_trace.should.startWith('Error: Version check of module "newrelic" failed\n');
   });
 
+  it("logs an app's uncaughtException handler error under the app category with the stack trace", () => {
+    const { status, stdout } = run('app-handler.js', { LOG_JSON: 'true', NEW_RELIC_LICENSE_KEY: 'key' });
+
+    status.should.not.equal(0);
+    const errors = jsonLines(stdout).filter(line => line.severity === 'ERROR');
+    errors.map(e => e.categoryName).should.eql(['orka', 'app']);
+    errors[1].message.should.equal(
+      'Uncaught Exception at Origin: uncaughtException reason: Error: Version check of module "newrelic" failed'
+    );
+    errors[1].stack_trace.should.startWith('Error: Version check of module "newrelic" failed\n');
+  });
+
   it('logs under the plain name with a logger taken before log4js is configured', () => {
-    const { status, stdout } = run('early-logger.js');
+    const { status, stdout } = run('early-logger.js', { LOG_JSON: 'true' });
 
     status.should.equal(0);
-    jsonLines(stdout).should.containDeep([{ categoryName: 'app', message: 'after configure' }]);
+    jsonLines(stdout)
+      .map(({ severity, categoryName, message }) => ({ severity, categoryName, message }))
+      .should.eql([
+        { severity: 'DEBUG', categoryName: 'app', message: 'before configure' },
+        { severity: 'INFO', categoryName: 'app', message: 'after configure' }
+      ]);
   });
 });

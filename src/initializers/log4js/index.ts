@@ -4,8 +4,9 @@ import * as path from 'path';
 import { getRequestContext } from '../../builder';
 import chalk from 'chalk';
 
+// Until log4js(config) runs, log everything. Configuring log4js resets the level to the configured one.
 let tmp = name => {
-  const logger = Log4js.getLogger('initializing.' + name);
+  const logger = Log4js.getLogger(name);
   logger.level = 'trace';
   return logger;
 };
@@ -105,8 +106,6 @@ export default async config => {
   });
 
   tmp = Log4js.getLogger.bind(Log4js);
-  // Loggers handed out before configuration log under 'initializing.<name>'; move them to their own category.
-  Object.entries(loggers).forEach(([name, logger]) => ((logger as any).category = name));
 };
 
 function toLog(obj, prefix = '', traceId) {
