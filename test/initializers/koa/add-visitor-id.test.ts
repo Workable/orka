@@ -23,8 +23,8 @@ describe('add-visitor-id', function () {
       }
     } as any;
     visitorWrapper = proxyquire('../../../src/initializers/koa/add-visitor-id', {
-      'uuid': {
-        v4: () => 'new-uuid'
+      crypto: {
+        randomUUID: () => 'new-uuid'
       },
       '../../../src/builder': {
         getRequestContext: () => ({ set: getRequestContextStub })

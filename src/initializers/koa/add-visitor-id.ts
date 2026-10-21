@@ -3,8 +3,12 @@ import { getLogger } from 'log4js';
 import { getRequestContext } from '../../builder';
 import { SetOption } from 'cookies';
 import { URL } from 'url';
-import * as uuid from 'uuid';
+import { randomUUID } from 'crypto';
+import * as Joi from 'joi';
 import * as ms from 'ms';
+
+const uuidSchema = Joi.string().guid({ separator: '-', wrapper: false }).required();
+export const isUUID = (value: unknown) => !uuidSchema.validate(value).error;
 
 export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURIComponent(cookie))) || {};
 export const encode = (cookie: any) => encodeURIComponent(JSON.stringify(cookie || {}));
@@ -24,7 +28,7 @@ export default function (config): Middleware {
     let decoded;
     try {
       decoded = decode(cookie);
-      if (uuid.validate(decoded?.cookie_id)) {
+      if (isUUID(decoded?.cookie_id)) {
         ctx.state.visitor = decoded.cookie_id;
       }
     } catch (e) {
@@ -32,12 +36,11 @@ export default function (config): Middleware {
     }
 
     if (config.visitor.setCookie && !ctx.state.visitor) {
-      ctx.state.visitor = uuid.v4();
+      ctx.state.visitor = randomUUID();
       if (config.visitor.secure && !ctx.cookies.secure) {
         // Force secure cookies in context, when our ENV dictates to always use secure=true;.
         ctx.cookies.secure = true;
       }
-
 
       const options: SetOption = {
         domain: getCookieDomain(ctx, config),
