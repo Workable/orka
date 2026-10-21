@@ -4,13 +4,11 @@ import { getRequestContext } from '../../builder';
 import { SetOption } from 'cookies';
 import { URL } from 'url';
 import { randomUUID } from 'crypto';
+import * as Joi from 'joi';
 import * as ms from 'ms';
 
-// Same pattern as uuid's validate(). The uuid package is ESM-only, and loading it with require() prints an
-// ExperimentalWarning on stderr on some Node versions (e.g. 22.12), which log aggregators report as an error.
-const UUID_PATTERN =
-  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/i;
-export const isUUID = (value: unknown) => typeof value === 'string' && UUID_PATTERN.test(value);
+const uuidSchema = Joi.string().guid({ separator: '-', wrapper: false }).required();
+export const isUUID = (value: unknown) => !uuidSchema.validate(value).error;
 
 export const decode = (cookie?: string) => (cookie && JSON.parse(decodeURIComponent(cookie))) || {};
 export const encode = (cookie: any) => encodeURIComponent(JSON.stringify(cookie || {}));
