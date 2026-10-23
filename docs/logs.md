@@ -23,8 +23,7 @@ By default the below config is used:
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   }
 }

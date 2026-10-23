@@ -63,7 +63,6 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
       'orka.kafka.producer': 'info',
       orka: 'debug',
       kafka: 'debug',
-      initializing: 'debug',
       ...config.log?.categories
     }
   };
