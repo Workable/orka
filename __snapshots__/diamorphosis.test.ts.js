@@ -71,8 +71,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "port": 3000,
@@ -241,8 +240,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "nodeEnv": "development",
@@ -476,8 +474,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "nodeEnv": "development",
@@ -711,8 +708,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "nodeEnv": "development",
@@ -946,8 +942,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "riviere": {
@@ -1304,8 +1299,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "port": 3000,
@@ -1544,8 +1538,7 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "port": 3000,

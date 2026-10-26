@@ -44,7 +44,7 @@ describe('request-context', function () {
     JSON.stringify({
       timestamp: '2019-01-01T00:00:00.000Z',
       severity: 'INFO',
-      categoryName: 'initializing.log',
+      categoryName: 'log',
       message,
       context
     })
