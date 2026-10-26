@@ -258,6 +258,9 @@ You can find the default values below:
       }
     }
   },
+  "rejectBrotliEncoding": {
+    "enabled": true
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": ["requestId", "visitor"],
