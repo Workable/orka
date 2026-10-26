@@ -18,6 +18,7 @@ Orka adds by default the following middleware:
 
 - addRequestId (adds ctx.state.requestId from header config.traceHeaderName)
 - addRequestContext (enabled by default see [request-context](https://workable.github.io/orka/request-context) )
+- rejectBrotliEncoding (enabled by default via `config.rejectBrotliEncoding.enabled`; rejects `Content-Encoding: br` with HTTP 415 before the body is read)
 - [koa-bodyparser](https://www.npmjs.com/package/koa-bodyparser)
 - [riviere](https://www.npmjs.com/package/@workablehr/riviere)
 - [errorHandler](./getting-started.md#errorhandler) (Handles errors thrown in any middleware added afterwards)

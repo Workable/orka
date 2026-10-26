@@ -200,6 +200,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
     "clientKey": "",
     "timeout": 10
   },
+  "rejectBrotliEncoding": {
+    "enabled": true
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -431,6 +434,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "apiHost": "https://cdn.growthbook.io",
     "clientKey": "",
     "timeout": 10
+  },
+  "rejectBrotliEncoding": {
+    "enabled": true
   },
   "requestContext": {
     "enabled": true,
@@ -664,6 +670,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientKey": "",
     "timeout": 10
   },
+  "rejectBrotliEncoding": {
+    "enabled": true
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -896,6 +905,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "clientKey": "",
     "timeout": 10
   },
+  "rejectBrotliEncoding": {
+    "enabled": true
+  },
   "requestContext": {
     "enabled": true,
     "logKeys": [
@@ -1127,6 +1139,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "apiHost": "https://cdn.growthbook.io",
     "clientKey": "",
     "timeout": 10
+  },
+  "rejectBrotliEncoding": {
+    "enabled": true
   },
   "requestContext": {
     "enabled": true,
@@ -1364,6 +1379,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "apiHost": "https://cdn.growthbook.io",
     "clientKey": "",
     "timeout": 10
+  },
+  "rejectBrotliEncoding": {
+    "enabled": true
   },
   "requestContext": {
     "enabled": true,
@@ -1603,6 +1621,9 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
     "apiHost": "https://cdn.growthbook.io",
     "clientKey": "",
     "timeout": 10
+  },
+  "rejectBrotliEncoding": {
+    "enabled": true
   },
   "requestContext": {
     "enabled": true,
