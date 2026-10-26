@@ -15,6 +15,7 @@ import addRequestId from './initializers/koa/add-request-id';
 import addVisitorId from './initializers/koa/add-visitor-id';
 import parseQuerystring from './initializers/koa/parse-querystring';
 import addRequestContext from './initializers/koa/add-request-context';
+import rejectBrotliEncoding from './middlewares/reject-brotli-encoding';
 import _defaults from './default-options';
 import { OrkaOptions } from './typings/orka';
 import assert = require('assert');
@@ -71,6 +72,9 @@ export default class OrkaBuilder {
     this.use(() => addRequestId(this.config));
     if (this.config.requestContext.enabled) {
       this.use(() => addRequestContext(this.als, this.config));
+    }
+    if (this.config.rejectBrotliEncoding?.enabled !== false) {
+      this.use(() => rejectBrotliEncoding);
     }
     this.use(() => bodyParser(this.config.bodyParser));
     this.use(() => parseQuerystring(this.config));

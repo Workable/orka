@@ -118,6 +118,11 @@ export default (config, orkaOptions: Partial<OrkaOptions>) => {
   addWorkersConfig(config);
   addGrowthbookConfig(config);
 
+  config.rejectBrotliEncoding = {
+    enabled: true,
+    ...config.rejectBrotliEncoding
+  };
+
   config.requestContext = {
     enabled: true,
     logKeys: ['requestId', 'visitor', 'correlationId', 'propagatedHeaders'],
