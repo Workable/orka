@@ -5,19 +5,22 @@ export interface KafkaConfig {
     ca: string;
     rejectUnauthorized: boolean;
   };
-  sasl?: {
-    mechanism: 'plain';
-    username: string;
-    password: string;
-  } | {
-    mechanism: 'scram-sha-256';
-    username: string;
-    password: string;
-  } | {
-    mechanism: 'scram-sha-512';
-    username: string;
-    password: string;
-  };
+  sasl?:
+    | {
+        mechanism: 'plain';
+        username: string;
+        password: string;
+      }
+    | {
+        mechanism: 'scram-sha-256';
+        username: string;
+        password: string;
+      }
+    | {
+        mechanism: 'scram-sha-512';
+        username: string;
+        password: string;
+      };
   ssl?: boolean;
   groupId: string;
   clientId: string;
@@ -31,19 +34,22 @@ export interface KafkaConfig {
       ca: string;
     };
     ssl?: boolean;
-    sasl?: {
-      mechanism: 'plain';
-      username: string;
-      password: string;
-    } | {
-      mechanism: 'scram-sha-256';
-      username: string;
-      password: string;
-    } | {
-      mechanism: 'scram-sha-512';
-      username: string;
-      password: string;
-    };
+    sasl?:
+      | {
+          mechanism: 'plain';
+          username: string;
+          password: string;
+        }
+      | {
+          mechanism: 'scram-sha-256';
+          username: string;
+          password: string;
+        }
+      | {
+          mechanism: 'scram-sha-512';
+          username: string;
+          password: string;
+        };
   };
   log?: {
     level: 'info' | 'debug' | 'error' | 'warn' | 'nothing';
@@ -51,4 +57,6 @@ export interface KafkaConfig {
   };
   connectionTimeout?: number;
   authenticationTimeout?: number;
+  /** How long to wait for consumers and the producer to disconnect on SIGTERM. Defaults to 25000. */
+  shutdownTimeoutMs?: number;
 }

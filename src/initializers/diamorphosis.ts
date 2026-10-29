@@ -215,7 +215,8 @@ function addKafkaConfig(config) {
       }
     },
     connectionTimeout: 5000,
-    authenticationTimeout: 10000
+    authenticationTimeout: 10000,
+    shutdownTimeoutMs: config.kafka?.shutdownTimeoutMs ?? 25000
   };
 }
 
