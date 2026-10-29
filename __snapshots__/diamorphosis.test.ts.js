@@ -154,7 +154,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when nothing
       }
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "queue": {
     "url": "",
@@ -389,7 +390,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "queue": {
     "url": "",
@@ -624,7 +626,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "queue": {
     "url": "",
@@ -859,7 +862,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "queue": {
     "url": "",
@@ -1094,7 +1098,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       }
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "queue": {
     "url": "",
@@ -1218,7 +1223,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "password": ""
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "healthCheck": {
     "kafka": true,
@@ -1458,7 +1464,8 @@ exports['Diamorphosis Test should set json/console loggingvariables when console
       "password": ""
     },
     "connectionTimeout": 5000,
-    "authenticationTimeout": 10000
+    "authenticationTimeout": 10000,
+    "shutdownTimeoutMs": 25000
   },
   "healthCheck": {
     "kafka": true,

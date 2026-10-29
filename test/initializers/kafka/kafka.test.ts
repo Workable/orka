@@ -54,7 +54,7 @@ describe('kafka class', () => {
     kafkaStubReturn = { producer: () => producerStub, consumer: consumerStub, admin: adminStub };
     kafkaStub = sinon.stub().returns(kafkaStubReturn);
     delete require.cache[require.resolve('../../../src/initializers/kafka/kafka')];
-    mock('kafkajs', { Kafka: kafkaStub, Partitioners  });
+    mock('kafkajs', { Kafka: kafkaStub, Partitioners });
     ({ default: Kafka } = await import('../../../src/initializers/kafka/kafka'));
   });
 
@@ -278,7 +278,7 @@ describe('kafka class', () => {
         ]);
       });
 
-      it('should register sigtermHandler in SIGTERM process listeners and remove on disconnect', async function() {
+      it('should register sigtermHandler in SIGTERM process listeners and remove on disconnect', async function () {
         kafka = new Kafka({
           certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
           groupId: 'groupId',
@@ -296,7 +296,7 @@ describe('kafka class', () => {
 
         process.listeners('SIGTERM').should.containEql(handler);
 
-        kafka.disconnect();
+        await kafka.disconnect();
 
         process.listeners('SIGTERM').should.not.containEql(handler);
       });
@@ -317,9 +317,10 @@ describe('kafka class', () => {
         await kafka.createConsumer();
 
         (kafka as any).handleSigterm();
+        await kafka.shutdown();
 
         consumerStub().disconnect.calledOnce.should.eql(true);
-      })
+      });
     });
   });
 
@@ -446,6 +447,168 @@ describe('kafka class', () => {
         { alreadyDeclared: true, groupId: 'newGroupId2', topic: 'topic2', renamedFrom: 'oldGroupId2' },
         { groupId: 'newGroupId3', oldOffsets: [], topic: 'topic3', renamedFrom: 'oldGroupId3' }
       ]);
+    });
+  });
+
+  describe('shutdown', function () {
+    function kafkaOptions(overrides = {}) {
+      return {
+        certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false },
+        groupId: 'groupId',
+        clientId: 'clientId',
+        brokers: ['broker-consumer'],
+        producer: {
+          brokers: ['broker-producer'],
+          certificates: { key: 'key', cert: 'cert', ca: 'ca', rejectUnauthorized: false }
+        },
+        connectionTimeout: 5000,
+        authenticationTimeout: 10000,
+        ...overrides
+      };
+    }
+
+    function consumerDouble() {
+      return {
+        connect: sandbox.stub().resolves(),
+        disconnect: sandbox.stub().resolves(),
+        on: sandbox.stub()
+      };
+    }
+
+    it('keeps the SIGTERM listener until shutdown finishes', async () => {
+      kafka = new Kafka(kafkaOptions());
+      const hanging = consumerDouble();
+      let release: () => void = () => undefined;
+      hanging.disconnect.returns(
+        new Promise<void>(resolve => {
+          release = resolve;
+        })
+      );
+      consumerStub.returns(hanging);
+      await kafka.createConsumer();
+
+      const handler = (kafka as any).sigtermHandler;
+      const pending = kafka.shutdown();
+
+      process.listeners('SIGTERM').should.containEql(handler);
+
+      release();
+      await pending;
+
+      process.listeners('SIGTERM').should.not.containEql(handler);
+    });
+
+    it('disconnects the producer only after every consumer has settled', async () => {
+      kafka = new Kafka(kafkaOptions());
+      await kafka.connect();
+
+      const first = consumerDouble();
+      const second = consumerDouble();
+      let releaseFirst: () => void = () => undefined;
+      first.disconnect.returns(
+        new Promise<void>(resolve => {
+          releaseFirst = resolve;
+        })
+      );
+      consumerStub.onCall(0).returns(first);
+      consumerStub.onCall(1).returns(second);
+
+      await kafka.createConsumer({ groupId: 'group-a' });
+      await kafka.createConsumer({ groupId: 'group-b' });
+
+      const pending = kafka.shutdown();
+
+      first.disconnect.calledOnce.should.eql(true);
+      second.disconnect.calledOnce.should.eql(true);
+      producerStub.disconnect.called.should.eql(false);
+
+      releaseFirst();
+      const result = await pending;
+
+      result.should.eql({ timedOut: false });
+      producerStub.disconnect.calledOnce.should.eql(true);
+    });
+
+    it('keeps draining when a consumer disconnect rejects', async () => {
+      kafka = new Kafka(kafkaOptions());
+      await kafka.connect();
+
+      const first = consumerDouble();
+      const second = consumerDouble();
+      first.disconnect.rejects(new Error('disconnect failed'));
+      consumerStub.onCall(0).returns(first);
+      consumerStub.onCall(1).returns(second);
+
+      await kafka.createConsumer({ groupId: 'group-a' });
+      await kafka.createConsumer({ groupId: 'group-b' });
+
+      const result = await kafka.shutdown();
+
+      result.should.eql({ timedOut: false });
+      first.disconnect.calledOnce.should.eql(true);
+      second.disconnect.calledOnce.should.eql(true);
+      producerStub.disconnect.calledOnce.should.eql(true);
+    });
+
+    it('resolves with timedOut when disconnect never settles', async () => {
+      kafka = new Kafka(kafkaOptions({ shutdownTimeoutMs: 50 }));
+      await kafka.connect();
+
+      const hanging = consumerDouble();
+      hanging.disconnect.returns(new Promise(() => undefined));
+      consumerStub.returns(hanging);
+      await kafka.createConsumer();
+
+      const clock = sandbox.useFakeTimers();
+      const pending = kafka.shutdown();
+      await clock.tickAsync(50);
+      const result = await pending;
+
+      result.should.eql({ timedOut: true });
+      producerStub.disconnect.called.should.eql(false);
+    });
+
+    it('shares one drain across shutdown and SIGTERM', async () => {
+      kafka = new Kafka(kafkaOptions());
+      await kafka.createConsumer();
+
+      (kafka as any).handleSigterm();
+      const pending = kafka.shutdown();
+      const again = kafka.shutdown();
+
+      pending.should.equal(again);
+      await pending;
+      consumerStub().disconnect.calledOnce.should.eql(true);
+    });
+
+    it('disconnects every consumer that shares a group id', async () => {
+      kafka = new Kafka(kafkaOptions());
+      const first = consumerDouble();
+      const second = consumerDouble();
+      consumerStub.onCall(0).returns(first);
+      consumerStub.onCall(1).returns(second);
+
+      await kafka.createConsumer({ groupId: 'shared' });
+      await kafka.createConsumer({ groupId: 'shared' });
+      await kafka.shutdown();
+
+      first.disconnect.calledOnce.should.eql(true);
+      second.disconnect.calledOnce.should.eql(true);
+    });
+
+    it('does not connect a consumer after shutdown has started', async () => {
+      kafka = new Kafka(kafkaOptions());
+      await kafka.shutdown();
+
+      let message = '';
+      try {
+        await kafka.createConsumer();
+      } catch (err) {
+        message = err.message;
+      }
+
+      message.should.eql('Kafka shutdown in progress. Refusing to create a new consumer.');
+      consumerStub.called.should.eql(false);
     });
   });
 });

@@ -53,15 +53,16 @@ abstract class Base<Input, Output> {
     this.jsonParseValue = options.jsonParseValue ?? true;
     this.runOptions = options.runOptions;
     this.logger = logger || getLogger(`kafka.consumer.${this.topic}`);
-    kafka.createConsumer(options.consumerOptions).then(c => {
-      this.consumer = c;
-      if (onConsumerCreated) {
-        onConsumerCreated(c);
-      }
-      this.consume()
-        .then(() => this.logger.info(`Kafka consumer connected to topic: ${this.topic}`))
-        .catch(err => this.logger.error(err));
-    });
+    kafka
+      .createConsumer(options.consumerOptions)
+      .then(c => {
+        this.consumer = c;
+        if (onConsumerCreated) {
+          onConsumerCreated(c);
+        }
+        return this.consume().then(() => this.logger.info(`Kafka consumer connected to topic: ${this.topic}`));
+      })
+      .catch(err => this.logger.error(err));
   }
 
   parseValue(buffer: Buffer) {
