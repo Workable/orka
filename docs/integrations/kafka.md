@@ -57,6 +57,7 @@ module.exports = {
       "username": "",
       "password": ""
     },
+    "shutdownTimeoutMs": 25000, // How long to wait for consumers and the producer to disconnect on SIGTERM. Overridable with KAFKA_SHUTDOWN_TIMEOUT_MS
     "producer": { // Can be given if the producer is using a different kafka broker than the consumer. Might be useful for migrating brokers.
       "brokers": [],
       "ssl": true,
@@ -171,6 +172,25 @@ await kafka.producer.send({
 ```
 
 See [kafkaJS producer](https://kafka.js.org/docs/producing) for more.
+
+### Graceful shutdown
+
+On `SIGTERM`, orka stops fetching, waits for in-flight messages to finish, commits their offsets, leaves the consumer group, and then disconnects the producer. The wait is bounded by `kafka.shutdownTimeoutMs` (default `25000`). Override it with the `KAFKA_SHUTDOWN_TIMEOUT_MS` environment variable, and keep it under the pod's `terminationGracePeriodSeconds`.
+
+The listener stays registered for the whole drain, so Honeybadger will not force-exit the process while a message is still running.
+
+orka does not exit the process. With that listener registered, Node also will not exit on its own while other handles (a database pool, Redis) are open, and the process would otherwise sit until Kubernetes sends `SIGKILL`. Consumer apps should drain and then exit:
+
+```js
+const { shutdownKafka } = require('@workablehr/orka');
+
+process.on('SIGTERM', async () => {
+  await shutdownKafka();
+  process.exit(0);
+});
+```
+
+`shutdownKafka()` resolves with `{ timedOut: false }` when the drain finishes, or `{ timedOut: true }` if `shutdownTimeoutMs` elapses first. It is a no-op when Kafka was not initialized, and calling it more than once returns the same drain.
 
 ### Creating topics programmatically
 

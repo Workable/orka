@@ -92,7 +92,8 @@ describe('Diamorphosis Test', () => {
             sasl: { mechanism: '', username: '', password: '' }
           },
           connectionTimeout: 5000,
-          authenticationTimeout: 10000
+          authenticationTimeout: 10000,
+          shutdownTimeoutMs: 25000
         });
       });
 

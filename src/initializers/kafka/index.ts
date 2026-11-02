@@ -14,6 +14,7 @@ export {
   BaseKafkaHandlerOptions,
   BaseKafkaHandlerBatch
 } from './base-kafka-handler';
+export type { ShutdownResult } from './kafka';
 
 let kafka: Kafka;
 export default async (
@@ -62,6 +63,11 @@ export const getKafka = () => {
 export const disconnectProducer = async () => {
   if (!kafka) return;
   await kafka.disconnect();
+};
+
+export const shutdownKafka = async () => {
+  if (!kafka) return;
+  return kafka.shutdown();
 };
 
 export const isHealthy = () => {
