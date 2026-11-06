@@ -54,7 +54,7 @@
   "dependencies": {
     "@honeybadger-io/js": "^6.15.3",
     "@workablehr/riviere": "^1.22.3",
-    "chalk": "^2.4.2",
+    "chalk": "^6.0.1",
     "codependency": "^2.1.0",
     "diamorphosis": "^1.1.0",
     "fast-koa-router": "^1.3.0",
