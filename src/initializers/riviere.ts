@@ -114,7 +114,7 @@ const init = (config, orkaOptions) => {
 
 export default (config, orkaOptions: Partial<OrkaOptions>) => {
   if (!middleware) {
-    getLogger('initializing.orka').info('Initializing riviere...');
+    getLogger('orka.riviere').info('Initializing riviere...');
     init(config, orkaOptions);
   }
   return middleware;

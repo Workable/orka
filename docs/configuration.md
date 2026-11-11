@@ -166,8 +166,7 @@ You can find the default values below:
       "orka.kafka.consumer": "info",
       "orka.kafka.producer": "info",
       "orka": "debug",
-      "kafka": "debug",
-      "initializing": "debug"
+      "kafka": "debug"
     }
   },
   "port": 3000,

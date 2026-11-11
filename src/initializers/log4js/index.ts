@@ -4,8 +4,9 @@ import * as path from 'path';
 import { getRequestContext } from '../../builder';
 import chalk from 'chalk';
 
+// Until log4js(config) runs, log everything. Configuring log4js resets the level to the configured one.
 let tmp = name => {
-  const logger = Log4js.getLogger('initializing.' + name);
+  const logger = Log4js.getLogger(name);
   logger.level = 'trace';
   return logger;
 };
@@ -17,6 +18,15 @@ export let getLogger = (name: string) => {
   return loggers[name] as Log4js.Logger;
 };
 const loggers = {};
+
+// Until log4js(config) runs, log4js writes plain text, which log aggregators can merge into preceding
+// output with the wrong severity. With LOG_JSON, log start-up messages as JSON lines from the start.
+if (process.env.LOG_JSON === 'true') {
+  Log4js.configure({
+    appenders: { json: { type: path.resolve(path.join(__dirname, './json-appender')) } },
+    categories: { default: { appenders: ['json'], level: 'off' } }
+  });
+}
 
 export default async config => {
   let appenders = {} as any;

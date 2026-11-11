@@ -30,7 +30,10 @@ describe('log4js_json_appender', () => {
       }
     };
 
-    appender.configure({}, layout)({
+    appender.configure(
+      {},
+      layout
+    )({
       level: {
         levelStr: 'INFO'
       },
@@ -59,7 +62,10 @@ describe('log4js_json_appender', () => {
       }
     };
 
-    appender.configure({}, layout)({
+    appender.configure(
+      {},
+      layout
+    )({
       level: {
         levelStr: 'ERROR'
       },
@@ -88,6 +94,41 @@ describe('log4js_json_appender', () => {
         }
       }
     ]);
+  });
+
+  describe('createErrorLog when the error is not the first argument', () => {
+    const error = new Error('boom');
+    const errorLog = (data: any[]) =>
+      appender.createErrorLog(
+        log => log.data.join(' '),
+        { level: { levelStr: 'ERROR' }, startTime: '01-01-1970', categoryName: 'app', data },
+        {}
+      );
+
+    it('takes the stack trace from an error passed after the message', () => {
+      errorLog(['Something failed', error]).should.containDeep({
+        message: 'Something failed',
+        stack_trace: error.stack
+      });
+    });
+
+    it('takes the stack trace from an error inside a context object', () => {
+      errorLog(['Uncaught Exception', { origin: 'uncaughtException', reason: error }]).should.containDeep({
+        message: 'Uncaught Exception',
+        stack_trace: error.stack,
+        context: { origin: 'uncaughtException' }
+      });
+    });
+
+    it('uses only the message when there is no error', () => {
+      const log = errorLog(['Something failed']);
+      log.message.should.equal('Something failed');
+      (log.stack_trace === undefined).should.equal(true);
+    });
+
+    it("uses the error's message when there is no other message", () => {
+      errorLog([{ reason: error }]).should.containDeep({ message: 'boom', stack_trace: error.stack });
+    });
   });
 
   it('should correctly print circular json', () => {

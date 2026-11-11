@@ -21,6 +21,16 @@ export const runWithContext = <T>(store: Map<string, any>, callback: (args: any[
 };
 
 export default (defaults: Partial<OrkaOptions> = _defaults) => {
+  try {
+    return build(defaults);
+  } catch (e) {
+    // Before log4js(config) this goes through the early logger, so start-up failures are still reported as errors.
+    getLogger('orka').error(e);
+    throw e;
+  }
+};
+
+const build = (defaults: Partial<OrkaOptions>) => {
   const options: Partial<OrkaOptions> = lodash.cloneDeep(lodash.defaultsDeep({}, defaults, _defaults));
 
   const diamorphosis = require('./initializers/diamorphosis').default;
