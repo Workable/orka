@@ -69,7 +69,7 @@
     "ms": "^2.1.3",
     "node-cron": "^2.0.3",
     "qs": "^6.17.1",
-    "rabbit-queue": "^5.10.1",
+    "rabbit-queue": "^5.13.0",
     "redis": "^6.1.0",
     "sanitize-html": "^2.18.1",
     "source-map-support": "^0.5.16",
