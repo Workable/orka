@@ -3,6 +3,9 @@ import 'should';
 import * as Honeybadger from '@honeybadger-io/js';
 import * as sinon from 'sinon';
 import { runWithContext } from '../../../src/builder';
+import axios from 'axios';
+import * as nock from 'nock';
+import { inspect } from 'util';
 
 const sandbox = sinon.createSandbox();
 
@@ -238,5 +241,29 @@ describe('log4js_honeybadger_appender', () => {
     notifySpy.callCount.should.equal(1);
     notifySpy.args[0][0].message.should.equal('plain message');
     notifySpy.args[0][1].context.should.eql({ foo: 'bar' });
+  });
+
+  it('should send only the safe fields of an axios error in the context', async () => {
+    nock('http://orka.test').get('/jobs').query(true).reply(500);
+    const err = await axios
+      .create()
+      .get('http://orka.test/jobs?secretKey=QUERY-SECRET', { headers: { Authorization: 'Bearer HEADER-SECRET' } })
+      .catch(e => e);
+    appender.configure()({
+      level: {
+        level: 40000
+      },
+      categoryName: 'testCategoryName',
+      data: ['Calling jobs failed', err, { err, job: { calls: [err] } }]
+    });
+    const { context } = notifySpy.args[0][1];
+    inspect(context, { depth: null }).should.not.containEql('SECRET');
+    context.err.should.containDeep({
+      code: 'ERR_BAD_RESPONSE',
+      config: { method: 'get', url: 'http://orka.test/jobs' },
+      response: { status: 500 }
+    });
+    context.config.should.eql(context.err.config);
+    context.job.calls[0].should.eql(context.err);
   });
 });

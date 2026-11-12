@@ -1,5 +1,7 @@
 import * as Honeybadger from '@honeybadger-io/js';
+import { cloneDeepWith } from 'lodash';
 import { getRequestContext } from '../../builder';
+import { axiosErrorToLog, isAxiosError } from './json-appender';
 
 const Levels = require('log4js/lib/levels');
 const log4jsErrorLevel = Levels.ERROR.level;
@@ -32,7 +34,10 @@ function buildError(error: Error | string, rest: any[]) {
 }
 
 function buildContext(rest: any[]) {
-  return rest.filter(r => typeof r !== 'string').reduce((acc, r) => Object.assign(acc, r), {});
+  const context = rest
+    .filter(r => typeof r !== 'string')
+    .reduce((acc, r) => Object.assign(acc, isAxiosError(r) ? axiosErrorToLog(r) : r), {});
+  return cloneDeepWith(context, v => (isAxiosError(v) ? axiosErrorToLog(v) : undefined));
 }
 
 function buildPayload(categoryName, error, context) {

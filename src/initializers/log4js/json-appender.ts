@@ -13,11 +13,12 @@ const jsonAppender = (layout, config) => {
     let json = '';
     try {
       injectTrace(event);
-      json = JSON.stringify(event);
+      json = JSON.stringify(event, replaceAxiosErrors);
     } catch (error) {
       let seen = new WeakSet();
 
-      const circularJson = JSON.stringify(event, (key, value) => {
+      const circularJson = JSON.stringify(event, function (key, value) {
+        value = replaceAxiosErrors.call(this, key, value);
         if (typeof value === 'object' && value !== null) {
           if (seen.has(value)) {
             return 'circular_ref';
@@ -72,10 +73,32 @@ const getContextObject = data => {
   data
     .filter(element => typeof element === 'object')
     .forEach(element => {
-      Object.assign(context, element);
+      Object.assign(context, isAxiosError(element) ? axiosErrorToLog(element) : element);
     });
   return context;
 };
+
+export const isAxiosError = error => error?.isAxiosError === true && error instanceof Error;
+
+// Axios errors carry request headers, auth and body: log only safe fields.
+export const axiosErrorToLog = ({ config, request, response, ...error }) => {
+  const withoutQuery = url => url?.toString().split('?')[0];
+  const data = response?.data;
+  return {
+    ...error,
+    config: config && { method: config.method, baseURL: withoutQuery(config.baseURL), url: withoutQuery(config.url) },
+    response: response && {
+      status: response.status,
+      statusText: response.statusText,
+      data: typeof data !== 'object' || Array.isArray(data) || lodash.isPlainObject(data) ? data : undefined
+    }
+  };
+};
+
+// JSON.stringify calls toJSON() before the replacer, so check the original value.
+function replaceAxiosErrors(key, value) {
+  return isAxiosError(this[key]) ? axiosErrorToLog(this[key]) : value;
+}
 
 const getMessageObject = (layout, data) => {
   return layout({ data: data.filter(element => typeof element !== 'object') });

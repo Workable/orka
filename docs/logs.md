@@ -73,6 +73,13 @@ e.g.:
 `LOG_CATEGORIES_ORKA_KAFKA=warn LOG_CATEGORIES_ORKA_KAFKA_CONSUMER=error node app.js`
 
 
+## Axios errors
+
+When you log an axios error, as an argument or inside a context object, orka logs only these fields of it:
+`name`, `message`, `code`, `status`, the request `config.method`, `config.baseURL` and `config.url` (without the query string),
+and the `response.status`, `response.statusText` and `response.data` (unless the data is a stream or a buffer).
+The request headers, auth, body and the raw request are not logged. The same applies to the context sent to Honeybadger.
+
 ## Propagated Header Logging
 
 See: [RequestContext #Header Propagation](https://workable.github.io/orka/request-context.html#header-propagation)
