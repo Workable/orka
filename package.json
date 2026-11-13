@@ -89,7 +89,7 @@
     "bullmq": "*",
     "dd-trace": "^6.6.0",
     "growthbook": "npm:@growthbook/growthbook@*",
-    "husky": "^3.0.9",
+    "husky": "^9.1.7",
     "ioredis": "*",
     "kafkajs": "^2.0.0",
     "lint-staged": "^17.5.0",
